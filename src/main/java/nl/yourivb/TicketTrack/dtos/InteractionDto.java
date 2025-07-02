@@ -1,0 +1,165 @@
+package nl.yourivb.TicketTrack.dtos;
+
+import nl.yourivb.TicketTrack.models.*;
+import nl.yourivb.TicketTrack.models.enums.Category;
+import nl.yourivb.TicketTrack.models.enums.Channel;
+import nl.yourivb.TicketTrack.models.enums.InteractionState;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+public class InteractionDto {
+    private Long id;
+    private String number;
+    private LocalDateTime created;
+    private LocalDateTime closed;
+    private String shortDescription;
+    private String description;
+    private Category category;
+    private InteractionState state;
+    private Channel channel;
+    private ServiceOffering serviceOffering;
+    private AssignmentGroup assignmentGroup;
+    private User openedBy;
+    private User openedFor;
+    private User closedBy;
+    private Incident incident;
+    private List<Attachment> attachments;
+    private List<Note> notes;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
+
+    public LocalDateTime getClosed() {
+        return closed;
+    }
+
+    public void setClosed(LocalDateTime closed) {
+        this.closed = closed;
+    }
+
+    public String getShortDescription() {
+        return shortDescription;
+    }
+
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public InteractionState getState() {
+        return state;
+    }
+
+    public void setState(InteractionState state) {
+        this.state = state;
+    }
+
+    public Channel getChannel() {
+        return channel;
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+    }
+
+    public ServiceOffering getServiceOffering() {
+        return serviceOffering;
+    }
+
+    public void setServiceOffering(ServiceOffering serviceOffering) {
+        this.serviceOffering = serviceOffering;
+    }
+
+    public AssignmentGroup getAssignmentGroup() {
+        return assignmentGroup;
+    }
+
+    public void setAssignmentGroup(AssignmentGroup assignmentGroup) {
+        this.assignmentGroup = assignmentGroup;
+    }
+
+    public User getOpenedBy() {
+        return openedBy;
+    }
+
+    public void setOpenedBy(User openedBy) {
+        this.openedBy = openedBy;
+    }
+
+    public User getOpenedFor() {
+        return openedFor;
+    }
+
+    public void setOpenedFor(User openedFor) {
+        this.openedFor = openedFor;
+    }
+
+    public User getClosedBy() {
+        return closedBy;
+    }
+
+    public void setClosedBy(User closedBy) {
+        this.closedBy = closedBy;
+    }
+
+    public Incident getIncident() {
+        return incident;
+    }
+
+    public void setIncident(Incident incident) {
+        this.incident = incident;
+    }
+
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
+    }
+
+    public List<Note> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
+    }
+}
