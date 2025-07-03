@@ -1,17 +1,12 @@
 package nl.yourivb.TicketTrack.dtos;
 
 import jakarta.validation.constraints.NotNull;
-import nl.yourivb.TicketTrack.models.*;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
-import nl.yourivb.TicketTrack.models.enums.InteractionState;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
 import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
 import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
 import nl.yourivb.TicketTrack.validators.ExcistInDatabase;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 public class InteractionInputDto {
 

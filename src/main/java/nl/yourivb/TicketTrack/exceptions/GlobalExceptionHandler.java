@@ -1,5 +1,6 @@
 package nl.yourivb.TicketTrack.exceptions;
 
+import nl.yourivb.TicketTrack.payload.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,15 +14,10 @@ import java.util.*;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(RecordNotFoundException.class)
-    public ResponseEntity<Object> handleRecordNotFound(RecordNotFoundException ex) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.NOT_FOUND.value());
-        body.put("error", HttpStatus.NOT_FOUND.getReasonPhrase());
-        body.put("message", ex.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ApiResponse<Object>> handleRecordNotFound(RecordNotFoundException ex) {
+        ApiResponse<Object> response = new ApiResponse<>(ex.getMessage(), HttpStatus.NOT_FOUND, null);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -39,7 +35,8 @@ public class GlobalExceptionHandler {
         body.put("status", HttpStatus.BAD_REQUEST.value());
         body.put("errors", errors);
 
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-    }
+        ApiResponse<Object> response = new ApiResponse<>("Validation failed", HttpStatus.BAD_REQUEST, errors);
 
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }
