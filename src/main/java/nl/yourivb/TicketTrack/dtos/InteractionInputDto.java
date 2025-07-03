@@ -5,6 +5,10 @@ import nl.yourivb.TicketTrack.models.*;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
 import nl.yourivb.TicketTrack.models.enums.InteractionState;
+import nl.yourivb.TicketTrack.repositories.AppUserRepository;
+import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
+import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
+import nl.yourivb.TicketTrack.validators.ExcistInDatabase;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,10 +23,17 @@ public class InteractionInputDto {
     private Category category;
     @NotNull(message = "Channel is required")
     private Channel channel;
+
+    @ExcistInDatabase(repository = ServiceOfferingRepository.class, message = "Service offering id not found in database")
     @NotNull(message = "Service offering is required")
     private Long serviceOfferingId;
+
+    @ExcistInDatabase(repository = AssignmentGroupRepository.class, message = "Assignment group id not found in database")
     @NotNull(message = "Assignmentgroup is required")
     private Long assignmentGroupId;
+
+    @ExcistInDatabase(repository = AppUserRepository.class, message = "Opened for id not found in database")
+    @NotNull(message = "Opened for is required")
     private Long openedForId;
 
 

@@ -10,10 +10,13 @@ import nl.yourivb.TicketTrack.models.AssignmentGroup;
 import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.models.ServiceOffering;
 import nl.yourivb.TicketTrack.repositories.InteractionRepository;
+import org.springframework.beans.BeanUtils;
+import org.springframework.cglib.beans.BeanMap;
 import org.springframework.stereotype.Service;
 
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,9 +52,11 @@ public class InteractionService {
     public InteractionDto addInteraction(InteractionInputDto dto) {
         Interaction interaction = interactionMapper.toModel(dto);
 
-        AppUser openedFor = entityLookupService.getAppUserById(dto.getOpenedForId());
+        /*AppUser openedFor = entityLookupService.getAppUserById(dto.getOpenedForId());
         AssignmentGroup assignmentGroup = entityLookupService.getAssignmentGroupById(dto.getAssignmentGroupId());
         ServiceOffering serviceOffering = entityLookupService.getServiceOfferingById(dto.getServiceOfferingId());
+*/
+
 
         interaction.setNumber(generateInteractionNumber());
         interaction.setCreated(LocalDateTime.now());
