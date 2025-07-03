@@ -18,7 +18,7 @@ public class Attachment {
 
     @ManyToOne
     @JoinColumn(name = "uploaded_by_id")
-    private User uploadedBy;
+    private AppUser uploadedBy;
 
     public Long getId() {
         return id;
@@ -76,11 +76,11 @@ public class Attachment {
         this.attachableId = attachableId;
     }
 
-    public User getUploadedBy() {
+    public AppUser getUploadedBy() {
         return uploadedBy;
     }
 
-    public void setUploadedBy(User uploadedBy) {
+    public void setUploadedBy(AppUser uploadedBy) {
         this.uploadedBy = uploadedBy;
     }
 }

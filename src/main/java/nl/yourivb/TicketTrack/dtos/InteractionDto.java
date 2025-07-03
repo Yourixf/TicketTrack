@@ -20,9 +20,9 @@ public class InteractionDto {
     private Channel channel;
     private ServiceOffering serviceOffering;
     private AssignmentGroup assignmentGroup;
-    private User openedBy;
-    private User openedFor;
-    private User closedBy;
+    private AppUser openedBy;
+    private AppUser openedFor;
+    private AppUser closedBy;
     private Incident incident;
     private List<Attachment> attachments;
     private List<Note> notes;
@@ -115,27 +115,27 @@ public class InteractionDto {
         this.assignmentGroup = assignmentGroup;
     }
 
-    public User getOpenedBy() {
+    public AppUser getOpenedBy() {
         return openedBy;
     }
 
-    public void setOpenedBy(User openedBy) {
+    public void setOpenedBy(AppUser openedBy) {
         this.openedBy = openedBy;
     }
 
-    public User getOpenedFor() {
+    public AppUser getOpenedFor() {
         return openedFor;
     }
 
-    public void setOpenedFor(User openedFor) {
+    public void setOpenedFor(AppUser openedFor) {
         this.openedFor = openedFor;
     }
 
-    public User getClosedBy() {
+    public AppUser getClosedBy() {
         return closedBy;
     }
 
-    public void setClosedBy(User closedBy) {
+    public void setClosedBy(AppUser closedBy) {
         this.closedBy = closedBy;
     }
 

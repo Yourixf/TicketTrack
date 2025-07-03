@@ -1,42 +1,58 @@
 package nl.yourivb.TicketTrack.services;
 
+import nl.yourivb.TicketTrack.dtos.IdInputDto;
 import nl.yourivb.TicketTrack.dtos.InteractionDto;
 import nl.yourivb.TicketTrack.dtos.InteractionInputDto;
+import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.InteractionMapper;
+import nl.yourivb.TicketTrack.models.AppUser;
+import nl.yourivb.TicketTrack.models.AssignmentGroup;
 import nl.yourivb.TicketTrack.models.Interaction;
+import nl.yourivb.TicketTrack.models.ServiceOffering;
 import nl.yourivb.TicketTrack.repositories.InteractionRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
 public class InteractionService {
     private final InteractionRepository interactionRepository;
     private final InteractionMapper interactionMapper;
+    private final EntityLookupService entityLookupService;
 
     public InteractionService(InteractionRepository interactionRepository,
-                              InteractionMapper interactionMapper) {
+                              InteractionMapper interactionMapper, EntityLookupService entityLookupService) {
         this.interactionRepository = interactionRepository;
         this.interactionMapper = interactionMapper;
+        this.entityLookupService = entityLookupService;
     }
 
     public List<InteractionDto> getAllInteractions() {
-        List<Interaction> interactionList = interactionRepository.findAll();
-        List<InteractionDto> interactionDtoList = new ArrayList<>();
+        return interactionRepository.findAll().stream().map(interactionMapper::toDto).toList();
+    }
 
-        for (Interaction interaction : interactionList) {
-            InteractionDto dto = interactionMapper.toDto(interaction);
-            interactionDtoList.add(dto);
+    public InteractionDto getInteractionById(Long id) {
+        Optional<Interaction> interactionOptional = interactionRepository.findById(id);
+
+        if (interactionOptional.isPresent()) {
+            Interaction interaction = interactionOptional.get();
+            return interactionMapper.toDto(interaction);
+        } else {
+            throw new RecordNotFoundException("Interaction " + id + " not found in the database");
         }
-
-        return interactionDtoList;
     }
 
     public InteractionDto addInteraction(InteractionInputDto dto) {
         Interaction interaction = interactionMapper.toModel(dto);
+
+        AppUser openedFor = entityLookupService.getAppUserById(dto.getOpenedForId());
+        AssignmentGroup assignmentGroup = entityLookupService.getAssignmentGroupById(dto.getAssignmentGroupId());
+        ServiceOffering serviceOffering = entityLookupService.getServiceOfferingById(dto.getServiceOfferingId());
+
         interaction.setNumber(generateInteractionNumber());
         interaction.setCreated(LocalDateTime.now());
         interactionRepository.save(interaction);

@@ -52,19 +52,19 @@ public class Incident {
 
     @ManyToOne
     @JoinColumn(name = "opened_by_id")
-    private User openedBy;
+    private AppUser openedBy;
 
     @ManyToOne
     @JoinColumn(name = "opened_for_id")
-    private User openedFor;
+    private AppUser openedFor;
 
     @ManyToOne
     @JoinColumn(name = "resolved_by_id")
-    private User resolvedBy;
+    private AppUser resolvedBy;
 
     @ManyToOne
     @JoinColumn(name = "closed_by_id")
-    private User closedBy;
+    private AppUser closedBy;
 
     @ManyToOne
     @JoinColumn(name = "escalated_from_id")
@@ -216,35 +216,35 @@ public class Incident {
         this.assignmentGroup = assignmentGroup;
     }
 
-    public User getOpenedBy() {
+    public AppUser getOpenedBy() {
         return openedBy;
     }
 
-    public void setOpenedBy(User openedBy) {
+    public void setOpenedBy(AppUser openedBy) {
         this.openedBy = openedBy;
     }
 
-    public User getOpenedFor() {
+    public AppUser getOpenedFor() {
         return openedFor;
     }
 
-    public void setOpenedFor(User openedFor) {
+    public void setOpenedFor(AppUser openedFor) {
         this.openedFor = openedFor;
     }
 
-    public User getResolvedBy() {
+    public AppUser getResolvedBy() {
         return resolvedBy;
     }
 
-    public void setResolvedBy(User resolvedBy) {
+    public void setResolvedBy(AppUser resolvedBy) {
         this.resolvedBy = resolvedBy;
     }
 
-    public User getClosedBy() {
+    public AppUser getClosedBy() {
         return closedBy;
     }
 
-    public void setClosedBy(User closedBy) {
+    public void setClosedBy(AppUser closedBy) {
         this.closedBy = closedBy;
     }
 
