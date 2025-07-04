@@ -1,6 +1,6 @@
-package nl.yourivb.TicketTrack.models;
+package nl.yourivb.TicketTrack.dtos;
 
-import jakarta.persistence.*;
+import nl.yourivb.TicketTrack.models.*;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
 import nl.yourivb.TicketTrack.models.enums.InteractionState;
@@ -8,68 +8,24 @@ import nl.yourivb.TicketTrack.models.enums.InteractionState;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity
-public class Interaction {
-
-    @Id
-    @GeneratedValue
+public class InteractionDto {
     private Long id;
-
-    @Column(unique = true)
     private String number;
     private LocalDateTime created;
     private LocalDateTime closed;
     private String shortDescription;
     private String description;
-
-    @Enumerated(EnumType.STRING)
     private Category category;
-
-    @Enumerated(EnumType.STRING)
     private InteractionState state;
-
-    @Enumerated(EnumType.STRING)
     private Channel channel;
-
-    @ManyToOne
-    @JoinColumn(name = "service_offering_id")
     private ServiceOffering serviceOffering;
-
-    @ManyToOne
-    @JoinColumn(name = "assignment_group_id")
     private AssignmentGroup assignmentGroup;
-
-    @ManyToOne
-    @JoinColumn(name = "opened_by_id")
     private AppUser openedBy;
-
-    @ManyToOne
-    @JoinColumn(name = "opened_for_id")
     private AppUser openedFor;
-
-    @ManyToOne
-    @JoinColumn(name = "closed_by_id")
     private AppUser closedBy;
-
-    @ManyToOne
-    @JoinColumn(name = "incident_id")
     private Incident incident;
-
-    // This tag makes sure the underlying variable doesn't get saved into the database, but editable in service layer so you can easily export it via DTO
-    @Transient
     private List<Attachment> attachments;
-
-    @Transient
     private List<Note> notes;
-
-
-    public List<Attachment> getAttachments() {
-        return attachments;
-    }
-
-    public void setAttachments(List<Attachment> attachments) {
-        this.attachments = attachments;
-    }
 
     public Long getId() {
         return id;
@@ -189,6 +145,14 @@ public class Interaction {
 
     public void setIncident(Incident incident) {
         this.incident = incident;
+    }
+
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
     }
 
     public List<Note> getNotes() {

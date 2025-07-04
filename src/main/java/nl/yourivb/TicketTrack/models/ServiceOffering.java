@@ -3,6 +3,7 @@ package nl.yourivb.TicketTrack.models;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "service_offering")
 public class ServiceOffering {
     @Id
     @GeneratedValue

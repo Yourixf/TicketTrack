@@ -3,7 +3,8 @@ package nl.yourivb.TicketTrack.models;
 import jakarta.persistence.*;
 
 @Entity
-public class User {
+@Table(name = "app_user")
+public class AppUser {
     @Id
     @GeneratedValue
     private Long id;

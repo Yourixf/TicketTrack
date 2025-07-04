@@ -2,9 +2,11 @@ package nl.yourivb.TicketTrack.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
 
 @Entity
+@Table(name = "assignment_group")
 public class AssignmentGroup {
     @Id
     @GeneratedValue
