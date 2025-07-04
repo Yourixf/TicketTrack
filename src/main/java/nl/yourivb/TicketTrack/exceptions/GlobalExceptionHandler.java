@@ -3,6 +3,7 @@ package nl.yourivb.TicketTrack.exceptions;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,5 +39,19 @@ public class GlobalExceptionHandler {
         ApiResponse<Object> response = new ApiResponse<>("Validation failed", HttpStatus.BAD_REQUEST, errors);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiResponse<Object>> handleBadException(BadRequestException ex) {
+        ApiResponse<Object> response = new ApiResponse<>(ex.getMessage(), HttpStatus.BAD_REQUEST, null);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Object>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        return new ResponseEntity<>(
+                new ApiResponse<>("Invalid or missing request body", HttpStatus.BAD_REQUEST, null),
+                HttpStatus.BAD_REQUEST
+        );
     }
 }

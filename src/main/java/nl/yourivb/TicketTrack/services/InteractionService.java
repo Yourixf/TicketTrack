@@ -1,24 +1,21 @@
 package nl.yourivb.TicketTrack.services;
 
-import nl.yourivb.TicketTrack.dtos.IdInputDto;
 import nl.yourivb.TicketTrack.dtos.InteractionDto;
 import nl.yourivb.TicketTrack.dtos.InteractionInputDto;
+import nl.yourivb.TicketTrack.dtos.InteractionPatchDto;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
+import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.mappers.InteractionMapper;
-import nl.yourivb.TicketTrack.models.AppUser;
-import nl.yourivb.TicketTrack.models.AssignmentGroup;
 import nl.yourivb.TicketTrack.models.Interaction;
-import nl.yourivb.TicketTrack.models.ServiceOffering;
 import nl.yourivb.TicketTrack.repositories.InteractionRepository;
-import org.springframework.beans.BeanUtils;
-import org.springframework.cglib.beans.BeanMap;
 import org.springframework.stereotype.Service;
 
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
+import static nl.yourivb.TicketTrack.utils.AppUtils.generateRegistrationNumber;
 
 
 @Service
@@ -52,22 +49,41 @@ public class InteractionService {
     public InteractionDto addInteraction(InteractionInputDto dto) {
         Interaction interaction = interactionMapper.toModel(dto);
 
-        /*AppUser openedFor = entityLookupService.getAppUserById(dto.getOpenedForId());
-        AssignmentGroup assignmentGroup = entityLookupService.getAssignmentGroupById(dto.getAssignmentGroupId());
-        ServiceOffering serviceOffering = entityLookupService.getServiceOfferingById(dto.getServiceOfferingId());
-*/
-
-
-        interaction.setNumber(generateInteractionNumber());
+        interaction.setNumber(generateRegistrationNumber("IMS", interactionRepository));
         interaction.setCreated(LocalDateTime.now());
         interactionRepository.save(interaction);
 
         return interactionMapper.toDto(interaction);
     }
 
-    public String generateInteractionNumber() {
-        Long count = interactionRepository.count();
-        Long nextnumber = count + 1;
-        return String.format("IMS%07d" , nextnumber);
+    public InteractionDto updateInteraction(Long id, InteractionInputDto newInteraction) {
+        Interaction interaction = interactionRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Interaction " + id + " not found"));
+
+        interactionMapper.updateInteractionFromDto(newInteraction, interaction);
+
+        Interaction updatedInteraction = interactionRepository.save(interaction);
+
+        return interactionMapper.toDto(updatedInteraction);
     }
+
+    public InteractionDto patchInteraction(Long id, InteractionPatchDto patchedInteraction) {
+        Interaction interaction = interactionRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Interaction " + id + " not found"));
+
+        if (allFieldsNull(patchedInteraction)) {
+            throw new BadRequestException("No valid fields provided for patch");
+        }
+
+        interactionMapper.patchInteractionFromDto(patchedInteraction, interaction);
+
+        Interaction updatedInteraction = interactionRepository.save(interaction);
+
+        return interactionMapper.toDto(updatedInteraction);
+    }
+
+    public void deleteInteraction(Long id) {
+        Interaction interaction = interactionRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Interaction " + id + " not found"));
+
+        interactionRepository.deleteById(id);
+    }
+
 }

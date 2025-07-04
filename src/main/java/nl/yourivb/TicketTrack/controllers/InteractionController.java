@@ -3,6 +3,7 @@ package nl.yourivb.TicketTrack.controllers;
 import jakarta.validation.Valid;
 import nl.yourivb.TicketTrack.dtos.InteractionDto;
 import nl.yourivb.TicketTrack.dtos.InteractionInputDto;
+import nl.yourivb.TicketTrack.dtos.InteractionPatchDto;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.InteractionService;
 import org.springframework.http.HttpStatus;
@@ -56,9 +57,31 @@ public class InteractionController {
 
     }
 
-//    @PutMapping("/interactions/{id}")
-//
-//    @PatchMapping("/interactions/{id}")
-//
-//    @DeleteMapping("/interactions/{id}")
+    @PutMapping("/interactions/{id}")
+    public ResponseEntity<ApiResponse<InteractionDto>> updateInteraction(@PathVariable Long id, @Valid @RequestBody InteractionInputDto newInteraction) {
+        InteractionDto updatedInteraction = interactionService.updateInteraction(id, newInteraction);
+
+        return new ResponseEntity<>(
+                new ApiResponse<>("Interaction updated", HttpStatus.OK, updatedInteraction), HttpStatus.OK
+        );
+    }
+
+    @PatchMapping("/interactions/{id}")
+    public ResponseEntity<ApiResponse<InteractionDto>> patchInteraction(@PathVariable Long id, @RequestBody InteractionPatchDto patchedInteraction) {
+        InteractionDto updatedInteraction = interactionService.patchInteraction(id, patchedInteraction);
+
+        return new ResponseEntity<>(
+                new ApiResponse<>("Interaction updated", HttpStatus.OK, updatedInteraction), HttpStatus.OK
+        );
+    }
+
+    @DeleteMapping("/interactions/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteInteraction(@PathVariable Long id) {
+        interactionService.deleteInteraction(id);
+
+        return new ResponseEntity<>(
+                new ApiResponse<>("Interaction deleted", HttpStatus.OK, null),
+                HttpStatus.OK
+        );
+    }
 }
