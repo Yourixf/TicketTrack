@@ -1,8 +1,8 @@
 package nl.yourivb.TicketTrack.services;
 
-import nl.yourivb.TicketTrack.dtos.InteractionDto;
-import nl.yourivb.TicketTrack.dtos.InteractionInputDto;
-import nl.yourivb.TicketTrack.dtos.InteractionPatchDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.mappers.InteractionMapper;
@@ -22,13 +22,11 @@ import static nl.yourivb.TicketTrack.utils.AppUtils.generateRegistrationNumber;
 public class InteractionService {
     private final InteractionRepository interactionRepository;
     private final InteractionMapper interactionMapper;
-    private final EntityLookupService entityLookupService;
 
     public InteractionService(InteractionRepository interactionRepository,
-                              InteractionMapper interactionMapper, EntityLookupService entityLookupService) {
+                              InteractionMapper interactionMapper) {
         this.interactionRepository = interactionRepository;
         this.interactionMapper = interactionMapper;
-        this.entityLookupService = entityLookupService;
     }
 
     public List<InteractionDto> getAllInteractions() {

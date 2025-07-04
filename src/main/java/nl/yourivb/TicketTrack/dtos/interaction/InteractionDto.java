@@ -1,4 +1,4 @@
-package nl.yourivb.TicketTrack.dtos;
+package nl.yourivb.TicketTrack.dtos.interaction;
 
 import nl.yourivb.TicketTrack.models.*;
 import nl.yourivb.TicketTrack.models.enums.Category;
