@@ -2,6 +2,8 @@ package nl.yourivb.TicketTrack.models;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "app_user")
 public class AppUser {
@@ -13,6 +15,11 @@ public class AppUser {
     private String email;
     private String info;
     private String password;
+
+    @Column(updatable = false)
+    private LocalDateTime created;
+
+    private LocalDateTime lastModified;
 
     @OneToOne
     @JoinColumn(name = "profile_picture_id")
@@ -70,6 +77,22 @@ public class AppUser {
         this.password = password;
     }
 
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
+
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
+    }
+
     public Attachment getProfilePicture() {
         return profilePicture;
     }
@@ -84,5 +107,17 @@ public class AppUser {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+
+    @PrePersist
+    protected void onCreate() {
+        this.created = LocalDateTime.now();
+        this.lastModified = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.lastModified = LocalDateTime.now();
     }
 }

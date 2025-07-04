@@ -16,6 +16,10 @@ public class Attachment {
     private String attachableType;
     private Long attachableId;
 
+    @Column(updatable = false)
+    private LocalDateTime created;
+    private LocalDateTime lastModified;
+
     @ManyToOne
     @JoinColumn(name = "uploaded_by_id")
     private AppUser uploadedBy;
@@ -76,11 +80,38 @@ public class Attachment {
         this.attachableId = attachableId;
     }
 
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
+
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
+    }
+
     public AppUser getUploadedBy() {
         return uploadedBy;
     }
 
     public void setUploadedBy(AppUser uploadedBy) {
         this.uploadedBy = uploadedBy;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.created = LocalDateTime.now();
+        this.lastModified = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.lastModified = LocalDateTime.now();
     }
 }

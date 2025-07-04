@@ -17,8 +17,15 @@ public class Interaction {
 
     @Column(unique = true)
     private String number;
+
+    @Column(updatable = false)
     private LocalDateTime created;
+
+    @Column(updatable = false)
     private LocalDateTime closed;
+
+    private LocalDateTime lastModified;
+
     private String shortDescription;
     private String description;
 
@@ -101,6 +108,14 @@ public class Interaction {
 
     public void setClosed(LocalDateTime closed) {
         this.closed = closed;
+    }
+
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
     }
 
     public String getShortDescription() {
@@ -197,5 +212,16 @@ public class Interaction {
 
     public void setNotes(List<Note> notes) {
         this.notes = notes;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.created = LocalDateTime.now();
+        this.lastModified = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.lastModified = LocalDateTime.now();
     }
 }

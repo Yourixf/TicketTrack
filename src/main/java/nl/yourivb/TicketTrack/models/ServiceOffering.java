@@ -2,6 +2,8 @@ package nl.yourivb.TicketTrack.models;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "service_offering")
 public class ServiceOffering {
@@ -10,6 +12,11 @@ public class ServiceOffering {
     private Long id;
     private String name;
     private int defaultSlaInDays;
+
+    @Column(updatable = false)
+    private LocalDateTime created;
+
+    private LocalDateTime  lastModified;
 
     @ManyToOne
     @JoinColumn(name = "assignment_group_id")
@@ -45,5 +52,32 @@ public class ServiceOffering {
 
     public void setAssignmentGroup(AssignmentGroup assignmentGroup) {
         this.assignmentGroup = assignmentGroup;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
+
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.created = LocalDateTime.now();
+        this.lastModified = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.lastModified = LocalDateTime.now();
     }
 }

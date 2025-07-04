@@ -13,6 +13,7 @@ public class InteractionDto {
     private String number;
     private LocalDateTime created;
     private LocalDateTime closed;
+    private LocalDateTime lastModified;
     private String shortDescription;
     private String description;
     private Category category;
@@ -57,6 +58,14 @@ public class InteractionDto {
 
     public void setClosed(LocalDateTime closed) {
         this.closed = closed;
+    }
+
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
     }
 
     public String getShortDescription() {

@@ -48,7 +48,6 @@ public class InteractionService {
         Interaction interaction = interactionMapper.toModel(dto);
 
         interaction.setNumber(generateRegistrationNumber("IMS", interactionRepository));
-        interaction.setCreated(LocalDateTime.now());
         interactionRepository.save(interaction);
 
         return interactionMapper.toDto(interaction);
@@ -58,7 +57,6 @@ public class InteractionService {
         Interaction interaction = interactionRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Interaction " + id + " not found"));
 
         interactionMapper.updateInteractionFromDto(newInteraction, interaction);
-
         Interaction updatedInteraction = interactionRepository.save(interaction);
 
         return interactionMapper.toDto(updatedInteraction);
@@ -72,7 +70,6 @@ public class InteractionService {
         }
 
         interactionMapper.patchInteractionFromDto(patchedInteraction, interaction);
-
         Interaction updatedInteraction = interactionRepository.save(interaction);
 
         return interactionMapper.toDto(updatedInteraction);
@@ -83,5 +80,4 @@ public class InteractionService {
 
         interactionRepository.deleteById(id);
     }
-
 }

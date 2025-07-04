@@ -10,6 +10,7 @@ import nl.yourivb.TicketTrack.models.ServiceOffering;
 import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +45,7 @@ public class ServiceOfferingService {
 
     public ServiceOfferingDto addServiceOffering(ServiceOfferingInputDto dto) {
         ServiceOffering serviceOffering = serviceOfferingMapper.toModel(dto);
+
         serviceOfferingRepository.save(serviceOffering);
 
         return serviceOfferingMapper.toDto(serviceOffering);
@@ -57,7 +59,6 @@ public class ServiceOfferingService {
         }
 
         serviceOfferingMapper.updateServiceOfferingFromDto(newServiceOffering, serviceOffering);
-
         ServiceOffering updatedServiceOffering = serviceOfferingRepository.save(serviceOffering);
 
         return serviceOfferingMapper.toDto(updatedServiceOffering);
@@ -71,7 +72,6 @@ public class ServiceOfferingService {
         }
 
         serviceOfferingMapper.patchServiceOfferingFromDto(patchedServiceOffering, serviceOffering);
-
         ServiceOffering updatedServiceOffering = serviceOfferingRepository.save(serviceOffering);
 
         return serviceOfferingMapper.toDto(updatedServiceOffering);

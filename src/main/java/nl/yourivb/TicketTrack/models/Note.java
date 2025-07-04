@@ -11,7 +11,10 @@ public class Note {
     @GeneratedValue
     private Long id;
     private String content;
+
+    @Column(updatable = false)
     private LocalDateTime created;
+
     private String noteableType;
     private Long noteableId;
 
@@ -64,5 +67,10 @@ public class Note {
 
     public void setNoteType(NoteType noteType) {
         this.noteType = noteType;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.created = LocalDateTime.now();
     }
 }
