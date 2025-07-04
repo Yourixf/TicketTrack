@@ -1,8 +1,8 @@
 package nl.yourivb.TicketTrack.services;
 
-import nl.yourivb.TicketTrack.dtos.InteractionDto;
-import nl.yourivb.TicketTrack.dtos.InteractionInputDto;
-import nl.yourivb.TicketTrack.dtos.InteractionPatchDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.mappers.InteractionMapper;
@@ -22,13 +22,11 @@ import static nl.yourivb.TicketTrack.utils.AppUtils.generateRegistrationNumber;
 public class InteractionService {
     private final InteractionRepository interactionRepository;
     private final InteractionMapper interactionMapper;
-    private final EntityLookupService entityLookupService;
 
     public InteractionService(InteractionRepository interactionRepository,
-                              InteractionMapper interactionMapper, EntityLookupService entityLookupService) {
+                              InteractionMapper interactionMapper) {
         this.interactionRepository = interactionRepository;
         this.interactionMapper = interactionMapper;
-        this.entityLookupService = entityLookupService;
     }
 
     public List<InteractionDto> getAllInteractions() {
@@ -50,7 +48,6 @@ public class InteractionService {
         Interaction interaction = interactionMapper.toModel(dto);
 
         interaction.setNumber(generateRegistrationNumber("IMS", interactionRepository));
-        interaction.setCreated(LocalDateTime.now());
         interactionRepository.save(interaction);
 
         return interactionMapper.toDto(interaction);
@@ -60,7 +57,6 @@ public class InteractionService {
         Interaction interaction = interactionRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Interaction " + id + " not found"));
 
         interactionMapper.updateInteractionFromDto(newInteraction, interaction);
-
         Interaction updatedInteraction = interactionRepository.save(interaction);
 
         return interactionMapper.toDto(updatedInteraction);
@@ -74,7 +70,6 @@ public class InteractionService {
         }
 
         interactionMapper.patchInteractionFromDto(patchedInteraction, interaction);
-
         Interaction updatedInteraction = interactionRepository.save(interaction);
 
         return interactionMapper.toDto(updatedInteraction);
@@ -85,5 +80,4 @@ public class InteractionService {
 
         interactionRepository.deleteById(id);
     }
-
 }

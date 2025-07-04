@@ -1,25 +1,15 @@
-package nl.yourivb.TicketTrack.models;
+package nl.yourivb.TicketTrack.dtos.serviceOffering;
 
-import jakarta.persistence.*;
+import nl.yourivb.TicketTrack.models.AssignmentGroup;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "service_offering")
-public class ServiceOffering {
-    @Id
-    @GeneratedValue
+public class ServiceOfferingDto {
     private Long id;
     private String name;
     private int defaultSlaInDays;
-
-    @Column(updatable = false)
     private LocalDateTime created;
-
-    private LocalDateTime  lastModified;
-
-    @ManyToOne
-    @JoinColumn(name = "assignment_group_id")
+    private LocalDateTime lastModified;
     private AssignmentGroup assignmentGroup;
 
     public Long getId() {
@@ -46,14 +36,6 @@ public class ServiceOffering {
         this.defaultSlaInDays = defaultSlaInDays;
     }
 
-    public AssignmentGroup getAssignmentGroup() {
-        return assignmentGroup;
-    }
-
-    public void setAssignmentGroup(AssignmentGroup assignmentGroup) {
-        this.assignmentGroup = assignmentGroup;
-    }
-
     public LocalDateTime getCreated() {
         return created;
     }
@@ -70,14 +52,12 @@ public class ServiceOffering {
         this.lastModified = lastModified;
     }
 
-    @PrePersist
-    protected void onCreate() {
-        this.created = LocalDateTime.now();
-        this.lastModified = LocalDateTime.now();
+    public AssignmentGroup getAssignmentGroup() {
+        return assignmentGroup;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.lastModified = LocalDateTime.now();
+    public void setAssignmentGroup(AssignmentGroup assignmentGroup) {
+        this.assignmentGroup = assignmentGroup;
     }
+
 }

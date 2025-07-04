@@ -14,7 +14,7 @@ public @interface ExcistInDatabase {
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 
-    // Dynamisch meegeven welke repository gebruikt moet worden
+    // Dynamically decides what repository to use
     Class<? extends JpaRepository<?, Long>> repository();
 
 }

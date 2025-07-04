@@ -1,9 +1,9 @@
 package nl.yourivb.TicketTrack.controllers;
 
 import jakarta.validation.Valid;
-import nl.yourivb.TicketTrack.dtos.InteractionDto;
-import nl.yourivb.TicketTrack.dtos.InteractionInputDto;
-import nl.yourivb.TicketTrack.dtos.InteractionPatchDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.InteractionService;
 import org.springframework.http.HttpStatus;
@@ -29,7 +29,7 @@ public class InteractionController {
         dtos = interactionService.getAllInteractions();
 
         return new ResponseEntity<>(
-                new ApiResponse<>("Fetched interactions", HttpStatus.OK, dtos),
+                new ApiResponse<>("Interactions fetched", HttpStatus.OK, dtos),
                 HttpStatus.OK
         );
     }
@@ -44,7 +44,6 @@ public class InteractionController {
         );
     }
 
-
     @PostMapping("/interactions")
     public ResponseEntity<ApiResponse<InteractionDto>> addInteraction(@Valid @RequestBody InteractionInputDto interactionInputDto) {
         InteractionDto dto = interactionService.addInteraction(interactionInputDto);
@@ -54,7 +53,6 @@ public class InteractionController {
                 new ApiResponse<>("Created interaction ", HttpStatus.CREATED, dto),
                 HttpStatus.CREATED
         );
-
     }
 
     @PutMapping("/interactions/{id}")

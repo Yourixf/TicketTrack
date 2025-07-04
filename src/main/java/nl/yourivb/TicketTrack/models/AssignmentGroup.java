@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "assignment_group")
@@ -13,6 +15,11 @@ public class AssignmentGroup {
     private Long id;
     private String name;
     private String email;
+
+    @Column(updatable = false)
+    private LocalDateTime created;
+
+    private LocalDateTime lastModified;
 
     public Long getId() {
         return id;
@@ -36,5 +43,32 @@ public class AssignmentGroup {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
+
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.created = LocalDateTime.now();
+        this.lastModified = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.lastModified = LocalDateTime.now();
     }
 }

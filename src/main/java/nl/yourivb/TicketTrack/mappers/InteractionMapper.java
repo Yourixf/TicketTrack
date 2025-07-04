@@ -1,8 +1,8 @@
 package nl.yourivb.TicketTrack.mappers;
 
-import nl.yourivb.TicketTrack.dtos.InteractionDto;
-import nl.yourivb.TicketTrack.dtos.InteractionInputDto;
-import nl.yourivb.TicketTrack.dtos.InteractionPatchDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
 import nl.yourivb.TicketTrack.models.Interaction;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;

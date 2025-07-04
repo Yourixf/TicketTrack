@@ -2,6 +2,7 @@ package nl.yourivb.TicketTrack.models;
 
 import jakarta.persistence.*;
 import nl.yourivb.TicketTrack.models.enums.*;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,9 +15,16 @@ public class Incident {
 
     @Column(unique = true)
     private String number;
+
+    @Column(updatable = false)
     private LocalDateTime created;
+
+    @Column(updatable = false)
     private LocalDateTime closed;
+
     private LocalDateTime resolved;
+    private LocalDateTime lastModified;
+
     private LocalDateTime onHoldSince;
     private String shortDescription;
     private String description;
@@ -118,6 +126,14 @@ public class Incident {
 
     public void setResolved(LocalDateTime resolved) {
         this.resolved = resolved;
+    }
+
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
     }
 
     public LocalDateTime getOnHoldSince() {
@@ -278,5 +294,16 @@ public class Incident {
 
     public void setNotes(List<Note> notes) {
         this.notes = notes;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.created = LocalDateTime.now();
+        this.lastModified = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.lastModified = LocalDateTime.now();
     }
 }
