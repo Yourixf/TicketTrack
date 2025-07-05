@@ -1,5 +1,6 @@
 package nl.yourivb.TicketTrack.dtos.interaction;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
@@ -10,9 +11,9 @@ import nl.yourivb.TicketTrack.validators.ExcistInDatabase;
 
 public class InteractionInputDto {
 
-    @NotNull(message = "Short description is required")
+    @NotBlank(message = "Short description is required")
     private String shortDescription;
-    @NotNull(message = "Description is required")
+    @NotBlank(message = "Description is required")
     private String description;
     @NotNull(message = "Category is required")
     private Category category;
