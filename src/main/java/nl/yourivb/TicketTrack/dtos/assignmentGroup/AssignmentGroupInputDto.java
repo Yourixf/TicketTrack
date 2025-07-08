@@ -1,12 +1,17 @@
 package nl.yourivb.TicketTrack.dtos.assignmentGroup;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class AssignmentGroupInputDto {
-    @NotBlank(message = "Name is required")
+    @NotBlank
+    @Size(min = 2, max = 255)
     private String name;
 
-    @NotBlank(message = "Email is required")
+    @Email
+    @NotBlank
+    @Size(min = 2, max = 255)
     private String email;
 
     public String getName() {

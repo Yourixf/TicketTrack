@@ -1,13 +1,15 @@
 package nl.yourivb.TicketTrack.dtos.assignmentGroup;
 
 
-import nl.yourivb.TicketTrack.validators.NotBlankIfPresent;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 
 public class AssignmentGroupPatchDto {
-    @NotBlankIfPresent(message = "Name can't be empty")
+    @Size(min = 2, max = 255)
     private String name;
 
-    @NotBlankIfPresent(message = "Email can't not be empty")
+    @Email
+    @Size(min = 2, max = 255)
     private String email;
 
     public String getName() {
