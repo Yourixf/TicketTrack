@@ -7,7 +7,9 @@ import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.mappers.InteractionMapper;
 import nl.yourivb.TicketTrack.models.Interaction;
+import nl.yourivb.TicketTrack.models.Note;
 import nl.yourivb.TicketTrack.repositories.InteractionRepository;
+import nl.yourivb.TicketTrack.repositories.NoteRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,11 +24,14 @@ import static nl.yourivb.TicketTrack.utils.AppUtils.generateRegistrationNumber;
 public class InteractionService {
     private final InteractionRepository interactionRepository;
     private final InteractionMapper interactionMapper;
+    private final NoteRepository noteRepository;
 
     public InteractionService(InteractionRepository interactionRepository,
-                              InteractionMapper interactionMapper) {
+                              InteractionMapper interactionMapper,
+                              NoteRepository noteRepository) {
         this.interactionRepository = interactionRepository;
         this.interactionMapper = interactionMapper;
+        this.noteRepository = noteRepository;
     }
 
     public List<InteractionDto> getAllInteractions() {
@@ -34,14 +39,14 @@ public class InteractionService {
     }
 
     public InteractionDto getInteractionById(Long id) {
-        Optional<Interaction> interactionOptional = interactionRepository.findById(id);
+        Interaction interaction = interactionRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Interaction " + id + " not found"));
 
-        if (interactionOptional.isPresent()) {
-            Interaction interaction = interactionOptional.get();
-            return interactionMapper.toDto(interaction);
-        } else {
-            throw new RecordNotFoundException("Interaction " + id + " not found in the database");
-        }
+        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId());
+
+        interaction.setNotes(notes);
+
+        return interactionMapper.toDto(interaction);
+
     }
 
     public InteractionDto addInteraction(InteractionInputDto dto) {
