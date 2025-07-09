@@ -53,10 +53,7 @@ public class ServiceOfferingController {
         ServiceOfferingDto dto = serviceOfferingService.addServiceOffering(serviceOfferingInputDto);
         URI uri = URI.create("/service-offerings/" + dto.getId());
 
-        return new ResponseEntity<>(
-                new ApiResponse<>("Created service offering ", HttpStatus.CREATED, dto),
-                HttpStatus.CREATED
-        );
+        return ResponseEntity.created(uri).body(new ApiResponse<>("Created service offering", HttpStatus.CREATED, dto));
     }
 
     @PutMapping("/service-offerings/{id}")
@@ -69,7 +66,7 @@ public class ServiceOfferingController {
     }
 
     @PatchMapping("/service-offerings/{id}")
-    public ResponseEntity<ApiResponse<ServiceOfferingDto>> patchServiceOffering(@PathVariable Long id, @RequestBody ServiceOfferingPatchDto patchedServiceOffering) {
+    public ResponseEntity<ApiResponse<ServiceOfferingDto>> patchServiceOffering(@PathVariable Long id, @Valid @RequestBody ServiceOfferingPatchDto patchedServiceOffering) {
         ServiceOfferingDto updatedServiceOffering = serviceOfferingService.patchServiceOffering(id, patchedServiceOffering);
 
         return new ResponseEntity<>(

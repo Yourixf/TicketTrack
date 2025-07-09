@@ -8,6 +8,7 @@ import nl.yourivb.TicketTrack.models.enums.InteractionState;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 public class InteractionDto {
     private Long id;
     private String number;

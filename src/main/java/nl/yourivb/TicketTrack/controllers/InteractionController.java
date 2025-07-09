@@ -49,10 +49,7 @@ public class InteractionController {
         InteractionDto dto = interactionService.addInteraction(interactionInputDto);
         URI uri = URI.create("/interactions/" + dto.getId());
 
-        return new ResponseEntity<>(
-                new ApiResponse<>("Created interaction ", HttpStatus.CREATED, dto),
-                HttpStatus.CREATED
-        );
+        return ResponseEntity.created(uri).body(new ApiResponse<>("Created interaction", HttpStatus.CREATED, dto));
     }
 
     @PutMapping("/interactions/{id}")
@@ -65,7 +62,7 @@ public class InteractionController {
     }
 
     @PatchMapping("/interactions/{id}")
-    public ResponseEntity<ApiResponse<InteractionDto>> patchInteraction(@PathVariable Long id, @RequestBody InteractionPatchDto patchedInteraction) {
+    public ResponseEntity<ApiResponse<InteractionDto>> patchInteraction(@PathVariable Long id, @Valid @RequestBody InteractionPatchDto patchedInteraction) {
         InteractionDto updatedInteraction = interactionService.patchInteraction(id, patchedInteraction);
 
         return new ResponseEntity<>(

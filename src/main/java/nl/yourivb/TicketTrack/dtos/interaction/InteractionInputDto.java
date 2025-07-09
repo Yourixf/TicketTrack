@@ -1,6 +1,8 @@
 package nl.yourivb.TicketTrack.dtos.interaction;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
@@ -9,26 +11,30 @@ import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
 import nl.yourivb.TicketTrack.validators.ExcistInDatabase;
 
 public class InteractionInputDto {
-
-    @NotNull(message = "Short description is required")
+    @NotBlank
+    @Size(min = 2, max = 255)
     private String shortDescription;
-    @NotNull(message = "Description is required")
+
+    @NotBlank
+    @Size(min = 2, max = 1500)
     private String description;
-    @NotNull(message = "Category is required")
+
+    @NotNull
     private Category category;
-    @NotNull(message = "Channel is required")
+
+    @NotNull
     private Channel channel;
 
     @ExcistInDatabase(repository = ServiceOfferingRepository.class, message = "Service offering id not found in database")
-    @NotNull(message = "Service offering is required")
+    @NotNull
     private Long serviceOfferingId;
 
 //    @ExcistInDatabase(repository = AssignmentGroupRepository.class, message = "Assignment group id not found in database")
-    @NotNull(message = "Assignmentgroup is required")
+    @NotNull
     private Long assignmentGroupId;
 
 //    @ExcistInDatabase(repository = AppUserRepository.class, message = "Opened for id not found in database")
-    @NotNull(message = "Opened for is required")
+    @NotNull
     private Long openedForId;
 
 

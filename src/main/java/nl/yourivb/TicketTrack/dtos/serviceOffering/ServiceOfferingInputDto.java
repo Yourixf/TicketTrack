@@ -1,13 +1,14 @@
 package nl.yourivb.TicketTrack.dtos.serviceOffering;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import nl.yourivb.TicketTrack.models.AssignmentGroup;
 import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
 import nl.yourivb.TicketTrack.validators.ExcistInDatabase;
 
 public class ServiceOfferingInputDto {
-    @NotNull(message = "Name is required")
+    @NotBlank(message = "Name is required")
     private String name;
 
     @NotNull(message = "Default SLA in days is required")

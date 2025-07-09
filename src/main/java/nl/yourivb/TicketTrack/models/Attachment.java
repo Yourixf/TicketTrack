@@ -11,13 +11,13 @@ public class Attachment {
     private Long id;
     private String fileType;
     private String fileName;
-    private LocalDateTime uploaded;
-    private String filePath;
-    private String attachableType;
-    private Long attachableId;
 
     @Column(updatable = false)
     private LocalDateTime created;
+
+    private String filePath;
+    private String attachableType;
+    private Long attachableId;
     private LocalDateTime lastModified;
 
     @ManyToOne
@@ -48,12 +48,12 @@ public class Attachment {
         this.fileName = fileName;
     }
 
-    public LocalDateTime getUploaded() {
-        return uploaded;
+    public LocalDateTime getCreated() {
+        return created;
     }
 
-    public void setUploaded(LocalDateTime uploaded) {
-        this.uploaded = uploaded;
+    public void setCreated(LocalDateTime uploaded) {
+        this.created = uploaded;
     }
 
     public String getFilePath() {
@@ -78,14 +78,6 @@ public class Attachment {
 
     public void setAttachableId(Long attachableId) {
         this.attachableId = attachableId;
-    }
-
-    public LocalDateTime getCreated() {
-        return created;
-    }
-
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
     }
 
     public LocalDateTime getLastModified() {
