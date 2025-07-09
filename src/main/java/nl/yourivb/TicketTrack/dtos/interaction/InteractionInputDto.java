@@ -11,15 +11,17 @@ import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
 import nl.yourivb.TicketTrack.validators.ExcistInDatabase;
 
 public class InteractionInputDto {
-
     @NotBlank
     @Size(min = 2, max = 255)
     private String shortDescription;
+
     @NotBlank
     @Size(min = 2, max = 1500)
     private String description;
+
     @NotNull
     private Category category;
+
     @NotNull
     private Channel channel;
 
