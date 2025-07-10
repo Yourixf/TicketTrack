@@ -1,6 +1,8 @@
 package nl.yourivb.TicketTrack.dtos.Note;
 
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotNull;
+import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.models.enums.NoteVisibility;
 
 import java.time.LocalDateTime;
@@ -8,7 +10,7 @@ import java.time.LocalDateTime;
 public class NoteDto {
     private Long id;
 
-    @Column(updatable = false)
+    //only updatable for admins
     private String content;
 
     @Column(updatable = false)
@@ -22,6 +24,9 @@ public class NoteDto {
 
     @Column(updatable = false)
     private NoteVisibility noteVisibility;
+
+    @Column(updatable = false)
+    private AppUser createdBy;
 
     public Long getId() {
         return id;
@@ -67,7 +72,24 @@ public class NoteDto {
         return noteVisibility;
     }
 
+    public NoteVisibility getNoteVisibility() {
+        return noteVisibility;
+    }
     public void setNoteType(NoteVisibility noteVisibility) {
         this.noteVisibility = noteVisibility;
+    }
+
+
+
+    public void setNoteVisibility(NoteVisibility noteVisibility) {
+        this.noteVisibility = noteVisibility;
+    }
+
+    public AppUser getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(AppUser createdBy) {
+        this.createdBy = createdBy;
     }
 }

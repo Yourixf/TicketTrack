@@ -15,11 +15,12 @@ public class AssignmentGroup {
     private Long id;
     private String name;
     private String email;
-
-    @Column(updatable = false)
     private LocalDateTime created;
-
     private LocalDateTime lastModified;
+
+    @ManyToOne
+    @JoinColumn(name = "created_by_id")
+    private AppUser createdBy;
 
     public Long getId() {
         return id;

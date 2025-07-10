@@ -19,6 +19,7 @@ public class ServiceOfferingInputDto {
     @NotNull(message = "Assignmentgroup is required")
     private Long assignmentGroupId;
 
+
     public String getName() {
         return name;
     }

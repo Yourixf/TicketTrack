@@ -12,7 +12,6 @@ public class Note {
     private Long id;
     private String content;
 
-    @Column(updatable = false)
     private LocalDateTime created;
 
     private String noteableType;
@@ -20,6 +19,10 @@ public class Note {
 
     @Enumerated(EnumType.STRING)
     private NoteVisibility visibility;
+
+    @ManyToOne
+    @JoinColumn(name = "created_by_id")
+    private AppUser createdBy;
 
     public Long getId() {
         return id;
@@ -67,6 +70,14 @@ public class Note {
 
     public void setVisibility(NoteVisibility noteVisibility) {
         this.visibility = noteVisibility;
+    }
+
+    public AppUser getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(AppUser createdBy) {
+        this.createdBy = createdBy;
     }
 
     @PrePersist

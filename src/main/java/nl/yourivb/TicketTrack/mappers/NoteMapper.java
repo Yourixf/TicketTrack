@@ -5,6 +5,7 @@ import nl.yourivb.TicketTrack.dtos.Note.NoteInputDto;
 import nl.yourivb.TicketTrack.models.Note;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 
@@ -12,4 +13,6 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface NoteMapper {
     NoteDto toDto(Note note);
     Note toModel(NoteInputDto dto);
+
+    void updateNoteFromDto(NoteInputDto dto, @MappingTarget Note note);
 }

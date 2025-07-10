@@ -1,6 +1,7 @@
 package nl.yourivb.TicketTrack.dtos.Note;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 
@@ -11,6 +12,7 @@ public class NoteInputDto {
 
     @NotBlank
     private String visibility;
+
 
     public String getContent() {
         return content;

@@ -1,24 +1,36 @@
-package nl.yourivb.TicketTrack.models;
+package nl.yourivb.TicketTrack.dtos.attachment;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import nl.yourivb.TicketTrack.models.AppUser;
 
 import java.time.LocalDateTime;
 
-@Entity
-public class Attachment {
-    @Id
-    @GeneratedValue
+public class AttachmentDto {
     private Long id;
+
+    @Column(updatable = false)
     private String fileType;
+
+    @Column(updatable = false)
     private String fileName;
+
+    @Column(updatable = false)
     private LocalDateTime created;
+
+    @Column(updatable = false)
     private String filePath;
+
+    @Column(updatable = false)
     private String attachableType;
+
+    @Column(updatable = false)
     private Long attachableId;
+
+    @Column(updatable = false)
     private LocalDateTime lastModified;
 
-    @ManyToOne
-    @JoinColumn(name = "uploaded_by_id")
     private AppUser uploadedBy;
 
     public Long getId() {
@@ -49,8 +61,8 @@ public class Attachment {
         return created;
     }
 
-    public void setCreated(LocalDateTime uploaded) {
-        this.created = uploaded;
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
     }
 
     public String getFilePath() {
@@ -91,16 +103,5 @@ public class Attachment {
 
     public void setUploadedBy(AppUser uploadedBy) {
         this.uploadedBy = uploadedBy;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        this.created = LocalDateTime.now();
-        this.lastModified = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.lastModified = LocalDateTime.now();
     }
 }

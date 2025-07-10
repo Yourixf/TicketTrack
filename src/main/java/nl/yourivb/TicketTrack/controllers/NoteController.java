@@ -1,12 +1,12 @@
 package nl.yourivb.TicketTrack.controllers;
 
+import nl.yourivb.TicketTrack.dtos.Note.NoteDto;
+import nl.yourivb.TicketTrack.dtos.Note.NoteInputDto;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.NoteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class NoteController {
@@ -24,6 +24,15 @@ public class NoteController {
         return new ResponseEntity<>(
                 new ApiResponse<>("Note deleted", HttpStatus.OK, null),
                 HttpStatus.OK
+        );
+    }
+
+    @PutMapping("/notes/{id}")
+    public ResponseEntity<ApiResponse<NoteDto>> updateNote(@PathVariable Long id, @RequestBody NoteInputDto newNote) {
+        NoteDto updateNote = noteService.updateNote(id, newNote);
+
+        return new ResponseEntity<>(
+                new ApiResponse<>("Note updated", HttpStatus.OK, updateNote), HttpStatus.OK
         );
     }
 }

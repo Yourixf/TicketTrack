@@ -31,20 +31,20 @@ public class NoteService {
         this.incidentRepository = incidentRepository;
     }
 
-    public NoteDto addNote(NoteInputDto noteInputDto, String parentType, Long parentId) {
+    public NoteDto addNote(NoteInputDto noteInputDto, String noteableType, Long parentId) {
         Note note = noteMapper.toModel(noteInputDto);
 
-        switch (parentType) {
+        switch (noteableType) {
             case "Interaction" -> {
-                Interaction interaction = interactionRepository.findById(parentId).orElseThrow(() -> new RecordNotFoundException("Interaction " + parentId  + " not found"));
+                interactionRepository.findById(parentId).orElseThrow(() -> new RecordNotFoundException("Interaction " + parentId  + " not found"));
             }
             case "Incident" -> {
-                Incident incident = incidentRepository.findById(parentId).orElseThrow(() -> new RecordNotFoundException("Incident " + parentId + " not found" ));
+                incidentRepository.findById(parentId).orElseThrow(() -> new RecordNotFoundException("Incident " + parentId + " not found" ));
             }
-            default -> throw new BadRequestException("Unsupported parent type: " + parentType);
+            default -> throw new BadRequestException("Unsupported parent type: " + noteableType);
         }
 
-        note.setNoteableType(parentType);
+        note.setNoteableType(noteableType);
         note.setNoteableId(parentId);
         noteRepository.save(note);
 
@@ -56,5 +56,15 @@ public class NoteService {
         Note note = noteRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Note " + id + " not found"));
 
         noteRepository.deleteById(id);
+    }
+
+    // for admins
+    public NoteDto updateNote(Long id, NoteInputDto newNote) {
+        Note note = noteRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Note " + id + " not found"));
+
+        noteMapper.updateNoteFromDto(newNote, note);
+        Note updatedNote = noteRepository.save(note);
+
+        return noteMapper.toDto(updatedNote);
     }
 }

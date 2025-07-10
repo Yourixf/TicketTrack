@@ -35,7 +35,11 @@ public class InteractionService {
     }
 
     public List<InteractionDto> getAllInteractions() {
-        return interactionRepository.findAll().stream().map(interactionMapper::toDto).toList();
+
+        // this finds alls interactions, loops throug each, gets and sets the corresponding note list.
+        return interactionRepository.findAll()
+                .stream().peek(interaction -> interaction.setNotes(noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId())))
+                .map(interactionMapper::toDto).toList();
     }
 
     public InteractionDto getInteractionById(Long id) {
@@ -55,6 +59,9 @@ public class InteractionService {
         interaction.setNumber(generateRegistrationNumber("IMS", interactionRepository));
         interactionRepository.save(interaction);
 
+        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId());
+        interaction.setNotes(notes);
+
         return interactionMapper.toDto(interaction);
     }
 
@@ -63,6 +70,9 @@ public class InteractionService {
 
         interactionMapper.updateInteractionFromDto(newInteraction, interaction);
         Interaction updatedInteraction = interactionRepository.save(interaction);
+
+        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", updatedInteraction.getId());
+        interaction.setNotes(notes);
 
         return interactionMapper.toDto(updatedInteraction);
     }
@@ -76,6 +86,9 @@ public class InteractionService {
 
         interactionMapper.patchInteractionFromDto(patchedInteraction, interaction);
         Interaction updatedInteraction = interactionRepository.save(interaction);
+
+        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", updatedInteraction.getId());
+        interaction.setNotes(notes);
 
         return interactionMapper.toDto(updatedInteraction);
     }

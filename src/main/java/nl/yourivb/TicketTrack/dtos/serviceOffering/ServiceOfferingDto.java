@@ -1,5 +1,6 @@
 package nl.yourivb.TicketTrack.dtos.serviceOffering;
 
+import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.models.AssignmentGroup;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,8 @@ public class ServiceOfferingDto {
     private LocalDateTime created;
     private LocalDateTime lastModified;
     private AssignmentGroup assignmentGroup;
+
+    private AppUser createdBy;
 
     public Long getId() {
         return id;
@@ -60,4 +63,11 @@ public class ServiceOfferingDto {
         this.assignmentGroup = assignmentGroup;
     }
 
+    public AppUser getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(AppUser createdBy) {
+        this.createdBy = createdBy;
+    }
 }
