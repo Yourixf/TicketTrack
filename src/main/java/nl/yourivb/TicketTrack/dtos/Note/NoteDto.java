@@ -1,7 +1,6 @@
 package nl.yourivb.TicketTrack.dtos.Note;
 
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.NotNull;
 import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.models.enums.NoteVisibility;
 
@@ -23,7 +22,7 @@ public class NoteDto {
     private Long noteableId;
 
     @Column(updatable = false)
-    private NoteVisibility noteVisibility;
+    private NoteVisibility visibility;
 
     @Column(updatable = false)
     private AppUser createdBy;
@@ -69,20 +68,18 @@ public class NoteDto {
     }
 
     public NoteVisibility getNoteType() {
-        return noteVisibility;
+        return visibility;
     }
 
-    public NoteVisibility getNoteVisibility() {
-        return noteVisibility;
+    public NoteVisibility getVisibility() {
+        return visibility;
     }
     public void setNoteType(NoteVisibility noteVisibility) {
-        this.noteVisibility = noteVisibility;
+        this.visibility = noteVisibility;
     }
 
-
-
-    public void setNoteVisibility(NoteVisibility noteVisibility) {
-        this.noteVisibility = noteVisibility;
+    public void setVisibility(NoteVisibility visibility) {
+        this.visibility = visibility;
     }
 
     public AppUser getCreatedBy() {

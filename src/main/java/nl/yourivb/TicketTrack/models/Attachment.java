@@ -9,13 +9,14 @@ public class Attachment {
     @Id
     @GeneratedValue
     private Long id;
-    private String fileType;
+
     private String fileName;
-    private LocalDateTime created;
+    private String storedFileName;
     private String filePath;
+    private LocalDateTime created;
+
     private String attachableType;
     private Long attachableId;
-    private LocalDateTime lastModified;
 
     @ManyToOne
     @JoinColumn(name = "uploaded_by_id")
@@ -29,20 +30,28 @@ public class Attachment {
         this.id = id;
     }
 
-    public String getFileType() {
-        return fileType;
-    }
-
-    public void setFileType(String fileType) {
-        this.fileType = fileType;
-    }
-
     public String getFileName() {
         return fileName;
     }
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getStoredFileName() {
+        return storedFileName;
+    }
+
+    public void setStoredFileName(String storedFileName) {
+        this.storedFileName = storedFileName;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public LocalDateTime getCreated() {
@@ -53,13 +62,6 @@ public class Attachment {
         this.created = uploaded;
     }
 
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
 
     public String getAttachableType() {
         return attachableType;
@@ -77,13 +79,6 @@ public class Attachment {
         this.attachableId = attachableId;
     }
 
-    public LocalDateTime getLastModified() {
-        return lastModified;
-    }
-
-    public void setLastModified(LocalDateTime lastModified) {
-        this.lastModified = lastModified;
-    }
 
     public AppUser getUploadedBy() {
         return uploadedBy;
@@ -96,11 +91,5 @@ public class Attachment {
     @PrePersist
     protected void onCreate() {
         this.created = LocalDateTime.now();
-        this.lastModified = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.lastModified = LocalDateTime.now();
     }
 }

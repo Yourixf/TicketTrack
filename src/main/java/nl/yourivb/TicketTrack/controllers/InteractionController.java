@@ -7,7 +7,6 @@ import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
-import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.AttachmentService;
 import nl.yourivb.TicketTrack.services.InteractionService;
@@ -103,15 +102,14 @@ public class InteractionController {
     }
 
     @PostMapping("/interactions/{id}/attachments")
-    public ResponseEntity<ApiResponse<InteractionDto>> addAttachment(@PathVariable Long id, @Valid  @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ApiResponse<AttachmentDto>> addAttachment(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+
         AttachmentDto attachment = attachmentService.addAttachment(file, "Interaction", id);
 
-        InteractionDto interaction = interactionService.getInteractionById(id);
-
         URI uri = URI.create("/interactions/" + id + "/attachments/" + attachment.getId());
-
-        return ResponseEntity.created(uri).body(new ApiResponse<>("Added attachment", HttpStatus.CREATED, interaction));
-
+        return ResponseEntity.created(uri).body(new ApiResponse<>("Added attachment", HttpStatus.CREATED, attachment));
     }
 
 }

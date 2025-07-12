@@ -5,15 +5,11 @@ import nl.yourivb.TicketTrack.dtos.Note.NoteInputDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.NoteMapper;
-import nl.yourivb.TicketTrack.models.Incident;
-import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.models.Note;
 import nl.yourivb.TicketTrack.repositories.IncidentRepository;
 import nl.yourivb.TicketTrack.repositories.InteractionRepository;
 import nl.yourivb.TicketTrack.repositories.NoteRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class NoteService {

@@ -1,7 +1,5 @@
 package nl.yourivb.TicketTrack.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

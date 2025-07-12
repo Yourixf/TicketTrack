@@ -2,7 +2,6 @@ package nl.yourivb.TicketTrack.models;
 
 import jakarta.persistence.*;
 import nl.yourivb.TicketTrack.models.enums.*;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 import java.util.List;

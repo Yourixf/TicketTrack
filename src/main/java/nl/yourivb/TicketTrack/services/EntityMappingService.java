@@ -6,7 +6,6 @@ import nl.yourivb.TicketTrack.models.ServiceOffering;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
 import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
 import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
