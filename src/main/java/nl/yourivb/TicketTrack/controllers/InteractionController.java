@@ -111,5 +111,4 @@ public class InteractionController {
         URI uri = URI.create("/attachments/" + attachment.getId());
         return ResponseEntity.created(uri).body(new ApiResponse<>("Added attachment", HttpStatus.CREATED, attachment));
     }
-
 }
