@@ -67,15 +67,8 @@ public class NoteDto {
         this.noteableId = noteableId;
     }
 
-    public NoteVisibility getNoteType() {
-        return visibility;
-    }
-
     public NoteVisibility getVisibility() {
         return visibility;
-    }
-    public void setNoteType(NoteVisibility noteVisibility) {
-        this.visibility = noteVisibility;
     }
 
     public void setVisibility(NoteVisibility visibility) {

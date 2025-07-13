@@ -6,5 +6,5 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface AttachmentMapper {
-    AttachmentDto toResponseDto(Attachment attachment);
+    AttachmentDto toDto(Attachment attachment);
 }

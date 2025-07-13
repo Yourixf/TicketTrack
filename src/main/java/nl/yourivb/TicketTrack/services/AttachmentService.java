@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -36,6 +37,16 @@ public class AttachmentService {
         this.attachmentMapper = attachmentMapper;
         this.interactionRepository = interactionRepository;
         this.incidentRepository = incidentRepository;
+    }
+
+    public List<AttachmentDto> getAllAttachments() {
+        return attachmentRepository.findAll().stream().map(attachmentMapper::toDto).toList();
+    }
+
+    public AttachmentDto getAttachmentById(Long id) {
+        Attachment attachment = attachmentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Attachment " + id + " not found"));
+
+        return attachmentMapper.toDto(attachment);
     }
 
     public AttachmentDto addAttachment(MultipartFile file, String attachableType, Long attachableId) {
@@ -74,7 +85,7 @@ public class AttachmentService {
         // attachment.setUploadedBy(...); // TODO SecurityContext
 
         attachmentRepository.save(attachment);
-        return attachmentMapper.toResponseDto(attachment);
+        return attachmentMapper.toDto(attachment);
     }
 
     public void deleteAttachment(Long id) {

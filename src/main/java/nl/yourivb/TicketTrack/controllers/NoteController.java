@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class NoteController {
 
@@ -17,6 +19,27 @@ public class NoteController {
         this.noteService = noteService;
     }
 
+    @GetMapping("/notes")
+    public ResponseEntity<ApiResponse<List<NoteDto>>> getAllNotes() {
+        List<NoteDto> dtos;
+
+        dtos = noteService.getAllNotes();
+
+        return new ResponseEntity<>(
+                new ApiResponse<>("Notes fetched", HttpStatus.OK, dtos),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/notes/{id}")
+    public ResponseEntity<ApiResponse<NoteDto>> getNoteById(@PathVariable Long id) {
+        NoteDto note = noteService.getNoteById(id);
+
+        return new ResponseEntity<>(
+                new ApiResponse<>("Fetched note " + id, HttpStatus.OK, note), HttpStatus.OK
+        );
+    }
+
     @DeleteMapping("/notes/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteNote(@PathVariable Long id) {
         noteService.deleteNote(id);
@@ -24,15 +47,6 @@ public class NoteController {
         return new ResponseEntity<>(
                 new ApiResponse<>("Note deleted", HttpStatus.OK, null),
                 HttpStatus.OK
-        );
-    }
-
-    @PutMapping("/notes/{id}")
-    public ResponseEntity<ApiResponse<NoteDto>> updateNote(@PathVariable Long id, @RequestBody NoteInputDto newNote) {
-        NoteDto updateNote = noteService.updateNote(id, newNote);
-
-        return new ResponseEntity<>(
-                new ApiResponse<>("Note updated", HttpStatus.OK, updateNote), HttpStatus.OK
         );
     }
 }

@@ -11,6 +11,8 @@ import nl.yourivb.TicketTrack.repositories.InteractionRepository;
 import nl.yourivb.TicketTrack.repositories.NoteRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class NoteService {
 
@@ -25,6 +27,16 @@ public class NoteService {
         this.noteRepository = noteRepository;
         this.interactionRepository = interactionRepository;
         this.incidentRepository = incidentRepository;
+    }
+
+    public List<NoteDto> getAllNotes() {
+        return noteRepository.findAll().stream().map(noteMapper::toDto).toList();
+    }
+
+    public NoteDto getNoteById(Long id) {
+        Note note = noteRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Note " + id + " not found"));
+
+        return noteMapper.toDto(note);
     }
 
     public NoteDto addNote(NoteInputDto noteInputDto, String noteableType, Long parentId) {
@@ -52,15 +64,5 @@ public class NoteService {
         Note note = noteRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Note " + id + " not found"));
 
         noteRepository.deleteById(id);
-    }
-
-    // for admins
-    public NoteDto updateNote(Long id, NoteInputDto newNote) {
-        Note note = noteRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Note " + id + " not found"));
-
-        noteMapper.updateNoteFromDto(newNote, note);
-        Note updatedNote = noteRepository.save(note);
-
-        return noteMapper.toDto(updatedNote);
     }
 }

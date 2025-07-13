@@ -219,6 +219,10 @@ public class Interaction {
     protected void onCreate() {
         this.created = LocalDateTime.now();
         this.lastModified = LocalDateTime.now();
+
+        if (this.state == null) {
+            this.state = InteractionState.NEW;
+        }
     }
 
     @PreUpdate

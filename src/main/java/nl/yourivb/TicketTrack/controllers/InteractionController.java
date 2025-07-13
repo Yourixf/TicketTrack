@@ -96,7 +96,7 @@ public class InteractionController {
 
         InteractionDto interaction = interactionService.getInteractionById(id);
 
-        URI uri = URI.create("/interactions/" + id + "/notes/" + note.getId());
+        URI uri = URI.create("/notes/" + note.getId());
 
         return ResponseEntity.created(uri).body(new ApiResponse<>("Added note", HttpStatus.CREATED, interaction));
     }
@@ -108,7 +108,7 @@ public class InteractionController {
 
         AttachmentDto attachment = attachmentService.addAttachment(file, "Interaction", id);
 
-        URI uri = URI.create("/interactions/" + id + "/attachments/" + attachment.getId());
+        URI uri = URI.create("/attachments/" + attachment.getId());
         return ResponseEntity.created(uri).body(new ApiResponse<>("Added attachment", HttpStatus.CREATED, attachment));
     }
 
