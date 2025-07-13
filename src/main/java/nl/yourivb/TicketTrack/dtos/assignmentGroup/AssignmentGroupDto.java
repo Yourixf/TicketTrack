@@ -1,13 +1,21 @@
 package nl.yourivb.TicketTrack.dtos.assignmentGroup;
 
+import jakarta.persistence.Column;
+import nl.yourivb.TicketTrack.models.AppUser;
+
 import java.time.LocalDateTime;
 
 public class AssignmentGroupDto {
     private Long id;
     private String name;
     private String email;
+
+    @Column(updatable = false)
     private LocalDateTime created;
     private LocalDateTime lastModified;
+
+    @Column(updatable = false)
+    private AppUser createdBy;
 
     public Long getId() {
         return id;
@@ -47,5 +55,13 @@ public class AssignmentGroupDto {
 
     public void setLastModified(LocalDateTime lastModified) {
         this.lastModified = lastModified;
+    }
+
+    public AppUser getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(AppUser createdBy) {
+        this.createdBy = createdBy;
     }
 }

@@ -1,5 +1,9 @@
 package nl.yourivb.TicketTrack.dtos.interaction;
 
+import nl.yourivb.TicketTrack.dtos.Note.NoteDto;
+import nl.yourivb.TicketTrack.dtos.assignmentGroup.AssignmentGroupDto;
+import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
+import nl.yourivb.TicketTrack.dtos.serviceOffering.ServiceOfferingDto;
 import nl.yourivb.TicketTrack.models.*;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
@@ -20,14 +24,14 @@ public class InteractionDto {
     private Category category;
     private InteractionState state;
     private Channel channel;
-    private ServiceOffering serviceOffering;
-    private AssignmentGroup assignmentGroup;
-    private AppUser openedBy;
+    private ServiceOfferingDto serviceOffering;
+    private AssignmentGroupDto assignmentGroup;
+    private AppUser openedBy; // TODO when finsihed with appuser, replace with dto instead of entity
     private AppUser openedFor;
     private AppUser closedBy;
-    private Incident incident;
-    private List<Attachment> attachments;
-    private List<Note> notes;
+    private Incident incident; // TODO when finsihed with incident, replace with dto instead of entity
+    private List<AttachmentDto> attachments;
+    private List<NoteDto> notes;
 
     public Long getId() {
         return id;
@@ -109,19 +113,19 @@ public class InteractionDto {
         this.channel = channel;
     }
 
-    public ServiceOffering getServiceOffering() {
+    public ServiceOfferingDto getServiceOffering() {
         return serviceOffering;
     }
 
-    public void setServiceOffering(ServiceOffering serviceOffering) {
+    public void setServiceOffering(ServiceOfferingDto serviceOffering) {
         this.serviceOffering = serviceOffering;
     }
 
-    public AssignmentGroup getAssignmentGroup() {
+    public AssignmentGroupDto getAssignmentGroup() {
         return assignmentGroup;
     }
 
-    public void setAssignmentGroup(AssignmentGroup assignmentGroup) {
+    public void setAssignmentGroup(AssignmentGroupDto assignmentGroup) {
         this.assignmentGroup = assignmentGroup;
     }
 
@@ -157,19 +161,19 @@ public class InteractionDto {
         this.incident = incident;
     }
 
-    public List<Attachment> getAttachments() {
+    public List<AttachmentDto> getAttachments() {
         return attachments;
     }
 
-    public void setAttachments(List<Attachment> attachments) {
+    public void setAttachments(List<AttachmentDto> attachments) {
         this.attachments = attachments;
     }
 
-    public List<Note> getNotes() {
+    public List<NoteDto> getNotes() {
         return notes;
     }
 
-    public void setNotes(List<Note> notes) {
+    public void setNotes(List<NoteDto> notes) {
         this.notes = notes;
     }
 }

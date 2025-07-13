@@ -3,9 +3,6 @@ package nl.yourivb.TicketTrack.dtos.serviceOffering;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import nl.yourivb.TicketTrack.models.AssignmentGroup;
-import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
-import nl.yourivb.TicketTrack.validators.ExcistInDatabase;
 
 public class ServiceOfferingInputDto {
     @NotBlank(message = "Name is required")
@@ -18,6 +15,7 @@ public class ServiceOfferingInputDto {
 //    @ExcistInDatabase(repository = AssignmentGroupRepository.class, message = "Assignment group id not found in database")
     @NotNull(message = "Assignmentgroup is required")
     private Long assignmentGroupId;
+
 
     public String getName() {
         return name;

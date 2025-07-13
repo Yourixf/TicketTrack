@@ -10,7 +10,6 @@ import nl.yourivb.TicketTrack.models.ServiceOffering;
 import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 

@@ -22,6 +22,10 @@ public class ServiceOffering {
     @JoinColumn(name = "assignment_group_id")
     private AssignmentGroup assignmentGroup;
 
+    @ManyToOne
+    @JoinColumn(name = "created_by_id")
+    private AppUser createdBy;
+
     public Long getId() {
         return id;
     }
@@ -68,6 +72,14 @@ public class ServiceOffering {
 
     public void setLastModified(LocalDateTime lastModified) {
         this.lastModified = lastModified;
+    }
+
+    public AppUser getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(AppUser createdBy) {
+        this.createdBy = createdBy;
     }
 
     @PrePersist

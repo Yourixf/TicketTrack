@@ -6,6 +6,7 @@ import nl.yourivb.TicketTrack.models.enums.Channel;
 import nl.yourivb.TicketTrack.models.enums.InteractionState;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -67,7 +68,7 @@ public class Interaction {
     private List<Attachment> attachments;
 
     @Transient
-    private List<Note> notes;
+    private List<Note> notes = new ArrayList<>();
 
 
     public List<Attachment> getAttachments() {
@@ -218,6 +219,10 @@ public class Interaction {
     protected void onCreate() {
         this.created = LocalDateTime.now();
         this.lastModified = LocalDateTime.now();
+
+        if (this.state == null) {
+            this.state = InteractionState.NEW;
+        }
     }
 
     @PreUpdate

@@ -1,13 +1,9 @@
 package nl.yourivb.TicketTrack.controllers;
 
 import jakarta.validation.Valid;
-import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
-import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
-import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
 import nl.yourivb.TicketTrack.dtos.serviceOffering.ServiceOfferingDto;
 import nl.yourivb.TicketTrack.dtos.serviceOffering.ServiceOfferingInputDto;
 import nl.yourivb.TicketTrack.dtos.serviceOffering.ServiceOfferingPatchDto;
-import nl.yourivb.TicketTrack.models.ServiceOffering;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.ServiceOfferingService;
 import org.springframework.http.HttpStatus;

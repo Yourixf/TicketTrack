@@ -1,7 +1,5 @@
 package nl.yourivb.TicketTrack.dtos.serviceOffering;
 
-import nl.yourivb.TicketTrack.models.AssignmentGroup;
-
 public class ServiceOfferingPatchDto {
     private String name;
     private int defaultSlaInDays;

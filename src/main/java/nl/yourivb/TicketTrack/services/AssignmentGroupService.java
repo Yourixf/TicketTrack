@@ -32,14 +32,9 @@ public class AssignmentGroupService {
     }
 
     public AssignmentGroupDto getAssignmentGroupById(Long id) {
-        Optional<AssignmentGroup> assignmentGroupOptional = assignmentGroupRepository.findById(id);
+        AssignmentGroup assignmentGroup = assignmentGroupRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Assignmentgroup " + id + " not found" ));
 
-        if (assignmentGroupOptional.isPresent()) {
-            AssignmentGroup assignmentGroup = assignmentGroupOptional.get();
-            return assignmentGroupMapper.toDto(assignmentGroup);
-        } else {
-            throw new RecordNotFoundException("Assignment group " + id + " not found in the database");
-        }
+        return assignmentGroupMapper.toDto(assignmentGroup);
     }
 
     public AssignmentGroupDto addAssignmentGroup(AssignmentGroupInputDto dto) {

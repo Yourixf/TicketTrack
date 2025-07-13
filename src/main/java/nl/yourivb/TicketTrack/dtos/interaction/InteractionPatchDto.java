@@ -1,11 +1,16 @@
 package nl.yourivb.TicketTrack.dtos.interaction;
 
+import jakarta.validation.constraints.Size;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
 
 public class InteractionPatchDto {
+    @Size(min = 2, max = 255)
     private String shortDescription;
+
+    @Size(min = 2, max = 1500)
     private String description;
+
     private Category category;
     private Channel channel;
     private Long serviceOfferingId;

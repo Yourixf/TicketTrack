@@ -1,27 +1,30 @@
-package nl.yourivb.TicketTrack.models;
+package nl.yourivb.TicketTrack.dtos.Note;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.models.enums.NoteVisibility;
 
 import java.time.LocalDateTime;
 
-@Entity
-public class Note {
-    @Id
-    @GeneratedValue
+public class NoteDto {
     private Long id;
+
+    //only updatable for admins
     private String content;
 
+    @Column(updatable = false)
     private LocalDateTime created;
 
+    @Column(updatable = false)
     private String noteableType;
+
+    @Column(updatable = false)
     private Long noteableId;
 
-    @Enumerated(EnumType.STRING)
+    @Column(updatable = false)
     private NoteVisibility visibility;
 
-    @ManyToOne
-    @JoinColumn(name = "created_by_id")
+    @Column(updatable = false)
     private AppUser createdBy;
 
     public Long getId() {
@@ -68,8 +71,8 @@ public class Note {
         return visibility;
     }
 
-    public void setVisibility(NoteVisibility noteVisibility) {
-        this.visibility = noteVisibility;
+    public void setVisibility(NoteVisibility visibility) {
+        this.visibility = visibility;
     }
 
     public AppUser getCreatedBy() {
@@ -78,10 +81,5 @@ public class Note {
 
     public void setCreatedBy(AppUser createdBy) {
         this.createdBy = createdBy;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        this.created = LocalDateTime.now();
     }
 }

@@ -5,8 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
-import nl.yourivb.TicketTrack.repositories.AppUserRepository;
-import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
+import nl.yourivb.TicketTrack.models.enums.InteractionState;
 import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
 import nl.yourivb.TicketTrack.validators.ExcistInDatabase;
 
@@ -22,6 +21,8 @@ public class InteractionInputDto {
     @NotNull
     private Category category;
 
+    private InteractionState state;
+
     @NotNull
     private Channel channel;
 
@@ -36,6 +37,8 @@ public class InteractionInputDto {
 //    @ExcistInDatabase(repository = AppUserRepository.class, message = "Opened for id not found in database")
     @NotNull
     private Long openedForId;
+
+
 
 
     public String getShortDescription() {
@@ -60,6 +63,14 @@ public class InteractionInputDto {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public InteractionState getState() {
+        return state;
+    }
+
+    public void setState(InteractionState state) {
+        this.state = state;
     }
 
     public Channel getChannel() {
