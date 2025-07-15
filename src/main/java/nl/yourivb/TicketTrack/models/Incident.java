@@ -1,5 +1,6 @@
 package nl.yourivb.TicketTrack.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import nl.yourivb.TicketTrack.models.enums.*;
 
@@ -59,25 +60,26 @@ public class Incident {
 
     @ManyToOne
     @JoinColumn(name = "opened_by_id")
-    private AppUser openedBy;
+    private AppUser openedBy; // TODO APPUSERDTO
 
     @ManyToOne
     @JoinColumn(name = "opened_for_id")
-    private AppUser openedFor;
+    private AppUser openedFor; // TODO APPUSERDTO
 
     @ManyToOne
     @JoinColumn(name = "resolved_by_id")
-    private AppUser resolvedBy;
+    private AppUser resolvedBy; // TODO APPUSERDTO
 
     @ManyToOne
     @JoinColumn(name = "closed_by_id")
-    private AppUser closedBy;
+    private AppUser closedBy; // TODO APPUSERDTO
 
     @ManyToOne
     @JoinColumn(name = "escalated_from_id")
     private Interaction escalatedFrom;
 
     @OneToMany(mappedBy = "incident")
+    @JsonManagedReference
     private List<Interaction> childInteractions;
 
     // This tag makes sure the underlying variable doesn't get saved into the database, but editable in service layer so you can easily export it via DTO

@@ -60,7 +60,6 @@ public class InteractionService {
         interaction.setAttachments(attachments);
 
         return interactionMapper.toDto(interaction);
-
     }
 
     public InteractionDto addInteraction(InteractionInputDto dto) {

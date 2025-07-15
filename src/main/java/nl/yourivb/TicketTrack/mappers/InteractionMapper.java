@@ -18,7 +18,6 @@ import org.mapstruct.*;
 )
 
 public interface InteractionMapper {
-    @Mapping(target = "attachments", source = "attachments")
     InteractionDto toDto(Interaction interaction);
 
     @Mapping(target = "serviceOffering", source = "serviceOfferingId")

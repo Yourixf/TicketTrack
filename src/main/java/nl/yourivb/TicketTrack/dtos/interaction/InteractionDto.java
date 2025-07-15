@@ -27,7 +27,7 @@ public class InteractionDto {
     private ServiceOfferingDto serviceOffering;
     private AssignmentGroupDto assignmentGroup;
     private AppUser openedBy; // TODO when finsihed with appuser, replace with dto instead of entity
-    private AppUser openedFor;
+    private AppUser openedFor; // TODO APPUSERDTO
     private AppUser closedBy;
     private Incident incident; // TODO when finsihed with incident, replace with dto instead of entity
     private List<AttachmentDto> attachments;

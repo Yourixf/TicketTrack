@@ -1,6 +1,7 @@
 package nl.yourivb.TicketTrack.controllers;
 
 import jakarta.validation.Valid;
+import nl.yourivb.TicketTrack.dtos.Incident.IncidentDto;
 import nl.yourivb.TicketTrack.dtos.Note.NoteDto;
 import nl.yourivb.TicketTrack.dtos.Note.NoteInputDto;
 import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
@@ -9,6 +10,7 @@ import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.AttachmentService;
+import nl.yourivb.TicketTrack.services.IncidentService;
 import nl.yourivb.TicketTrack.services.InteractionService;
 import nl.yourivb.TicketTrack.services.NoteService;
 import org.springframework.http.HttpStatus;
@@ -25,11 +27,13 @@ public class InteractionController {
     private final InteractionService interactionService;
     private final NoteService noteService;
     private final AttachmentService attachmentService;
+    private final IncidentService incidentService;
 
-    public InteractionController(InteractionService interactionService, NoteService noteService, AttachmentService attachmentService) {
+    public InteractionController(InteractionService interactionService, NoteService noteService, AttachmentService attachmentService, IncidentService incidentService) {
         this.interactionService = interactionService;
         this.noteService = noteService;
         this.attachmentService = attachmentService;
+        this.incidentService = incidentService;
     }
 
     @GetMapping("/interactions")
@@ -102,13 +106,19 @@ public class InteractionController {
     }
 
     @PostMapping("/interactions/{id}/attachments")
-    public ResponseEntity<ApiResponse<AttachmentDto>> addAttachment(
-            @PathVariable Long id,
-            @RequestParam("file") MultipartFile file) {
-
+    public ResponseEntity<ApiResponse<AttachmentDto>> addAttachment(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         AttachmentDto attachment = attachmentService.addAttachment(file, "Interaction", id);
 
         URI uri = URI.create("/attachments/" + attachment.getId());
         return ResponseEntity.created(uri).body(new ApiResponse<>("Added attachment", HttpStatus.CREATED, attachment));
+    }
+
+    @PostMapping("/interactions/{id}/escalate")
+    public ResponseEntity<ApiResponse<IncidentDto>> escalateFromInteraction(@PathVariable Long id) {
+        IncidentDto incident = incidentService.escalateFromInteraction(id);
+
+        URI uri = URI.create("/incidents/" + incident.getId());
+
+        return ResponseEntity.created(uri).body(new ApiResponse<>("Escalated interaction to incident", HttpStatus.CREATED, incident));
     }
 }
