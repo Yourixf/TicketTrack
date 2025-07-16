@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import nl.yourivb.TicketTrack.models.*;
 import nl.yourivb.TicketTrack.models.enums.*;
+import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
+import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
+import nl.yourivb.TicketTrack.validators.ExcistInDatabase;
 
 import java.util.List;
 
@@ -34,9 +37,11 @@ public class IncidentInputDto {
     private CanceledReason canceledReason;
 
     @NotNull
+    @ExcistInDatabase(repository = ServiceOfferingRepository.class, message = "Service offering id not found in database")
     private Long serviceOfferingId;
 
     @NotNull
+    @ExcistInDatabase(repository = AssignmentGroupRepository.class, message = "Assignment group id not found in database")
     private Long assignmentGroupId;
 
     @NotNull

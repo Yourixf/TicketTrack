@@ -20,6 +20,6 @@ public interface IncidentMapper {
 
     @Mapping(source = "state", target = "state")
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "number", ignore = true) // ook als je deze via service genereert
+    @Mapping(target = "number", ignore = true)
     Incident fromInteraction(Interaction interaction);
 }

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
 import nl.yourivb.TicketTrack.models.enums.InteractionState;
+import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
 import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
 import nl.yourivb.TicketTrack.validators.ExcistInDatabase;
 
@@ -30,7 +31,7 @@ public class InteractionInputDto {
     @NotNull
     private Long serviceOfferingId;
 
-//    @ExcistInDatabase(repository = AssignmentGroupRepository.class, message = "Assignment group id not found in database")
+    @ExcistInDatabase(repository = AssignmentGroupRepository.class, message = "Assignment group id not found in database")
     @NotNull
     private Long assignmentGroupId;
 

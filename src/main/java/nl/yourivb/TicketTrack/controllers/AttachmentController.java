@@ -50,4 +50,6 @@ public class AttachmentController {
                 new ApiResponse<>("Attachment deleted", HttpStatus.OK, null), HttpStatus.OK
         );
     }
+
+    // TODO download endpoint
 }
