@@ -24,8 +24,8 @@ public class Incident {
 
     private LocalDateTime resolved;
     private LocalDateTime lastModified;
-
     private LocalDateTime onHoldSince;
+    private LocalDateTime resolveBefore;
     private String shortDescription;
     private String description;
 
@@ -143,6 +143,14 @@ public class Incident {
 
     public void setOnHoldSince(LocalDateTime onHoldSince) {
         this.onHoldSince = onHoldSince;
+    }
+
+    public LocalDateTime getResolveBefore() {
+        return resolveBefore;
+    }
+
+    public void setResolveBefore(LocalDateTime resolveBefore) {
+        this.resolveBefore = resolveBefore;
     }
 
     public String getShortDescription() {
@@ -301,6 +309,7 @@ public class Incident {
     protected void onCreate() {
         this.created = LocalDateTime.now();
         this.lastModified = LocalDateTime.now();
+        this.priority = Priority.NORMAL;
     }
 
     @PreUpdate

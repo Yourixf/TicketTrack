@@ -7,12 +7,11 @@ import nl.yourivb.TicketTrack.models.Attachment;
 import nl.yourivb.TicketTrack.models.Incident;
 import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.models.enums.InteractionState;
-import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
-import nl.yourivb.TicketTrack.repositories.IncidentRepository;
-import nl.yourivb.TicketTrack.repositories.InteractionRepository;
-import nl.yourivb.TicketTrack.repositories.NoteRepository;
+import nl.yourivb.TicketTrack.models.enums.Priority;
+import nl.yourivb.TicketTrack.repositories.*;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,15 +26,30 @@ public class IncidentService {
     private final IncidentMapper incidentMapper;
     private final NoteRepository noteRepository;
     private final AttachmentRepository attachmentRepository;
+    private final ServiceOfferingRepository serviceOfferingRepository;
 
     public IncidentService(IncidentRepository incidentRepository,
                            InteractionRepository interactionRepository,
-                           IncidentMapper incidentMapper, NoteRepository noteRepository, AttachmentRepository attachmentRepository) {
+                           IncidentMapper incidentMapper, NoteRepository noteRepository, AttachmentRepository attachmentRepository, ServiceOfferingRepository serviceOfferingRepository) {
         this.incidentRepository = incidentRepository;
         this.interactionRepository = interactionRepository;
         this.incidentMapper = incidentMapper;
         this.noteRepository = noteRepository;
         this.attachmentRepository = attachmentRepository;
+        this.serviceOfferingRepository = serviceOfferingRepository;
+    }
+
+    private int calculateSlaInDays(Priority priority, int defaultSlaInDays) {
+        return switch (priority) {
+            case LOW -> defaultSlaInDays + 3;
+            case NORMAL -> defaultSlaInDays;
+            case HIGH -> Math.max(defaultSlaInDays - 2, 2); // ensures SLA is not lower than 2 for HIGH
+            case CRITICAL -> 1;
+        };
+    }
+
+    private LocalDateTime calculateResolveBeforeDate(LocalDateTime created, int slaInDays) {
+        return created.plusDays(slaInDays);
     }
 
     public List<IncidentDto> getAllIncidents() {
@@ -64,17 +78,23 @@ public class IncidentService {
             copy.setFilePath(original.getFilePath());
             copy.setAttachableId(incident.getId());
             copy.setAttachableType("Incident");
-            copy.setAttachableId(incident.getId());
             copiedAttachments.add(copy);
         }
         attachmentRepository.saveAll(copiedAttachments);
         incident.setAttachments(copiedAttachments);
         incident.setEscalatedFrom(interaction);
+        incident.setPriority(Priority.NORMAL);
+        incident.setResolveBefore(
+                calculateResolveBeforeDate(
+                    incident.getCreated(),
+                    calculateSlaInDays(incident.getPriority(), incident.getServiceOffering().getDefaultSlaInDays())
+                ));
 
         incidentRepository.save(incident);
 
         interaction.setIncident(incident);
         interaction.setState(InteractionState.CLOSED);
+        interaction.setClosed(LocalDateTime.now());
         interactionRepository.save(interaction);
 
         return incidentMapper.toDto(incident);

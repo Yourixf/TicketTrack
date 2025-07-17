@@ -14,6 +14,7 @@ public class IncidentDto {
     private LocalDateTime resolved;
     private LocalDateTime lastModified;
     private LocalDateTime onHoldSince;
+    private LocalDateTime resolveBefore;
     private String shortDescription;
     private String description;
     private Category category;
@@ -88,6 +89,14 @@ public class IncidentDto {
 
     public void setOnHoldSince(LocalDateTime onHoldSince) {
         this.onHoldSince = onHoldSince;
+    }
+
+    public LocalDateTime getResolveBefore() {
+        return resolveBefore;
+    }
+
+    public void setResolveBefore(LocalDateTime resolveBefore) {
+        this.resolveBefore = resolveBefore;
     }
 
     public String getShortDescription() {

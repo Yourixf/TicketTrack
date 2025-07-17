@@ -17,6 +17,7 @@ public interface IncidentMapper {
     @Mapping(target = "resolvedById", source = "resolvedBy")
     @Mapping(target = "closedById", source = "closedBy")
     @Mapping(target = "escalatedFromId", source = "escalatedFrom")
+    @Mapping(target = "resolveBefore", source = "resolveBefore")
     IncidentDto toDto(Incident incident);
 
     Incident toModel(IncidentDto dto);
