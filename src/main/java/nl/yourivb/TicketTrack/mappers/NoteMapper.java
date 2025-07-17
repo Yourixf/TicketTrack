@@ -3,14 +3,18 @@ package nl.yourivb.TicketTrack.mappers;
 import nl.yourivb.TicketTrack.dtos.Note.NoteDto;
 import nl.yourivb.TicketTrack.dtos.Note.NoteInputDto;
 import nl.yourivb.TicketTrack.models.Note;
+import nl.yourivb.TicketTrack.services.EntityMappingService;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = EntityMappingService.class)
 public interface NoteMapper {
 
+    @Mapping(target = "createdById", source = "createdBy")
     NoteDto toDto(Note note);
+
     Note toModel(NoteInputDto dto);
 
     void updateNoteFromDto(NoteInputDto dto, @MappingTarget Note note);

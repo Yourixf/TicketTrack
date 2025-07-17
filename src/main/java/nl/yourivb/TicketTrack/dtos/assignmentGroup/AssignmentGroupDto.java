@@ -15,7 +15,7 @@ public class AssignmentGroupDto {
     private LocalDateTime lastModified;
 
     @Column(updatable = false)
-    private AppUser createdBy;
+    private Long createdById;
 
     public Long getId() {
         return id;
@@ -57,11 +57,11 @@ public class AssignmentGroupDto {
         this.lastModified = lastModified;
     }
 
-    public AppUser getCreatedBy() {
-        return createdBy;
+    public Long getCreatedById() {
+        return createdById;
     }
 
-    public void setCreatedBy(AppUser createdBy) {
-        this.createdBy = createdBy;
+    public void setCreatedById(Long createdById) {
+        this.createdById = createdById;
     }
 }

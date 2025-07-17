@@ -10,7 +10,7 @@ public class AttachmentDto {
     private LocalDateTime created;
     private String attachableType;
     private Long attachableId;
-    private AppUser uploadedBy;
+    private Long uploadedById;
 
     public Long getId() {
         return id;
@@ -52,11 +52,11 @@ public class AttachmentDto {
         this.attachableId = attachableId;
     }
 
-    public AppUser getUploadedBy() {
-        return uploadedBy;
+    public Long getUploadedById() {
+        return uploadedById;
     }
 
-    public void setUploadedBy(AppUser uploadedBy) {
-        this.uploadedBy = uploadedBy;
+    public void setUploadedById(Long uploadedById) {
+        this.uploadedById = uploadedById;
     }
 }

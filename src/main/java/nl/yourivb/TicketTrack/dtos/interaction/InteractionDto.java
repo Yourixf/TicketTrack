@@ -1,10 +1,5 @@
 package nl.yourivb.TicketTrack.dtos.interaction;
 
-import nl.yourivb.TicketTrack.dtos.Note.NoteDto;
-import nl.yourivb.TicketTrack.dtos.assignmentGroup.AssignmentGroupDto;
-import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
-import nl.yourivb.TicketTrack.dtos.serviceOffering.ServiceOfferingDto;
-import nl.yourivb.TicketTrack.models.*;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
 import nl.yourivb.TicketTrack.models.enums.InteractionState;
@@ -24,14 +19,14 @@ public class InteractionDto {
     private Category category;
     private InteractionState state;
     private Channel channel;
-    private ServiceOfferingDto serviceOffering;
-    private AssignmentGroupDto assignmentGroup;
-    private AppUser openedBy; // TODO when finsihed with appuser, replace with dto instead of entity
-    private AppUser openedFor; // TODO APPUSERDTO
-    private AppUser closedBy;
-    private Incident incident; // TODO when finsihed with incident, replace with dto instead of entity
-    private List<AttachmentDto> attachments;
-    private List<NoteDto> notes;
+    private Long serviceOfferingId;
+    private Long assignmentGroupId;
+    private Long openedById; // TODO when finsihed with appuser, replace with dto instead of entity
+    private Long openedForId; // TODO APPUSERDTO
+    private Long closedById;
+    private Long incidentId; // TODO when finsihed with incidentId, replace with dto instead of entity
+    private List<Long> attachmentIds;
+    private List<Long> noteIds;
 
     public Long getId() {
         return id;
@@ -113,67 +108,67 @@ public class InteractionDto {
         this.channel = channel;
     }
 
-    public ServiceOfferingDto getServiceOffering() {
-        return serviceOffering;
+    public Long getServiceOfferingId() {
+        return serviceOfferingId;
     }
 
-    public void setServiceOffering(ServiceOfferingDto serviceOffering) {
-        this.serviceOffering = serviceOffering;
+    public void setServiceOfferingId(Long serviceOfferingId) {
+        this.serviceOfferingId = serviceOfferingId;
     }
 
-    public AssignmentGroupDto getAssignmentGroup() {
-        return assignmentGroup;
+    public Long getAssignmentGroupId() {
+        return assignmentGroupId;
     }
 
-    public void setAssignmentGroup(AssignmentGroupDto assignmentGroup) {
-        this.assignmentGroup = assignmentGroup;
+    public void setAssignmentGroupId(Long assignmentGroupId) {
+        this.assignmentGroupId = assignmentGroupId;
     }
 
-    public AppUser getOpenedBy() {
-        return openedBy;
+    public Long getOpenedById() {
+        return openedById;
     }
 
-    public void setOpenedBy(AppUser openedBy) {
-        this.openedBy = openedBy;
+    public void setOpenedById(Long openedById) {
+        this.openedById = openedById;
     }
 
-    public AppUser getOpenedFor() {
-        return openedFor;
+    public Long getOpenedForId() {
+        return openedForId;
     }
 
-    public void setOpenedFor(AppUser openedFor) {
-        this.openedFor = openedFor;
+    public void setOpenedForId(Long openedForId) {
+        this.openedForId = openedForId;
     }
 
-    public AppUser getClosedBy() {
-        return closedBy;
+    public Long getClosedById() {
+        return closedById;
     }
 
-    public void setClosedBy(AppUser closedBy) {
-        this.closedBy = closedBy;
+    public void setClosedById(Long closedById) {
+        this.closedById = closedById;
     }
 
-    public Incident getIncident() {
-        return incident;
+    public Long getIncidentId() {
+        return incidentId;
     }
 
-    public void setIncident(Incident incident) {
-        this.incident = incident;
+    public void setIncidentId(Long incidentId) {
+        this.incidentId = incidentId;
     }
 
-    public List<AttachmentDto> getAttachments() {
-        return attachments;
+    public List<Long> getAttachmentIds() {
+        return attachmentIds;
     }
 
-    public void setAttachments(List<AttachmentDto> attachments) {
-        this.attachments = attachments;
+    public void setAttachmentIds(List<Long> attachmentIds) {
+        this.attachmentIds = attachmentIds;
     }
 
-    public List<NoteDto> getNotes() {
-        return notes;
+    public List<Long> getNoteIds() {
+        return noteIds;
     }
 
-    public void setNotes(List<NoteDto> notes) {
-        this.notes = notes;
+    public void setNoteIds(List<Long> noteIds) {
+        this.noteIds = noteIds;
     }
 }

@@ -11,9 +11,9 @@ public class ServiceOfferingDto {
     private int defaultSlaInDays;
     private LocalDateTime created;
     private LocalDateTime lastModified;
-    private AssignmentGroup assignmentGroup;
+    private Long assignmentGroupId;
 
-    private AppUser createdBy;
+    private Long createdById;
 
     public Long getId() {
         return id;
@@ -55,19 +55,19 @@ public class ServiceOfferingDto {
         this.lastModified = lastModified;
     }
 
-    public AssignmentGroup getAssignmentGroup() {
-        return assignmentGroup;
+    public Long getAssignmentGroupId() {
+        return assignmentGroupId;
     }
 
-    public void setAssignmentGroup(AssignmentGroup assignmentGroup) {
-        this.assignmentGroup = assignmentGroup;
+    public void setAssignmentGroupId(Long assignmentGroupId) {
+        this.assignmentGroupId = assignmentGroupId;
     }
 
-    public AppUser getCreatedBy() {
-        return createdBy;
+    public Long getCreatedById() {
+        return createdById;
     }
 
-    public void setCreatedBy(AppUser createdBy) {
-        this.createdBy = createdBy;
+    public void setCreatedById(Long createdById) {
+        this.createdById = createdById;
     }
 }

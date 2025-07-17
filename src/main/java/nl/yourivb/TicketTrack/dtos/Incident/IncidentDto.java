@@ -1,6 +1,5 @@
 package nl.yourivb.TicketTrack.dtos.Incident;
 
-import jakarta.persistence.*;
 import nl.yourivb.TicketTrack.models.*;
 import nl.yourivb.TicketTrack.models.enums.*;
 
@@ -24,16 +23,16 @@ public class IncidentDto {
     private OnHoldReason onHoldReason;
     private ResolvedReason resolvedReason;
     private CanceledReason canceledReason;
-    private ServiceOffering serviceOffering;
-    private AssignmentGroup assignmentGroup;
-    private AppUser openedBy;
-    private AppUser openedFor;
-    private AppUser resolvedBy;
-    private AppUser closedBy;
-    private Interaction escalatedFrom;
-    private List<Interaction> childInteractions;
-    private List<Attachment> attachments;
-    private List<Note> notes;
+    private Long serviceOfferingId;
+    private Long assignmentGroupId;
+    private Long openedById;
+    private Long openedForId;
+    private Long resolvedById;
+    private Long closedById;
+    private Long escalatedFromId;
+    private List<Long> childInteractionIds;
+    private List<Long> attachmentIds;
+    private List<Long> noteIds;
 
     public Long getId() {
         return id;
@@ -163,83 +162,83 @@ public class IncidentDto {
         this.canceledReason = canceledReason;
     }
 
-    public ServiceOffering getServiceOffering() {
-        return serviceOffering;
+    public Long getServiceOfferingId() {
+        return serviceOfferingId;
     }
 
-    public void setServiceOffering(ServiceOffering serviceOffering) {
-        this.serviceOffering = serviceOffering;
+    public void setServiceOfferingId(Long serviceOfferingId) {
+        this.serviceOfferingId = serviceOfferingId;
     }
 
-    public AssignmentGroup getAssignmentGroup() {
-        return assignmentGroup;
+    public Long getAssignmentGroupId() {
+        return assignmentGroupId;
     }
 
-    public void setAssignmentGroup(AssignmentGroup assignmentGroup) {
-        this.assignmentGroup = assignmentGroup;
+    public void setAssignmentGroupId(Long assignmentGroupId) {
+        this.assignmentGroupId = assignmentGroupId;
     }
 
-    public AppUser getOpenedBy() {
-        return openedBy;
+    public Long getOpenedById() {
+        return openedById;
     }
 
-    public void setOpenedBy(AppUser openedBy) {
-        this.openedBy = openedBy;
+    public void setOpenedById(Long openedById) {
+        this.openedById = openedById;
     }
 
-    public AppUser getOpenedFor() {
-        return openedFor;
+    public Long getOpenedForId() {
+        return openedForId;
     }
 
-    public void setOpenedFor(AppUser openedFor) {
-        this.openedFor = openedFor;
+    public void setOpenedForId(Long openedForId) {
+        this.openedForId = openedForId;
     }
 
-    public AppUser getResolvedBy() {
-        return resolvedBy;
+    public Long getResolvedById() {
+        return resolvedById;
     }
 
-    public void setResolvedBy(AppUser resolvedBy) {
-        this.resolvedBy = resolvedBy;
+    public void setResolvedById(Long resolvedById) {
+        this.resolvedById = resolvedById;
     }
 
-    public AppUser getClosedBy() {
-        return closedBy;
+    public Long getClosedById() {
+        return closedById;
     }
 
-    public void setClosedBy(AppUser closedBy) {
-        this.closedBy = closedBy;
+    public void setClosedById(Long closedById) {
+        this.closedById = closedById;
     }
 
-    public Interaction getEscalatedFrom() {
-        return escalatedFrom;
+    public Long getEscalatedFromId() {
+        return escalatedFromId;
     }
 
-    public void setEscalatedFrom(Interaction escalatedFrom) {
-        this.escalatedFrom = escalatedFrom;
+    public void setEscalatedFromId(Long escalatedFromId) {
+        this.escalatedFromId = escalatedFromId;
     }
 
-    public List<Interaction> getChildInteractions() {
-        return childInteractions;
+    public List<Long> getChildInteractionIds() {
+        return childInteractionIds;
     }
 
-    public void setChildInteractions(List<Interaction> childInteractions) {
-        this.childInteractions = childInteractions;
+    public void setChildInteractionIds(List<Long> childInteractionIds) {
+        this.childInteractionIds = childInteractionIds;
     }
 
-    public List<Attachment> getAttachments() {
-        return attachments;
+    public List<Long> getAttachmentIds() {
+        return attachmentIds;
     }
 
-    public void setAttachments(List<Attachment> attachments) {
-        this.attachments = attachments;
+    public void setAttachmentIds(List<Long> attachmentIds) {
+        this.attachmentIds = attachmentIds;
     }
 
-    public List<Note> getNotes() {
-        return notes;
+    public List<Long> getNoteIds() {
+        return noteIds;
     }
 
-    public void setNotes(List<Note> notes) {
-        this.notes = notes;
+    public void setNoteIds(List<Long> noteIds) {
+        this.noteIds = noteIds;
     }
 }

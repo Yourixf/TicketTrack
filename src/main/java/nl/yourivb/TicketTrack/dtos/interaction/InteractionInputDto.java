@@ -40,8 +40,6 @@ public class InteractionInputDto {
     private Long openedForId;
 
 
-
-
     public String getShortDescription() {
         return shortDescription;
     }

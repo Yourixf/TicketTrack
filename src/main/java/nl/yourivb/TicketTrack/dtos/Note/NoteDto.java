@@ -25,7 +25,7 @@ public class NoteDto {
     private NoteVisibility visibility;
 
     @Column(updatable = false)
-    private AppUser createdBy;
+    private Long createdById;
 
     public Long getId() {
         return id;
@@ -75,11 +75,11 @@ public class NoteDto {
         this.visibility = visibility;
     }
 
-    public AppUser getCreatedBy() {
-        return createdBy;
+    public Long getCreatedById() {
+        return createdById;
     }
 
-    public void setCreatedBy(AppUser createdBy) {
-        this.createdBy = createdBy;
+    public void setCreatedById(Long createdById) {
+        this.createdById = createdById;
     }
 }

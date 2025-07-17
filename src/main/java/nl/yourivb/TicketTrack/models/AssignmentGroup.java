@@ -60,6 +60,14 @@ public class AssignmentGroup {
         this.lastModified = lastModified;
     }
 
+    public AppUser getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(AppUser createdBy) {
+        this.createdBy = createdBy;
+    }
+
     @PrePersist
     protected void onCreate() {
         this.created = LocalDateTime.now();

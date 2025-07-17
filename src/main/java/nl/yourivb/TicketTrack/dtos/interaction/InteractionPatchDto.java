@@ -17,7 +17,6 @@ public class InteractionPatchDto {
     private Long assignmentGroupId;
     private Long openedForId;
 
-
     public String getShortDescription() {
         return shortDescription;
     }
