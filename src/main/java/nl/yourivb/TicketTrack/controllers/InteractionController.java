@@ -94,15 +94,14 @@ public class InteractionController {
         );
     }
 
+    @G
+
     @PostMapping("/interactions/{id}/notes")
-    public ResponseEntity<ApiResponse<InteractionDto>> addNote(@PathVariable Long id, @Valid @RequestBody NoteInputDto noteInputDto) {
+    public ResponseEntity<ApiResponse<NoteDto>> addNote(@PathVariable Long id, @Valid @RequestBody NoteInputDto noteInputDto) {
         NoteDto note = noteService.addNote(noteInputDto, "Interaction", id);
 
-        InteractionDto interaction = interactionService.getInteractionById(id);
-
         URI uri = URI.create("/notes/" + note.getId());
-
-        return ResponseEntity.created(uri).body(new ApiResponse<>("Added note", HttpStatus.CREATED, interaction));
+        return ResponseEntity.created(uri).body(new ApiResponse<>("Added note", HttpStatus.CREATED, note));
     }
 
     @PostMapping("/interactions/{id}/attachments")

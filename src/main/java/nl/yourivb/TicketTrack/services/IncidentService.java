@@ -6,9 +6,11 @@ import nl.yourivb.TicketTrack.mappers.IncidentMapper;
 import nl.yourivb.TicketTrack.models.Attachment;
 import nl.yourivb.TicketTrack.models.Incident;
 import nl.yourivb.TicketTrack.models.Interaction;
+import nl.yourivb.TicketTrack.models.Note;
 import nl.yourivb.TicketTrack.models.enums.InteractionState;
 import nl.yourivb.TicketTrack.models.enums.Priority;
 import nl.yourivb.TicketTrack.repositories.*;
+import nl.yourivb.TicketTrack.utils.AppUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -61,6 +63,23 @@ public class IncidentService {
                 return incidentMapper.toDto(incident);
                 })
                 .toList();
+    }
+
+    public IncidentDto getIncidentById(Long id) {
+        Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found" ));
+        IncidentDto incidentDto = incidentMapper.toDto(incident);
+
+
+        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId());
+        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
+
+        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Incident", incident.getId());
+        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
+
+        incidentDto.setNoteIds(noteIds);
+        incidentDto.setAttachmentIds(attachmentIds);
+
+        return incidentDto;
     }
 
     public IncidentDto escalateFromInteraction (Long interactionId) {

@@ -3,6 +3,9 @@ package nl.yourivb.TicketTrack.utils;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
 public class AppUtils {
 
@@ -29,4 +32,14 @@ public class AppUtils {
         Long nextNumber = count + 1;
         return String.format("%s%07d", registrationType.toUpperCase(), nextNumber);
     }
+
+    // makes a list of ids of a entity list.
+    public static <T> List<Long> extractIds(List<T> entities, Function<T, Long> idGetter) {
+        if (entities == null) return List.of();
+        return entities.stream()
+                .map(idGetter)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
 }
