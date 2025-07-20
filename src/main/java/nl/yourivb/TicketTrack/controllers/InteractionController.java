@@ -8,6 +8,7 @@ import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
+import nl.yourivb.TicketTrack.models.Attachment;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.AttachmentService;
 import nl.yourivb.TicketTrack.services.IncidentService;
@@ -94,7 +95,14 @@ public class InteractionController {
         );
     }
 
-    @G
+    @GetMapping("/interactions/{id}/notes")
+    public ResponseEntity<ApiResponse<List<NoteDto>>> getInteractionNotes(@PathVariable Long id) {
+        List<NoteDto> dtos = noteService.getAllNotesFromParent("Interaction", id);
+
+        return new ResponseEntity<>(
+                new ApiResponse<>("Fetched notes from interaction " + id, HttpStatus.OK, dtos), HttpStatus.OK
+        );
+    }
 
     @PostMapping("/interactions/{id}/notes")
     public ResponseEntity<ApiResponse<NoteDto>> addNote(@PathVariable Long id, @Valid @RequestBody NoteInputDto noteInputDto) {
@@ -102,6 +110,16 @@ public class InteractionController {
 
         URI uri = URI.create("/notes/" + note.getId());
         return ResponseEntity.created(uri).body(new ApiResponse<>("Added note", HttpStatus.CREATED, note));
+    }
+
+
+    @GetMapping("/interactions/{id}/attachments")
+    public ResponseEntity<ApiResponse<List<AttachmentDto>>> getInteractionAttachments(@PathVariable Long id) {
+        List<AttachmentDto> dtos = attachmentService.getAllAttachmentsFromParent("Interaction", id);
+
+        return new ResponseEntity<>(
+                new ApiResponse<>("Fetched attachments from interaction " + id, HttpStatus.OK, dtos), HttpStatus.OK
+        );
     }
 
     @PostMapping("/interactions/{id}/attachments")

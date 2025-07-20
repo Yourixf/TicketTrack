@@ -102,4 +102,20 @@ public class AttachmentService {
         attachmentRepository.deleteById(id);
     }
 
+    public List<AttachmentDto> getAllAttachmentsFromParent(String attachableType, Long attachableId) {
+
+        switch (attachableType) {
+            case "Interaction" -> {
+                interactionRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("Interaction " + attachableId  + " not found"));
+            }
+            case "Incident" -> {
+                incidentRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("Incident " + attachableId + " not found" ));
+            }
+            default -> throw new BadRequestException("Unsupported parent type: " + attachableType);
+        }
+        return attachmentMapper.toDto(
+                attachmentRepository.findByAttachableTypeAndAttachableId(attachableType, attachableId)
+        );
+    }
+
 }

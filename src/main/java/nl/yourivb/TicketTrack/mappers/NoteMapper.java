@@ -8,6 +8,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import java.util.List;
+
 
 @Mapper(componentModel = "spring", uses = EntityMappingService.class)
 public interface NoteMapper {
@@ -15,7 +17,10 @@ public interface NoteMapper {
     @Mapping(target = "createdById", source = "createdBy")
     NoteDto toDto(Note note);
 
+    List<NoteDto> toDto(List<Note> notes);
+
     Note toModel(NoteInputDto dto);
 
     void updateNoteFromDto(NoteInputDto dto, @MappingTarget Note note);
+
 }

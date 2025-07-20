@@ -1,6 +1,11 @@
 package nl.yourivb.TicketTrack.services;
 
 import nl.yourivb.TicketTrack.dtos.Incident.IncidentDto;
+import nl.yourivb.TicketTrack.dtos.Incident.IncidentInputDto;
+import nl.yourivb.TicketTrack.dtos.Incident.IncidentPatchDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
+import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.IncidentMapper;
 import nl.yourivb.TicketTrack.models.Attachment;
@@ -17,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
 import static nl.yourivb.TicketTrack.utils.AppUtils.generateRegistrationNumber;
 
 
@@ -32,7 +38,9 @@ public class IncidentService {
 
     public IncidentService(IncidentRepository incidentRepository,
                            InteractionRepository interactionRepository,
-                           IncidentMapper incidentMapper, NoteRepository noteRepository, AttachmentRepository attachmentRepository, ServiceOfferingRepository serviceOfferingRepository) {
+                           IncidentMapper incidentMapper, NoteRepository noteRepository,
+                           AttachmentRepository attachmentRepository,
+                           ServiceOfferingRepository serviceOfferingRepository) {
         this.incidentRepository = incidentRepository;
         this.interactionRepository = interactionRepository;
         this.incidentMapper = incidentMapper;
@@ -58,9 +66,18 @@ public class IncidentService {
         return incidentRepository.findAll()
                 .stream()
                 .map(incident -> {
-                    incident.setNotes(noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId()));
-                    incident.setAttachments(attachmentRepository.findByAttachableTypeAndAttachableId("Incident", incident.getId()));
-                return incidentMapper.toDto(incident);
+                    IncidentDto dto = incidentMapper.toDto(incident);
+
+                    List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId());
+                    List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
+
+                    List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Incident", incident.getId());
+                    List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
+
+                    dto.setNoteIds(noteIds);
+                    dto.setAttachmentIds(attachmentIds);
+
+                    return dto;
                 })
                 .toList();
     }
@@ -68,7 +85,6 @@ public class IncidentService {
     public IncidentDto getIncidentById(Long id) {
         Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found" ));
         IncidentDto incidentDto = incidentMapper.toDto(incident);
-
 
         List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId());
         List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
@@ -118,4 +134,67 @@ public class IncidentService {
 
         return incidentMapper.toDto(incident);
     }
+
+    public IncidentDto updateIncident(Long id, IncidentInputDto newIncident) {
+        Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found"));
+
+        incidentMapper.updateIncidentFromDto(newIncident, incident);
+        incident.setResolveBefore(
+                calculateResolveBeforeDate(
+                        incident.getCreated(),
+                        calculateSlaInDays(incident.getPriority(), incident.getServiceOffering().getDefaultSlaInDays())
+                ));
+        incidentRepository.save(incident);
+
+
+        IncidentDto incidentDto = incidentMapper.toDto(incident);
+
+        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId());
+        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
+
+        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Incident", incident.getId());
+        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
+
+        incidentDto.setNoteIds(noteIds);
+        incidentDto.setAttachmentIds(attachmentIds);
+
+        return incidentDto;
+    }
+
+
+    public IncidentDto patchIncident(Long id, IncidentPatchDto patchedIncident) {
+        Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found"));
+
+        if (allFieldsNull(patchedIncident)) {
+            throw new BadRequestException("No valid fields provided for patch");
+        }
+
+        incidentMapper.patchIncidentFromDto(patchedIncident, incident);
+        incident.setResolveBefore(
+                calculateResolveBeforeDate(
+                        incident.getCreated(),
+                        calculateSlaInDays(incident.getPriority(), incident.getServiceOffering().getDefaultSlaInDays())
+                ));
+        incidentRepository.save(incident);
+
+        IncidentDto incidentDto = incidentMapper.toDto(incident);
+
+        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId());
+        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
+
+        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Incident", incident.getId());
+        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
+
+        incidentDto.setNoteIds(noteIds);
+        incidentDto.setAttachmentIds(attachmentIds);
+
+        return incidentDto;
+    }
+
+    public void deleteIncident(Long id) {
+        Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found"));
+
+        incidentRepository.deleteById(id);
+    }
+
 }
