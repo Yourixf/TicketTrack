@@ -8,7 +8,6 @@ import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
-import nl.yourivb.TicketTrack.models.Attachment;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.AttachmentService;
 import nl.yourivb.TicketTrack.services.IncidentService;
@@ -128,6 +127,15 @@ public class InteractionController {
 
         URI uri = URI.create("/attachments/" + attachment.getId());
         return ResponseEntity.created(uri).body(new ApiResponse<>("Added attachment", HttpStatus.CREATED, attachment));
+    }
+
+    @DeleteMapping("/interactions/{interactionId}/attachments/{attachmentId}")
+    public ResponseEntity<ApiResponse<Void>> deleteAttachment(@PathVariable Long interactionId, @PathVariable Long attachmentId) {
+        attachmentService.deleteAttachmentFromParent("Interaction", interactionId, attachmentId);
+
+        return new ResponseEntity<>(
+                new ApiResponse<>("Attachment deleted", HttpStatus.OK, null), HttpStatus.OK
+        );
     }
 
     @PostMapping("/interactions/{id}/escalate")

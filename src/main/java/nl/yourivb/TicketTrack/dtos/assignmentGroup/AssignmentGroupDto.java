@@ -1,7 +1,6 @@
 package nl.yourivb.TicketTrack.dtos.assignmentGroup;
 
 import jakarta.persistence.Column;
-import nl.yourivb.TicketTrack.models.AppUser;
 
 import java.time.LocalDateTime;
 

@@ -1,6 +1,5 @@
 package nl.yourivb.TicketTrack.dtos.Incident;
 
-import nl.yourivb.TicketTrack.models.*;
 import nl.yourivb.TicketTrack.models.enums.*;
 
 import java.time.LocalDateTime;

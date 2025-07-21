@@ -2,7 +2,6 @@ package nl.yourivb.TicketTrack.mappers;
 
 import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
 import nl.yourivb.TicketTrack.models.Attachment;
-import nl.yourivb.TicketTrack.models.Note;
 import nl.yourivb.TicketTrack.services.EntityMappingService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,4 +14,5 @@ public interface AttachmentMapper {
     AttachmentDto toDto(Attachment attachment);
 
     List<AttachmentDto> toDto(List<Attachment> attachments);
+
 }

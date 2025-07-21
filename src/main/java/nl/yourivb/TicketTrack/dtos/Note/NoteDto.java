@@ -1,7 +1,6 @@
 package nl.yourivb.TicketTrack.dtos.Note;
 
 import jakarta.persistence.Column;
-import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.models.enums.NoteVisibility;
 
 import java.time.LocalDateTime;

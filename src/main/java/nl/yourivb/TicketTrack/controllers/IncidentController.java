@@ -7,8 +7,6 @@ import nl.yourivb.TicketTrack.dtos.Incident.IncidentPatchDto;
 import nl.yourivb.TicketTrack.dtos.Note.NoteDto;
 import nl.yourivb.TicketTrack.dtos.Note.NoteInputDto;
 import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
-import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
-import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.AttachmentService;
 import nl.yourivb.TicketTrack.services.IncidentService;

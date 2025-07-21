@@ -1,7 +1,5 @@
 package nl.yourivb.TicketTrack.dtos.attachment;
 
-import nl.yourivb.TicketTrack.models.AppUser;
-
 import java.time.LocalDateTime;
 
 public class AttachmentDto {

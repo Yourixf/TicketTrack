@@ -11,7 +11,6 @@ import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
 

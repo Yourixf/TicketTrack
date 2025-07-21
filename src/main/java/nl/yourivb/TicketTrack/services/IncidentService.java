@@ -3,8 +3,6 @@ package nl.yourivb.TicketTrack.services;
 import nl.yourivb.TicketTrack.dtos.Incident.IncidentDto;
 import nl.yourivb.TicketTrack.dtos.Incident.IncidentInputDto;
 import nl.yourivb.TicketTrack.dtos.Incident.IncidentPatchDto;
-import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
-import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.IncidentMapper;
@@ -21,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
 import static nl.yourivb.TicketTrack.utils.AppUtils.generateRegistrationNumber;
@@ -107,12 +106,16 @@ public class IncidentService {
         List<Attachment> oldAttachments = attachmentRepository.findByAttachableTypeAndAttachableId("Interaction", interaction.getId());
         List<Attachment> copiedAttachments = new ArrayList<>();
 
+        incidentRepository.save(incident);
+
         for (Attachment original : oldAttachments) {
             Attachment copy = new Attachment();
             copy.setFileName(original.getFileName());
             copy.setFilePath(original.getFilePath());
+            copy.setStoredFileName(UUID.randomUUID() + "_" + original.getFileName());
             copy.setAttachableId(incident.getId());
             copy.setAttachableType("Incident");
+
             copiedAttachments.add(copy);
         }
         attachmentRepository.saveAll(copiedAttachments);

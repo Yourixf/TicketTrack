@@ -1,8 +1,5 @@
 package nl.yourivb.TicketTrack.dtos.serviceOffering;
 
-import nl.yourivb.TicketTrack.models.AppUser;
-import nl.yourivb.TicketTrack.models.AssignmentGroup;
-
 import java.time.LocalDateTime;
 
 public class ServiceOfferingDto {

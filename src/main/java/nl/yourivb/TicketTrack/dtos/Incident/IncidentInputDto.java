@@ -3,7 +3,6 @@ package nl.yourivb.TicketTrack.dtos.Incident;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import nl.yourivb.TicketTrack.models.*;
 import nl.yourivb.TicketTrack.models.enums.*;
 import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
 import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
