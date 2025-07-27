@@ -39,21 +39,21 @@ public class NoteService {
         return noteMapper.toDto(note);
     }
 
-    public NoteDto addNote(NoteInputDto noteInputDto, String noteableType, Long parentId) {
+    public NoteDto addNote(NoteInputDto noteInputDto, String noteableType, Long noteableId) {
         Note note = noteMapper.toModel(noteInputDto);
 
         switch (noteableType) {
             case "Interaction" -> {
-                interactionRepository.findById(parentId).orElseThrow(() -> new RecordNotFoundException("Interaction " + parentId  + " not found"));
+                interactionRepository.findById(noteableId).orElseThrow(() -> new RecordNotFoundException("Interaction " + noteableId  + " not found"));
             }
             case "Incident" -> {
-                incidentRepository.findById(parentId).orElseThrow(() -> new RecordNotFoundException("Incident " + parentId + " not found" ));
+                incidentRepository.findById(noteableId).orElseThrow(() -> new RecordNotFoundException("Incident " + noteableId + " not found" ));
             }
             default -> throw new BadRequestException("Unsupported parent type: " + noteableType);
         }
 
         note.setNoteableType(noteableType);
-        note.setNoteableId(parentId);
+        note.setNoteableId(noteableId);
         noteRepository.save(note);
 
         return noteMapper.toDto(note);
@@ -65,4 +65,22 @@ public class NoteService {
 
         noteRepository.deleteById(id);
     }
+
+    public List<NoteDto> getAllNotesFromParent(String noteableType, Long noteableId) {
+
+        switch (noteableType) {
+            case "Interaction" -> {
+                interactionRepository.findById(noteableId).orElseThrow(() -> new RecordNotFoundException("Interaction " + noteableId  + " not found"));
+            }
+            case "Incident" -> {
+                incidentRepository.findById(noteableId).orElseThrow(() -> new RecordNotFoundException("Incident " + noteableId + " not found" ));
+            }
+            default -> throw new BadRequestException("Unsupported parent type: " + noteableType);
+        }
+        return noteMapper.toDto(
+                noteRepository.findByNoteableTypeAndNoteableId(noteableType, noteableId)
+        );
+
+    }
+
 }

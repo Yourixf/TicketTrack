@@ -20,7 +20,7 @@ public class ApiResponse<T> {
         this.timestamp = LocalDateTime.now();
         this.message = message;
         this.status = status.value();
-        this.error = status.getReasonPhrase();
+        this.error = status.isError() ? status.getReasonPhrase() : null;
         this.data = data;
     }
 

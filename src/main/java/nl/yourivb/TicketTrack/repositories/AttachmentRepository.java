@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface AttachmentRepository extends JpaRepository<Attachment, Long> {
     List<Attachment> findByAttachableTypeAndAttachableId(String noteableType, Long noteableId);
+    List<Attachment> findByFileName(String fileName);
 }

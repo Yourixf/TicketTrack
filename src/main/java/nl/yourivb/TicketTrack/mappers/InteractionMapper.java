@@ -7,23 +7,20 @@ import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.services.EntityMappingService;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring",
-        uses = {
-                EntityMappingService.class,
-                AttachmentMapper.class,
-                NoteMapper.class,
-                AssignmentGroupMapper.class,
-                ServiceOfferingMapper.class
-        }
-)
+@Mapper(componentModel = "spring", uses = EntityMappingService.class)
 
 public interface InteractionMapper {
-    @Mapping(target = "attachments", source = "attachments")
+    @Mapping(target = "serviceOfferingId", source = "serviceOffering")
+    @Mapping(target = "assignmentGroupId", source = "assignmentGroup")
+    @Mapping(target = "openedById", source = "openedBy")
+    @Mapping(target = "openedForId", source = "openedFor")
+    @Mapping(target = "closedById", source = "closedBy")
+    @Mapping(target = "incidentId", source = "incident")
     InteractionDto toDto(Interaction interaction);
 
     @Mapping(target = "serviceOffering", source = "serviceOfferingId")
     @Mapping(target = "assignmentGroup", source = "assignmentGroupId")
-    @Mapping(target = "openedFor", source = "openedForId")
+//    @Mapping(target = "openedFor", source = "openedForId")
     @Mapping(target = "state", source = "state")
     Interaction toModel(InteractionInputDto dto);
     void updateInteractionFromDto(InteractionInputDto dto, @MappingTarget Interaction interaction);

@@ -9,6 +9,8 @@ import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", uses = EntityMappingService.class)
 public interface ServiceOfferingMapper {
+    @Mapping(target = "assignmentGroupId", source = "assignmentGroup")
+    @Mapping(target = "createdById", source = "createdBy")
     ServiceOfferingDto toDto(ServiceOffering serviceOffering);
 
 

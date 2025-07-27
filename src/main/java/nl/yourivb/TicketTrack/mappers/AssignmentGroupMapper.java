@@ -4,13 +4,12 @@ import nl.yourivb.TicketTrack.dtos.assignmentGroup.AssignmentGroupDto;
 import nl.yourivb.TicketTrack.dtos.assignmentGroup.AssignmentGroupInputDto;
 import nl.yourivb.TicketTrack.dtos.assignmentGroup.AssignmentGroupPatchDto;
 import nl.yourivb.TicketTrack.models.AssignmentGroup;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import nl.yourivb.TicketTrack.services.EntityMappingService;
+import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = EntityMappingService.class)
 public interface AssignmentGroupMapper {
+    @Mapping(target = "createdById", source = "createdBy")
     AssignmentGroupDto toDto(AssignmentGroup assignmentGroup);
     AssignmentGroup toModel(AssignmentGroupInputDto dto);
     void updateAssignmentGroupFromDto(AssignmentGroupInputDto dto, @MappingTarget AssignmentGroup assignmentGroup);

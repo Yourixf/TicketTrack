@@ -6,12 +6,14 @@ import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.InteractionMapper;
+import nl.yourivb.TicketTrack.mappers.NoteMapper;
 import nl.yourivb.TicketTrack.models.Attachment;
 import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.models.Note;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.InteractionRepository;
 import nl.yourivb.TicketTrack.repositories.NoteRepository;
+import nl.yourivb.TicketTrack.utils.AppUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,26 +28,37 @@ public class InteractionService {
     private final InteractionMapper interactionMapper;
     private final NoteRepository noteRepository;
     private final AttachmentRepository attachmentRepository;
+    private final NoteMapper noteMapper;
 
     public InteractionService(InteractionRepository interactionRepository,
                               InteractionMapper interactionMapper,
                               NoteRepository noteRepository,
-                              AttachmentRepository attachmentRepository) {
+                              AttachmentRepository attachmentRepository, NoteMapper noteMapper) {
         this.interactionRepository = interactionRepository;
         this.interactionMapper = interactionMapper;
         this.noteRepository = noteRepository;
         this.attachmentRepository = attachmentRepository;
+        this.noteMapper = noteMapper;
     }
 
     public List<InteractionDto> getAllInteractions() {
 
-        // this finds alls interactions, loops throug each, gets and sets the corresponding note & atta list.
+        // this finds alls interactions, loops through each, gets and sets the corresponding note & atta list.
         return interactionRepository.findAll()
                 .stream()
                 .map(interaction -> {
-                    interaction.setNotes(noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId()));
-                    interaction.setAttachments(attachmentRepository.findByAttachableTypeAndAttachableId("Interaction", interaction.getId()));
-                    return interactionMapper.toDto(interaction);
+                    InteractionDto dto = interactionMapper.toDto(interaction);
+
+                    List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId());
+                    List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
+
+                    List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Interaction", interaction.getId());
+                    List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
+
+                    dto.setNoteIds(noteIds);
+                    dto.setAttachmentIds(attachmentIds);
+
+                    return dto;
                 })
                 .toList();
     }
@@ -53,14 +66,18 @@ public class InteractionService {
     public InteractionDto getInteractionById(Long id) {
         Interaction interaction = interactionRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Interaction " + id + " not found"));
 
+        InteractionDto interactionDto = interactionMapper.toDto(interaction);
+
         List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId());
+        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
+
         List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Interaction", interaction.getId());
+        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
 
-        interaction.setNotes(notes);
-        interaction.setAttachments(attachments);
+        interactionDto.setNoteIds(noteIds);
+        interactionDto.setAttachmentIds(attachmentIds);
 
-        return interactionMapper.toDto(interaction);
-
+        return interactionDto;
     }
 
     public InteractionDto addInteraction(InteractionInputDto dto) {
@@ -76,12 +93,20 @@ public class InteractionService {
         Interaction interaction = interactionRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Interaction " + id + " not found"));
 
         interactionMapper.updateInteractionFromDto(newInteraction, interaction);
-        Interaction updatedInteraction = interactionRepository.save(interaction);
+        interactionRepository.save(interaction);
 
-        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", updatedInteraction.getId());
-        interaction.setNotes(notes);
+        InteractionDto interactionDto = interactionMapper.toDto(interaction);
 
-        return interactionMapper.toDto(updatedInteraction);
+        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId());
+        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
+
+        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Interaction", interaction.getId());
+        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
+
+        interactionDto.setNoteIds(noteIds);
+        interactionDto.setAttachmentIds(attachmentIds);
+
+        return interactionDto;
     }
 
     public InteractionDto patchInteraction(Long id, InteractionPatchDto patchedInteraction) {
@@ -92,12 +117,20 @@ public class InteractionService {
         }
 
         interactionMapper.patchInteractionFromDto(patchedInteraction, interaction);
-        Interaction updatedInteraction = interactionRepository.save(interaction);
+        interactionRepository.save(interaction);
 
-        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", updatedInteraction.getId());
-        interaction.setNotes(notes);
+        InteractionDto interactionDto = interactionMapper.toDto(interaction);
 
-        return interactionMapper.toDto(updatedInteraction);
+        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId());
+        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
+
+        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Interaction", interaction.getId());
+        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
+
+        interactionDto.setNoteIds(noteIds);
+        interactionDto.setAttachmentIds(attachmentIds);
+
+        return interactionDto;
     }
 
     public void deleteInteraction(Long id) {

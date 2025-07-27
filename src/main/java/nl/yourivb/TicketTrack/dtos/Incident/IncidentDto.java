@@ -1,93 +1,38 @@
-package nl.yourivb.TicketTrack.models;
+package nl.yourivb.TicketTrack.dtos.Incident;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
 import nl.yourivb.TicketTrack.models.enums.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity
-public class Incident {
-    @Id
-    @GeneratedValue
+public class IncidentDto {
     private Long id;
-
-    @Column(unique = true)
     private String number;
-
-    @Column(updatable = false)
     private LocalDateTime created;
-
-    @Column(updatable = false)
     private LocalDateTime closed;
-
     private LocalDateTime resolved;
     private LocalDateTime lastModified;
     private LocalDateTime onHoldSince;
     private LocalDateTime resolveBefore;
     private String shortDescription;
     private String description;
-
-    @Enumerated(EnumType.STRING)
     private Category category;
-
-    @Enumerated(EnumType.STRING)
     private IncidentState state;
-
-    @Enumerated(EnumType.STRING)
     private Channel channel;
-
-    @Enumerated(EnumType.STRING)
     private Priority priority;
-
-    @Enumerated(EnumType.STRING)
     private OnHoldReason onHoldReason;
-
-    @Enumerated(EnumType.STRING)
     private ResolvedReason resolvedReason;
-
-    @Enumerated(EnumType.STRING)
     private CanceledReason canceledReason;
-
-    @ManyToOne
-    @JoinColumn(name = "service_offering_id")
-    private ServiceOffering serviceOffering;
-
-    @ManyToOne
-    @JoinColumn(name = "assignment_group_id")
-    private AssignmentGroup assignmentGroup;
-
-    @ManyToOne
-    @JoinColumn(name = "opened_by_id")
-    private AppUser openedBy; // TODO APPUSERDTO
-
-    @ManyToOne
-    @JoinColumn(name = "opened_for_id")
-    private AppUser openedFor; // TODO APPUSERDTO
-
-    @ManyToOne
-    @JoinColumn(name = "resolved_by_id")
-    private AppUser resolvedBy; // TODO APPUSERDTO
-
-    @ManyToOne
-    @JoinColumn(name = "closed_by_id")
-    private AppUser closedBy; // TODO APPUSERDTO
-
-    @ManyToOne
-    @JoinColumn(name = "escalated_from_id")
-    private Interaction escalatedFrom;
-
-    @OneToMany(mappedBy = "incident")
-    @JsonManagedReference
-    private List<Interaction> childInteractions;
-
-    // This tag makes sure the underlying variable doesn't get saved into the database, but editable in service layer so you can easily export it via DTO
-    @Transient
-    private List<Attachment> attachments;
-
-    @Transient
-    private List<Note> notes;
+    private Long serviceOfferingId;
+    private Long assignmentGroupId;
+    private Long openedById;
+    private Long openedForId;
+    private Long resolvedById;
+    private Long closedById;
+    private Long escalatedFromId;
+    private List<Long> childInteractionIds;
+    private List<Long> attachmentIds;
+    private List<Long> noteIds;
 
     public Long getId() {
         return id;
@@ -225,95 +170,83 @@ public class Incident {
         this.canceledReason = canceledReason;
     }
 
-    public ServiceOffering getServiceOffering() {
-        return serviceOffering;
+    public Long getServiceOfferingId() {
+        return serviceOfferingId;
     }
 
-    public void setServiceOffering(ServiceOffering serviceOffering) {
-        this.serviceOffering = serviceOffering;
+    public void setServiceOfferingId(Long serviceOfferingId) {
+        this.serviceOfferingId = serviceOfferingId;
     }
 
-    public AssignmentGroup getAssignmentGroup() {
-        return assignmentGroup;
+    public Long getAssignmentGroupId() {
+        return assignmentGroupId;
     }
 
-    public void setAssignmentGroup(AssignmentGroup assignmentGroup) {
-        this.assignmentGroup = assignmentGroup;
+    public void setAssignmentGroupId(Long assignmentGroupId) {
+        this.assignmentGroupId = assignmentGroupId;
     }
 
-    public AppUser getOpenedBy() {
-        return openedBy;
+    public Long getOpenedById() {
+        return openedById;
     }
 
-    public void setOpenedBy(AppUser openedBy) {
-        this.openedBy = openedBy;
+    public void setOpenedById(Long openedById) {
+        this.openedById = openedById;
     }
 
-    public AppUser getOpenedFor() {
-        return openedFor;
+    public Long getOpenedForId() {
+        return openedForId;
     }
 
-    public void setOpenedFor(AppUser openedFor) {
-        this.openedFor = openedFor;
+    public void setOpenedForId(Long openedForId) {
+        this.openedForId = openedForId;
     }
 
-    public AppUser getResolvedBy() {
-        return resolvedBy;
+    public Long getResolvedById() {
+        return resolvedById;
     }
 
-    public void setResolvedBy(AppUser resolvedBy) {
-        this.resolvedBy = resolvedBy;
+    public void setResolvedById(Long resolvedById) {
+        this.resolvedById = resolvedById;
     }
 
-    public AppUser getClosedBy() {
-        return closedBy;
+    public Long getClosedById() {
+        return closedById;
     }
 
-    public void setClosedBy(AppUser closedBy) {
-        this.closedBy = closedBy;
+    public void setClosedById(Long closedById) {
+        this.closedById = closedById;
     }
 
-    public Interaction getEscalatedFrom() {
-        return escalatedFrom;
+    public Long getEscalatedFromId() {
+        return escalatedFromId;
     }
 
-    public void setEscalatedFrom(Interaction escalatedFrom) {
-        this.escalatedFrom = escalatedFrom;
+    public void setEscalatedFromId(Long escalatedFromId) {
+        this.escalatedFromId = escalatedFromId;
     }
 
-    public List<Interaction> getChildInteractions() {
-        return childInteractions;
+    public List<Long> getChildInteractionIds() {
+        return childInteractionIds;
     }
 
-    public void setChildInteractions(List<Interaction> childInteractions) {
-        this.childInteractions = childInteractions;
+    public void setChildInteractionIds(List<Long> childInteractionIds) {
+        this.childInteractionIds = childInteractionIds;
     }
 
-    public List<Attachment> getAttachments() {
-        return attachments;
+    public List<Long> getAttachmentIds() {
+        return attachmentIds;
     }
 
-    public void setAttachments(List<Attachment> attachments) {
-        this.attachments = attachments;
+    public void setAttachmentIds(List<Long> attachmentIds) {
+        this.attachmentIds = attachmentIds;
     }
 
-    public List<Note> getNotes() {
-        return notes;
+    public List<Long> getNoteIds() {
+        return noteIds;
     }
 
-    public void setNotes(List<Note> notes) {
-        this.notes = notes;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        this.created = LocalDateTime.now();
-        this.lastModified = LocalDateTime.now();
-        this.priority = Priority.NORMAL;
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.lastModified = LocalDateTime.now();
+    public void setNoteIds(List<Long> noteIds) {
+        this.noteIds = noteIds;
     }
 }
