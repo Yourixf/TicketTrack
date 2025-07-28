@@ -12,15 +12,19 @@ public class EntityMappingService {
     private final AppUserRepository appUserRepository;
     private final InteractionRepository interactionRepository;
     private final IncidentRepository incidentRepository;
+    private final AttachmentRepository attachmentRepository;
+    private final RoleRepository roleRepository;
 
     public EntityMappingService(ServiceOfferingRepository serviceOfferingRepository,
                                 AssignmentGroupRepository assignmentGroupRepository,
-                                AppUserRepository appUserRepository, InteractionRepository interactionRepository, IncidentRepository incidentRepository) {
+                                AppUserRepository appUserRepository, InteractionRepository interactionRepository, IncidentRepository incidentRepository, AttachmentRepository attachmentRepository, RoleRepository roleRepository) {
         this.serviceOfferingRepository = serviceOfferingRepository;
         this.assignmentGroupRepository = assignmentGroupRepository;
         this.appUserRepository = appUserRepository;
         this.interactionRepository = interactionRepository;
         this.incidentRepository = incidentRepository;
+        this.attachmentRepository = attachmentRepository;
+        this.roleRepository = roleRepository;
     }
 
     // for input DTO mapping (ID -> Object)
@@ -40,6 +44,10 @@ public class EntityMappingService {
 
     public Incident getIncident(Long id) { return incidentRepository.findById(id).orElse(null);}
 
+    public Attachment getAttachment(Long id) {return attachmentRepository.findById(id).orElse(null);}
+
+    public Role getRole(Long id) {return roleRepository.findById(id).orElse(null);}
+
     // for output DTO mapping (Object -> ID)
     public Long getServiceOfferingId(ServiceOffering serviceOffering) {
         return serviceOffering != null ? serviceOffering.getId() : null;
@@ -56,4 +64,8 @@ public class EntityMappingService {
     public Long getInteractionId(Interaction interaction) { return interaction != null ? interaction.getId() : null;}
 
     public Long getIncidentId(Incident incident) { return incident != null ? incident.getId() : null;}
+
+    public Long getAttachmentId(Attachment attachment) {return attachment != null ? attachment.getId(): null;}
+
+    public Long getRoleId(Role role) {return role != null ? role.getId() : null;}
 }
