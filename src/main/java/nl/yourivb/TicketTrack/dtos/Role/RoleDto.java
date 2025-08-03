@@ -1,24 +1,14 @@
-package nl.yourivb.TicketTrack.models;
-
-import jakarta.persistence.*;
+package nl.yourivb.TicketTrack.dtos.Role;
 
 import java.time.LocalDateTime;
 
-
-// TODO make this App_role and change mappers
-@Entity
-public class Role {
-    @Id
-    @GeneratedValue
+public class RoleDto {
     private Long id;
     private String name;
-
-    @Column(updatable = false)
     private LocalDateTime created;
-
     private LocalDateTime lastModified;
 
-    public Long getId() {
+  public Long getId() {
         return id;
     }
 
@@ -50,14 +40,4 @@ public class Role {
         this.lastModified = lastModified;
     }
 
-    @PrePersist
-    protected void onCreate() {
-        this.created = LocalDateTime.now();
-        this.lastModified = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.lastModified = LocalDateTime.now();
-    }
 }

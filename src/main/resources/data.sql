@@ -1,3 +1,10 @@
+-- Insert Roles
+INSERT INTO role (id, name, created, last_modified)
+VALUES 
+    (1, 'ROLE_ADMIN', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (2, 'ROLE_IT', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (3, 'ROLE_CUSTOMER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
 -- Insert AssignmentGroups
 INSERT INTO assignment_group (id, name, email, created, last_modified)
 VALUES
@@ -15,6 +22,7 @@ VALUES
     (3, 'Network Storage', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 3),
     (4, 'Security Audit', 21, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 4),
     (5, 'Cloud Backup', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 5);
+
 
 -- Insert 5 Interactions
 -- INSERT INTO interaction (

@@ -35,10 +35,9 @@ public class InteractionInputDto {
     @NotNull
     private Long assignmentGroupId;
 
-//    @ExcistInDatabase(repository = AppUserRepository.class, message = "Opened for id not found in database")
+    @ExcistInDatabase(repository = AppUserRepository.class, message = "Opened for id not found in database")
     @NotNull
     private Long openedForId;
-
 
     public String getShortDescription() {
         return shortDescription;

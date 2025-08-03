@@ -44,6 +44,7 @@ public class IncidentInputDto {
     private Long assignmentGroupId;
 
     @NotNull
+    @ExcistInDatabase(repository = AssignmentGroupRepository.class, message = "Opened for id not found in database")
     private Long openedForId;
 
     private List<Long> childInteractionsId;
