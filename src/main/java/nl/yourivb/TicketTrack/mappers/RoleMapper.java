@@ -1,0 +1,18 @@
+package nl.yourivb.TicketTrack.mappers;
+
+import nl.yourivb.TicketTrack.dtos.Role.RoleInputDto;
+import nl.yourivb.TicketTrack.dtos.Role.RoleDto;
+import nl.yourivb.TicketTrack.models.Role;
+import nl.yourivb.TicketTrack.services.EntityMappingService;
+
+import org.mapstruct.*;
+
+@Mapper(componentModel = "spring", uses = EntityMappingService.class)
+public interface RoleMapper {
+
+    RoleDto toDto(Role role);
+
+    Role toModel(RoleInputDto dto);
+
+    void updateRoleFromDto(RoleInputDto dto, @MappingTarget Role role);
+}

@@ -1,5 +1,6 @@
 package nl.yourivb.TicketTrack.controllers;
 
+import jakarta.validation.Valid;
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserDto;
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserInputDto;
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserPatchDto;
@@ -9,45 +10,75 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
+
 @RestController
 public class AppUserController {
 
     private final AppUserService appUserService;
 
-    public AppUserController(AppUserService service) {
-        this.appUserService = service;
+    public AppUserController(AppUserService appUserService) {
+        this.appUserService = appUserService;
     }
 
     @GetMapping("/users")
     public ResponseEntity<ApiResponse<List<AppUserDto>>> getAllUsers() {
-        return ResponseEntity.ok(new ApiResponse<>("User list", HttpStatus.OK, appUserService.getAllUsers()));
+        List<AppUserDto> dtos = appUserService.getAllUsers();
+
+        return new ResponseEntity<>(
+                new ApiResponse<>("Users fetched", HttpStatus.OK, dtos),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<ApiResponse<AppUserDto>> getUser(@PathVariable Long id) {
-        return ResponseEntity.ok(new ApiResponse<>("User details", HttpStatus.OK, appUserService.getUserById(id)));
+    public ResponseEntity<ApiResponse<AppUserDto>> getUserById(@PathVariable Long id) {
+        AppUserDto dto = appUserService.getUserById(id);
+
+        return new ResponseEntity<>(
+                new ApiResponse<>("Fetched user " + id, HttpStatus.OK, dto),
+                HttpStatus.OK
+        );
     }
 
     @PostMapping("/users")
-    public ResponseEntity<ApiResponse<AppUserDto>> createUser(@RequestBody AppUserInputDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>("User created", HttpStatus.CREATED, appUserService.createUser(dto)));
+    public ResponseEntity<ApiResponse<AppUserDto>> createUser(@Valid @RequestBody AppUserInputDto dto) {
+        AppUserDto created = appUserService.createUser(dto);
+        URI uri = URI.create("/users/" + created.getId());
+
+        return ResponseEntity.created(uri).body(
+                new ApiResponse<>("Created user", HttpStatus.CREATED, created)
+        );
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<ApiResponse<AppUserDto>> updateUser(@PathVariable Long id, @RequestBody AppUserInputDto dto) {
-        return ResponseEntity.ok(new ApiResponse<>("User updated", HttpStatus.OK, appUserService.updateUser(id, dto)));
+    public ResponseEntity<ApiResponse<AppUserDto>> updateUser(@PathVariable Long id, @Valid @RequestBody AppUserInputDto dto) {
+        AppUserDto updated = appUserService.updateUser(id, dto);
+
+        return new ResponseEntity<>(
+                new ApiResponse<>("User updated", HttpStatus.OK, updated),
+                HttpStatus.OK
+        );
     }
 
     @PatchMapping("/users/{id}")
-    public ResponseEntity<ApiResponse<AppUserDto>> patchUser(@PathVariable Long id, @RequestBody AppUserPatchDto dto) {
-        return ResponseEntity.ok(new ApiResponse<>("User patched", HttpStatus.OK, appUserService.patchUser(id, dto)));
+    public ResponseEntity<ApiResponse<AppUserDto>> patchUser(@PathVariable Long id, @Valid @RequestBody AppUserPatchDto dto) {
+        AppUserDto updated = appUserService.patchUser(id, dto);
+
+        return new ResponseEntity<>(
+                new ApiResponse<>("User updated", HttpStatus.OK, updated),
+                HttpStatus.OK
+        );
     }
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
         appUserService.deleteUser(id);
-        return ResponseEntity.ok(new ApiResponse<>("User deleted", HttpStatus.OK, null));
+
+        return new ResponseEntity<>(
+                new ApiResponse<>("User deleted", HttpStatus.OK, null),
+                HttpStatus.OK
+        );
     }
 }

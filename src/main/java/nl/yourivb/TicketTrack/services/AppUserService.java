@@ -4,10 +4,13 @@ import nl.yourivb.TicketTrack.dtos.AppUser.AppUserDto;
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserInputDto;
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserPatchDto;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
+import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.mappers.AppUserMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
 import org.springframework.stereotype.Service;
+
+import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
 
 import java.util.List;
 
@@ -29,39 +32,49 @@ public class AppUserService {
     }
 
     public AppUserDto getUserById(Long id) {
-        return appUserMapper.toDto(
-                appUserRepository.findById(id)
-                        .orElseThrow(() -> new RecordNotFoundException("User not found"))
-        );
+        AppUser appUser = appUserRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("User " + id + " not found"));
+
+        return appUserMapper.toDto(appUser);
     }
 
     public AppUserDto createUser(AppUserInputDto dto) {
+        if (dto.getRoleId() == null) {
+            dto.setRoleId(3L); // sets default role to customer
+        }
+
         AppUser appUser = appUserMapper.toModel(dto);
-        return appUserMapper.toDto(appUserRepository.save(appUser));
+
+        appUserRepository.save(appUser);
+        return appUserMapper.toDto(appUser);
     }
 
     public AppUserDto updateUser(Long id, AppUserInputDto dto) {
-        AppUser existing = appUserRepository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException("User not found"));
+        AppUser appUser = appUserRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("User " + id + " not found"));
 
-        AppUser updated = appUserMapper.toModel(dto);
-        updated.setId(id);
-        updated.setCreated(existing.getCreated());
-        return appUserMapper.toDto(appUserRepository.save(updated));
+        appUserMapper.updateAppUserFromDto(dto, appUser);
+        appUserRepository.save(appUser);
+
+        return appUserMapper.toDto(appUser);
     }
 
     public AppUserDto patchUser(Long id, AppUserPatchDto dto) {
-        AppUser user = appUserRepository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException("User not found"));
+        AppUser appUser = appUserRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("User " + id + " not found"));
 
-        appUserMapper.patchAppUserFromDto(dto, user);
-        return appUserMapper.toDto(appUserRepository.save(user));
+        if (allFieldsNull(dto)) {
+            throw new BadRequestException("No valid fields provided for patch");
+        }
+
+        appUserMapper.patchAppUserFromDto(dto, appUser);
+        appUserRepository.save(appUser);
+
+        return appUserMapper.toDto(appUser);
     }
 
     public void deleteUser(Long id) {
-        if (!appUserRepository.existsById(id)) {
-            throw new RecordNotFoundException("User not found");
-        }
+        AppUser appUser = appUserRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("User " + id + " not found"));
+
         appUserRepository.deleteById(id);
     }
 }
