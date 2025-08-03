@@ -23,7 +23,7 @@ public class AppUserInputDto {
     private String info;
     private String password;
 
-//    @ExcistInDatabase(repository = AttachmentRepository.class, message = "Attachment id not found in database")
+    @ExcistInDatabase(repository = AttachmentRepository.class, message = "Attachment id not found in database")
     private Long profilePictureId;
 
     @ExcistInDatabase(repository = RoleRepository.class, message = "Role id not found in database")

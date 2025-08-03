@@ -9,6 +9,8 @@ import nl.yourivb.TicketTrack.mappers.AppUserMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
 
@@ -19,11 +21,16 @@ public class AppUserService {
 
     private final AppUserRepository appUserRepository;
     private final AppUserMapper appUserMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public AppUserService(AppUserRepository repo, AppUserMapper mapper) {
-        this.appUserRepository = repo;
-        this.appUserMapper = mapper;
-    }
+
+    public AppUserService(AppUserRepository repo, 
+                            AppUserMapper mapper, 
+                            PasswordEncoder passwordEncoder) {
+    this.appUserRepository = repo;
+    this.appUserMapper = mapper;
+    this.passwordEncoder = passwordEncoder;
+}
 
     public List<AppUserDto> getAllUsers() {
         return appUserRepository.findAll().stream()
@@ -43,7 +50,9 @@ public class AppUserService {
         }
 
         AppUser appUser = appUserMapper.toModel(dto);
-
+        
+        appUser.setPassword(passwordEncoder.encode(dto.getPassword()));
+        
         appUserRepository.save(appUser);
         return appUserMapper.toDto(appUser);
     }

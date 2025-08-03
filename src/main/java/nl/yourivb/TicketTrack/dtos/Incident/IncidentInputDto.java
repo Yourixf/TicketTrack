@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import nl.yourivb.TicketTrack.models.enums.*;
 import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
 import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
+import nl.yourivb.TicketTrack.repositories.AppUserRepository;
 import nl.yourivb.TicketTrack.validators.ExcistInDatabase;
 
 import java.util.List;
