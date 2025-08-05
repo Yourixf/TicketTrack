@@ -13,6 +13,7 @@ import nl.yourivb.TicketTrack.models.Note;
 import nl.yourivb.TicketTrack.models.enums.InteractionState;
 import nl.yourivb.TicketTrack.models.enums.Priority;
 import nl.yourivb.TicketTrack.repositories.*;
+import nl.yourivb.TicketTrack.security.SecurityUtils;
 import nl.yourivb.TicketTrack.utils.AppUtils;
 import org.springframework.stereotype.Service;
 
@@ -128,6 +129,7 @@ public class IncidentService {
                     calculateSlaInDays(incident.getPriority(), incident.getServiceOffering().getDefaultSlaInDays())
                 ));
 
+        incident.setOpenedBy(SecurityUtils.getCurrentUserDetails().getAppUser());
         incidentRepository.save(incident);
 
         interaction.setIncident(incident);

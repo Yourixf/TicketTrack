@@ -11,19 +11,17 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.stereotype.Component;
 
-import nl.yourivb.TicketTrack.security.CustomUserDetailsService;
-
 import java.io.IOException;
 
 
 @Component 
 public class JwtRequestFilter extends OncePerRequestFilter { 
  
-    private final CustomUserDetailsService userDetailsService; 
+    private final AppUserDetailsService userDetailsService;
  
     private final JwtUtil jwtUtil; 
  
-    public JwtRequestFilter(CustomUserDetailsService userDetailsService, JwtUtil jwtUtil) { 
+    public JwtRequestFilter(AppUserDetailsService userDetailsService, JwtUtil jwtUtil) {
         this.userDetailsService = userDetailsService; 
         this.jwtUtil = jwtUtil; 
     } 

@@ -2,7 +2,7 @@ package nl.yourivb.TicketTrack.controllers;
 
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.security.JwtUtil;
-import nl.yourivb.TicketTrack.security.CustomUserDetailsService;
+import nl.yourivb.TicketTrack.security.AppUserDetailsService;
 import nl.yourivb.TicketTrack.dtos.Auth.*;
 
 import org.springframework.http.HttpStatus;
@@ -20,9 +20,9 @@ public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-    private final CustomUserDetailsService userDetailsService;
+    private final AppUserDetailsService userDetailsService;
 
-    public AuthenticationController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
+    public AuthenticationController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, AppUserDetailsService userDetailsService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;

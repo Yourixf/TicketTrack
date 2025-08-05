@@ -20,12 +20,12 @@ public class InteractionInputDto {
     @Size(min = 2, max = 1500)
     private String description;
 
-    @NotNull
+//    @NotNull
     private Category category;
 
     private InteractionState state;
 
-    @NotNull
+//    @NotNull
     private Channel channel;
 
     @ExcistInDatabase(repository = ServiceOfferingRepository.class, message = "Service offering id not found in database")

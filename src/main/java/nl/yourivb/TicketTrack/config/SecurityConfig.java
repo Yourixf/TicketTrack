@@ -20,8 +20,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
 @Configuration
-public class SecurityConfig { 
-  private final DataSource dataSource; 
+public class SecurityConfig {
+  private final DataSource dataSource;
   
  private final JwtRequestFilter jwtRequestFilter;
 
@@ -55,10 +55,33 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/assignment-groups/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/assignment-groups/**").hasRole("ADMIN")
 
-                        .requestMatchers(HttpMethod.GET, "/attachments/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/attachments/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/attachments/**").authenticated()   // TODO owner check in service layer
+                        .requestMatchers(HttpMethod.DELETE, "/attachments/**").hasAnyRole("ADMIN", "IT")
 
-                        .requestMatchers("/interactions").hasAnyRole("ADMIN", "IT")
+                        .requestMatchers(HttpMethod.GET, "/incidents/**").authenticated()   // TODO owner check in service layer
+                        .requestMatchers(HttpMethod.POST, "/incidents/**").hasAnyRole("ADMIN", "IT")
+                        .requestMatchers(HttpMethod.PUT, "/incidents/**").hasAnyRole("ADMIN", "IT")
+                        .requestMatchers(HttpMethod.PATCH, "/incidents/**").hasAnyRole("ADMIN", "IT")
+                        .requestMatchers(HttpMethod.DELETE, "/incidents/**").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/interactions/**").authenticated()   // TODO owner check in service layer
+                        .requestMatchers(HttpMethod.POST, "/interactions").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/interactions/**").hasAnyRole("ADMIN", "IT")
+                        .requestMatchers(HttpMethod.PUT, "/interactions/**").hasAnyRole("ADMIN", "IT")
+                        .requestMatchers(HttpMethod.PATCH, "/interactions/**").hasAnyRole("ADMIN", "IT")
+                        .requestMatchers(HttpMethod.DELETE, "/interactions/**").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/notes/**").authenticated()   // TODO owner check in service layer
+                        .requestMatchers(HttpMethod.DELETE, "/notes/**").hasRole("ADMIN")
+
+                        .requestMatchers("/roles/**").denyAll()
+
+                        .requestMatchers(HttpMethod.GET, "/service-offerings/**").hasAnyRole("ADMIN", "IT")
+                        .requestMatchers(HttpMethod.POST, "/service-offerings").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/service-offerings/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/service-offerings/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/service-offerings/**").hasRole("ADMIN")
+
                         .requestMatchers("/authenticate").anonymous()
                         .anyRequest().denyAll()
                 )
