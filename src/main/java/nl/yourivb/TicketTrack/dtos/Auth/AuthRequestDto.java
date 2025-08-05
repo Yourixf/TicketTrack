@@ -1,6 +1,6 @@
 package nl.yourivb.TicketTrack.dtos.Auth;
 
-public class AuthRequest {
+public class AuthRequestDto {
     private String email;
     private String password;
 

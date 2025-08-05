@@ -1,6 +1,7 @@
 package nl.yourivb.TicketTrack.payload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import nl.yourivb.TicketTrack.dtos.Auth.AuthResponseDto;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
@@ -31,6 +32,9 @@ public class ApiResponse<T> {
         this.error = status.getReasonPhrase();
         this.data = null;
         this.errors = errors;
+    }
+
+    public ApiResponse(int value, String authenticationSuccessful, AuthResponseDto response) {
     }
 
     public LocalDateTime getTimestamp() {

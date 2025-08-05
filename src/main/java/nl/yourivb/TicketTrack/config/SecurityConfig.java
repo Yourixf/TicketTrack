@@ -8,15 +8,18 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
-
-@Configuration 
+@Configuration
 public class SecurityConfig { 
   private final DataSource dataSource; 
   
@@ -34,24 +37,36 @@ public class SecurityConfig {
  
  
     @Bean 
-    protected SecurityFilterChain filter (HttpSecurity http) throws Exception { 
- 
-        http 
-                .csrf().disable() 
-                .httpBasic().disable() 
-                .cors().and() 
-                .authorizeHttpRequests() 
-                .requestMatchers(HttpMethod.GET, "/info").authenticated()
-                .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                .requestMatchers("/users/**").hasAnyRole("ADMIN", "IT") 
-                .requestMatchers("/interactions").hasAnyRole("ADMIN", "IT") 
-                .requestMatchers(HttpMethod.DELETE, "/users/{id}").hasRole("ADMIN") 
-                .requestMatchers("/authenticate").permitAll() 
- 
-                .anyRequest().denyAll() 
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); 
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); 
-        return http.build(); 
+    protected SecurityFilterChain filter (HttpSecurity http) throws Exception {
+
+        return http
+                .securityMatcher("/**")
+                .authorizeHttpRequests(auth -> auth
+
+                        .requestMatchers(HttpMethod.GET, "/users/**").authenticated() // users can make interactions for other employees (openedFor)
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/assignment-groups/**").hasAnyRole("ADMIN", "IT")
+                        .requestMatchers(HttpMethod.POST, "/assignment-groups").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/assignment-groups/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/assignment-groups/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/assignment-groups/**").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/attachments/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/attachments/**").hasRole("ADMIN")
+
+                        .requestMatchers("/interactions").hasAnyRole("ADMIN", "IT")
+                        .requestMatchers("/authenticate").anonymous()
+                        .anyRequest().denyAll()
+                )
+                .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     } 
         
     @Bean
@@ -61,6 +76,18 @@ public class SecurityConfig {
             .usersByUsernameQuery("SELECT email, password, true FROM app_user WHERE email=?")
             .authoritiesByUsernameQuery("SELECT u.email, r.name " +
                 "FROM app_user u JOIN role r ON u.role_id = r.id WHERE u.email=?");
-    return authenticationManagerBuilder.build();
-}
+        return authenticationManagerBuilder.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("*");
+        config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 } 
