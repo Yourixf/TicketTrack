@@ -3,8 +3,8 @@ package nl.yourivb.TicketTrack.services;
 import nl.yourivb.TicketTrack.dtos.Incident.IncidentDto;
 import nl.yourivb.TicketTrack.dtos.Incident.IncidentInputDto;
 import nl.yourivb.TicketTrack.dtos.Incident.IncidentPatchDto;
-import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
+import nl.yourivb.TicketTrack.exceptions.CustomException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.IncidentMapper;
 import nl.yourivb.TicketTrack.models.Attachment;
@@ -17,6 +17,7 @@ import nl.yourivb.TicketTrack.models.enums.Priority;
 import nl.yourivb.TicketTrack.repositories.*;
 import nl.yourivb.TicketTrack.security.SecurityUtils;
 import nl.yourivb.TicketTrack.utils.AppUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -64,7 +65,7 @@ public class IncidentService {
         return created.plusDays(slaInDays);
     }
 
-    private boolean validateClosedDate(Incident incident) {
+    private boolean checkIfClosed(Incident incident) {
         if (incident.getState() == IncidentState.RESOLVED) {
             LocalDateTime resolvedDate = incident.getResolved();
             LocalDateTime currentDate = LocalDateTime.now();
@@ -75,7 +76,8 @@ public class IncidentService {
 
                 return false; // if incident is closed and thus not editable
             }
-        }
+        } else if (incident.getState() == IncidentState.CLOSED) return false;
+
         return true; // if incident still resolved and thus editable.
     }
 
@@ -83,6 +85,7 @@ public class IncidentService {
         return incidentRepository.findAll()
                 .stream()
                 .map(incident -> {
+                    checkIfClosed(incident);
                     IncidentDto dto = incidentMapper.toDto(incident);
 
                     List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId());
@@ -101,6 +104,7 @@ public class IncidentService {
 
     public IncidentDto getIncidentById(Long id) {
         Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found" ));
+        checkIfClosed(incident);
         IncidentDto incidentDto = incidentMapper.toDto(incident);
 
         List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId());
@@ -160,57 +164,61 @@ public class IncidentService {
     public IncidentDto updateIncident(Long id, IncidentInputDto newIncident) {
         Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found"));
 
-        incidentMapper.updateIncidentFromDto(newIncident, incident);
-        incident.setResolveBefore(
-                calculateResolveBeforeDate(
-                        incident.getCreated(),
-                        calculateSlaInDays(incident.getPriority(), incident.getServiceOffering().getDefaultSlaInDays())
-                ));
-        incidentRepository.save(incident);
+        if (checkIfClosed(incident)) {
+            incidentMapper.updateIncidentFromDto(newIncident, incident);
+            incident.setResolveBefore(
+                    calculateResolveBeforeDate(
+                            incident.getCreated(),
+                            calculateSlaInDays(incident.getPriority(), incident.getServiceOffering().getDefaultSlaInDays())
+                    ));
+            incidentRepository.save(incident);
 
+            IncidentDto incidentDto = incidentMapper.toDto(incident);
 
-        IncidentDto incidentDto = incidentMapper.toDto(incident);
+            List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId());
+            List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
 
-        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId());
-        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
+            List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Incident", incident.getId());
+            List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
 
-        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Incident", incident.getId());
-        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
+            incidentDto.setNoteIds(noteIds);
+            incidentDto.setAttachmentIds(attachmentIds);
 
-        incidentDto.setNoteIds(noteIds);
-        incidentDto.setAttachmentIds(attachmentIds);
-
-        return incidentDto;
+            return incidentDto;
+        } else throw new CustomException("Cannot edit closed incident", HttpStatus.CONFLICT);
     }
 
 
     public IncidentDto patchIncident(Long id, IncidentPatchDto patchedIncident) {
         Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found"));
 
-        if (allFieldsNull(patchedIncident)) {
-            throw new BadRequestException("No valid fields provided for patch");
-        }
+        if (checkIfClosed(incident)) {
 
-        incidentMapper.patchIncidentFromDto(patchedIncident, incident);
-        incident.setResolveBefore(
-                calculateResolveBeforeDate(
-                        incident.getCreated(),
-                        calculateSlaInDays(incident.getPriority(), incident.getServiceOffering().getDefaultSlaInDays())
-                ));
-        incidentRepository.save(incident);
+            if (allFieldsNull(patchedIncident)) {
+                throw new BadRequestException("No valid fields provided for patch");
+            }
 
-        IncidentDto incidentDto = incidentMapper.toDto(incident);
+            incidentMapper.patchIncidentFromDto(patchedIncident, incident);
+            incident.setResolveBefore(
+                    calculateResolveBeforeDate(
+                            incident.getCreated(),
+                            calculateSlaInDays(incident.getPriority(), incident.getServiceOffering().getDefaultSlaInDays())
+                    ));
+            incidentRepository.save(incident);
 
-        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId());
-        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
+            IncidentDto incidentDto = incidentMapper.toDto(incident);
 
-        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Incident", incident.getId());
-        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
+            List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId());
+            List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
 
-        incidentDto.setNoteIds(noteIds);
-        incidentDto.setAttachmentIds(attachmentIds);
+            List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Incident", incident.getId());
+            List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
 
-        return incidentDto;
+            incidentDto.setNoteIds(noteIds);
+            incidentDto.setAttachmentIds(attachmentIds);
+
+            return incidentDto;
+        } else throw new CustomException("Cannot edit closed incident", HttpStatus.CONFLICT);
     }
 
     public void deleteIncident(Long id) {

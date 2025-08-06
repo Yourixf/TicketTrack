@@ -70,4 +70,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ApiResponse<Object>> handleCustomException(CustomException ex) {
+        ApiResponse<Object> response = new ApiResponse<>(ex.getMessage(), ex.getStatusCode(), null);
+        return new ResponseEntity<>(response, ex.getStatusCode());
+    }
+
 }
