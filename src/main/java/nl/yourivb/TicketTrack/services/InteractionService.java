@@ -10,9 +10,12 @@ import nl.yourivb.TicketTrack.mappers.NoteMapper;
 import nl.yourivb.TicketTrack.models.Attachment;
 import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.models.Note;
+import nl.yourivb.TicketTrack.models.enums.Category;
+import nl.yourivb.TicketTrack.models.enums.Channel;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.InteractionRepository;
 import nl.yourivb.TicketTrack.repositories.NoteRepository;
+import nl.yourivb.TicketTrack.security.SecurityUtils;
 import nl.yourivb.TicketTrack.utils.AppUtils;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +45,6 @@ public class InteractionService {
     }
 
     public List<InteractionDto> getAllInteractions() {
-
         // this finds alls interactions, loops through each, gets and sets the corresponding note & atta list.
         return interactionRepository.findAll()
                 .stream()
@@ -84,6 +86,18 @@ public class InteractionService {
         Interaction interaction = interactionMapper.toModel(dto);
 
         interaction.setNumber(generateRegistrationNumber("IMS", interactionRepository));
+        interaction.setOpenedBy(SecurityUtils.getCurrentUserDetails().getAppUser());
+
+        if (SecurityUtils.hasRole("CUSTOMER")) {
+            interaction.setChannel(Channel.SELF_SERVICE);
+            interaction.setCategory(Category.USER_ASSISTANCE);
+
+            if (dto.getOpenedForId() == interaction.getOpenedBy().getId()) {
+                interaction.setOpenedFor(null); // prevents customers selecting "for someone else" and using their own name/id.
+            }
+
+        }
+
         interactionRepository.save(interaction);
 
         return interactionMapper.toDto(interaction);

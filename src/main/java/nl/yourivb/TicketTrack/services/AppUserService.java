@@ -3,27 +3,33 @@ package nl.yourivb.TicketTrack.services;
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserDto;
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserInputDto;
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserPatchDto;
-import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
+import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AppUserMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
-
 import java.util.List;
+
+import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
 
 @Service
 public class AppUserService {
 
     private final AppUserRepository appUserRepository;
     private final AppUserMapper appUserMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public AppUserService(AppUserRepository repo, AppUserMapper mapper) {
-        this.appUserRepository = repo;
-        this.appUserMapper = mapper;
-    }
+
+    public AppUserService(AppUserRepository repo, 
+                            AppUserMapper mapper, 
+                            PasswordEncoder passwordEncoder) {
+    this.appUserRepository = repo;
+    this.appUserMapper = mapper;
+    this.passwordEncoder = passwordEncoder;
+}
 
     public List<AppUserDto> getAllUsers() {
         return appUserRepository.findAll().stream()
@@ -43,7 +49,9 @@ public class AppUserService {
         }
 
         AppUser appUser = appUserMapper.toModel(dto);
-
+        
+        appUser.setPassword(passwordEncoder.encode(dto.getPassword()));
+        
         appUserRepository.save(appUser);
         return appUserMapper.toDto(appUser);
     }

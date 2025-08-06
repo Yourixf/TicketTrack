@@ -68,5 +68,4 @@ public class AttachmentController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + download.getFileName() + "\"")
                 .body(download.getFile());
     }
-
 }

@@ -20,7 +20,7 @@ public interface InteractionMapper {
 
     @Mapping(target = "serviceOffering", source = "serviceOfferingId")
     @Mapping(target = "assignmentGroup", source = "assignmentGroupId")
-//    @Mapping(target = "openedFor", source = "openedForId")
+    @Mapping(target = "openedFor", source = "openedForId")
     @Mapping(target = "state", source = "state")
     Interaction toModel(InteractionInputDto dto);
     void updateInteractionFromDto(InteractionInputDto dto, @MappingTarget Interaction interaction);

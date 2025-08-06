@@ -6,10 +6,13 @@ import jakarta.validation.constraints.Size;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
 import nl.yourivb.TicketTrack.models.enums.InteractionState;
+import nl.yourivb.TicketTrack.repositories.AppUserRepository;
 import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
 import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
 import nl.yourivb.TicketTrack.validators.ExcistInDatabase;
+import nl.yourivb.TicketTrack.validators.ValidInteractionInput;
 
+@ValidInteractionInput
 public class InteractionInputDto {
     @NotBlank
     @Size(min = 2, max = 255)
@@ -19,12 +22,12 @@ public class InteractionInputDto {
     @Size(min = 2, max = 1500)
     private String description;
 
-    @NotNull
+//    @NotNull
     private Category category;
 
     private InteractionState state;
 
-    @NotNull
+//    @NotNull
     private Channel channel;
 
     @ExcistInDatabase(repository = ServiceOfferingRepository.class, message = "Service offering id not found in database")

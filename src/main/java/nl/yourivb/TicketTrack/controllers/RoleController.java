@@ -1,13 +1,11 @@
 package nl.yourivb.TicketTrack.controllers;
 
 import jakarta.validation.Valid;
+import nl.yourivb.TicketTrack.dtos.Role.RoleDto;
+import nl.yourivb.TicketTrack.dtos.Role.RoleInputDto;
+import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.RoleService;
 import org.springframework.http.HttpStatus;
-
-import nl.yourivb.TicketTrack.dtos.Role.RoleInputDto;
-import nl.yourivb.TicketTrack.dtos.Role.RoleDto;
-import nl.yourivb.TicketTrack.models.Role;
-import nl.yourivb.TicketTrack.payload.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
