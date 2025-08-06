@@ -3,6 +3,7 @@ package nl.yourivb.TicketTrack.services;
 import nl.yourivb.TicketTrack.dtos.Incident.IncidentDto;
 import nl.yourivb.TicketTrack.dtos.Incident.IncidentInputDto;
 import nl.yourivb.TicketTrack.dtos.Incident.IncidentPatchDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.IncidentMapper;
@@ -10,6 +11,7 @@ import nl.yourivb.TicketTrack.models.Attachment;
 import nl.yourivb.TicketTrack.models.Incident;
 import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.models.Note;
+import nl.yourivb.TicketTrack.models.enums.IncidentState;
 import nl.yourivb.TicketTrack.models.enums.InteractionState;
 import nl.yourivb.TicketTrack.models.enums.Priority;
 import nl.yourivb.TicketTrack.repositories.*;
@@ -60,6 +62,21 @@ public class IncidentService {
 
     private LocalDateTime calculateResolveBeforeDate(LocalDateTime created, int slaInDays) {
         return created.plusDays(slaInDays);
+    }
+
+    private boolean validateClosedDate(Incident incident) {
+        if (incident.getState() == IncidentState.RESOLVED) {
+            LocalDateTime resolvedDate = incident.getResolved();
+            LocalDateTime currentDate = LocalDateTime.now();
+            if (resolvedDate.plusDays(7).isBefore(currentDate)) {
+                incident.setState(IncidentState.CLOSED);
+                incident.setClosed(resolvedDate.plusDays(7));
+                incidentRepository.save(incident);
+
+                return false; // if incident is closed and thus not editable
+            }
+        }
+        return true; // if incident still resolved and thus editable.
     }
 
     public List<IncidentDto> getAllIncidents() {
