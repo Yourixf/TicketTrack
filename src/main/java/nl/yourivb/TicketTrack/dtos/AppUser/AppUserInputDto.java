@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.RoleRepository;
-import nl.yourivb.TicketTrack.validators.ExcistInDatabase;
+import nl.yourivb.TicketTrack.validators.ExistInDatabase;
 
 public class AppUserInputDto {
     @NotBlank
@@ -23,10 +23,10 @@ public class AppUserInputDto {
     private String info;
     private String password;
 
-    @ExcistInDatabase(repository = AttachmentRepository.class, message = "Attachment id not found in database")
+    @ExistInDatabase(repository = AttachmentRepository.class, message = "Attachment id not found in database")
     private Long profilePictureId;
 
-    @ExcistInDatabase(repository = RoleRepository.class, message = "Role id not found in database")
+    @ExistInDatabase(repository = RoleRepository.class, message = "Role id not found in database")
     private Long roleId;
 
     public String getName() {

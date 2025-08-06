@@ -1,5 +1,10 @@
 package nl.yourivb.TicketTrack.utils;
 
+import nl.yourivb.TicketTrack.dtos.Incident.IncidentDto;
+import nl.yourivb.TicketTrack.models.Attachment;
+import nl.yourivb.TicketTrack.models.Note;
+import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
+import nl.yourivb.TicketTrack.repositories.NoteRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.lang.reflect.Field;
@@ -41,5 +46,21 @@ public class AppUtils {
                 .filter(Objects::nonNull)
                 .toList();
     }
+
+    // TODO fix this mess
+
+//
+//    public static <T> void addPolyRelationEntities (T dto,
+//                                                     Long id,
+//                                                     String table,
+//                                                     NoteRepository noteRepository,
+//                                                     AttachmentRepository attachmentRepository) {
+//
+//        var notes = noteRepository.findByNoteableTypeAndNoteableId(table, id);
+//        dto.setNoteIds(AppUtils.extractIds(notes, Note::getId));
+//
+//        var attachments = attachmentRepository.findByAttachableTypeAndAttachableId(table, id);
+//        dto.setAttachmentIds(AppUtils.extractIds(attachments, Attachment::getId));
+//    }
 
 }

@@ -22,6 +22,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/interactions")
 public class InteractionController {
 
     private final InteractionService interactionService;
@@ -36,7 +37,7 @@ public class InteractionController {
         this.incidentService = incidentService;
     }
 
-    @GetMapping("/interactions")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<InteractionDto>>>  getAllInteractions() {
         List<InteractionDto> dtos;
 
@@ -48,7 +49,7 @@ public class InteractionController {
         );
     }
 
-    @GetMapping("/interactions/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<InteractionDto>> getInteractionById(@PathVariable Long id){
         InteractionDto interaction = interactionService.getInteractionById(id);
 
@@ -58,7 +59,7 @@ public class InteractionController {
         );
     }
 
-    @PostMapping("/interactions")
+    @PostMapping
     public ResponseEntity<ApiResponse<InteractionDto>> addInteraction(@Valid @RequestBody InteractionInputDto interactionInputDto) {
         InteractionDto dto = interactionService.addInteraction(interactionInputDto);
         URI uri = URI.create("/interactions/" + dto.getId());
@@ -66,7 +67,7 @@ public class InteractionController {
         return ResponseEntity.created(uri).body(new ApiResponse<>("Created interaction", HttpStatus.CREATED, dto));
     }
 
-    @PutMapping("/interactions/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<InteractionDto>> updateInteraction(@PathVariable Long id, @Valid @RequestBody InteractionInputDto newInteraction) {
         InteractionDto updatedInteraction = interactionService.updateInteraction(id, newInteraction);
 
@@ -75,7 +76,7 @@ public class InteractionController {
         );
     }
 
-    @PatchMapping("/interactions/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<InteractionDto>> patchInteraction(@PathVariable Long id, @Valid @RequestBody InteractionPatchDto patchedInteraction) {
         InteractionDto updatedInteraction = interactionService.patchInteraction(id, patchedInteraction);
 
@@ -84,7 +85,7 @@ public class InteractionController {
         );
     }
 
-    @DeleteMapping("/interactions/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteInteraction(@PathVariable Long id) {
         interactionService.deleteInteraction(id);
 
@@ -94,7 +95,7 @@ public class InteractionController {
         );
     }
 
-    @GetMapping("/interactions/{id}/notes")
+    @GetMapping("/{id}/notes")
     public ResponseEntity<ApiResponse<List<NoteDto>>> getInteractionNotes(@PathVariable Long id) {
         List<NoteDto> dtos = noteService.getAllNotesFromParent("Interaction", id);
 
@@ -103,7 +104,7 @@ public class InteractionController {
         );
     }
 
-    @PostMapping("/interactions/{id}/notes")
+    @PostMapping("/{id}/notes")
     public ResponseEntity<ApiResponse<NoteDto>> addNote(@PathVariable Long id, @Valid @RequestBody NoteInputDto noteInputDto) {
         NoteDto note = noteService.addNote(noteInputDto, "Interaction", id);
 
@@ -112,7 +113,7 @@ public class InteractionController {
     }
 
 
-    @GetMapping("/interactions/{id}/attachments")
+    @GetMapping("/{id}/attachments")
     public ResponseEntity<ApiResponse<List<AttachmentDto>>> getInteractionAttachments(@PathVariable Long id) {
         List<AttachmentDto> dtos = attachmentService.getAllAttachmentsFromParent("Interaction", id);
 
@@ -121,7 +122,7 @@ public class InteractionController {
         );
     }
 
-    @PostMapping("/interactions/{id}/attachments")
+    @PostMapping("/{id}/attachments")
     public ResponseEntity<ApiResponse<AttachmentDto>> addAttachment(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         AttachmentDto attachment = attachmentService.addAttachment(file, "Interaction", id);
 
@@ -129,7 +130,7 @@ public class InteractionController {
         return ResponseEntity.created(uri).body(new ApiResponse<>("Added attachment", HttpStatus.CREATED, attachment));
     }
 
-    @DeleteMapping("/interactions/{interactionId}/attachments/{attachmentId}")
+    @DeleteMapping("/{interactionId}/attachments/{attachmentId}")
     public ResponseEntity<ApiResponse<Void>> deleteAttachment(@PathVariable Long interactionId, @PathVariable Long attachmentId) {
         attachmentService.deleteAttachmentFromParent("Interaction", interactionId, attachmentId);
 
@@ -138,7 +139,7 @@ public class InteractionController {
         );
     }
 
-    @PostMapping("/interactions/{id}/escalate")
+    @PostMapping("/{id}/escalate")
     public ResponseEntity<ApiResponse<IncidentDto>> escalateFromInteraction(@PathVariable Long id) {
         IncidentDto incident = incidentService.escalateFromInteraction(id);
 

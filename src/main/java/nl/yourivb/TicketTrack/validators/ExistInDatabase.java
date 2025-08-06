@@ -11,8 +11,8 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ExcistInDatabaseValidator.class)
-public @interface ExcistInDatabase {
+@Constraint(validatedBy = ExistInDatabaseValidator.class)
+public @interface ExistInDatabase {
     String message() default "Entity with id ${validatedValue} does not exist";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

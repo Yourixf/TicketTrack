@@ -9,7 +9,7 @@ import nl.yourivb.TicketTrack.models.enums.InteractionState;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
 import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
 import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
-import nl.yourivb.TicketTrack.validators.ExcistInDatabase;
+import nl.yourivb.TicketTrack.validators.ExistInDatabase;
 import nl.yourivb.TicketTrack.validators.ValidInteractionInput;
 
 @ValidInteractionInput
@@ -22,23 +22,20 @@ public class InteractionInputDto {
     @Size(min = 2, max = 1500)
     private String description;
 
-//    @NotNull
     private Category category;
+    private Channel channel;
 
     private InteractionState state;
 
-//    @NotNull
-    private Channel channel;
-
-    @ExcistInDatabase(repository = ServiceOfferingRepository.class, message = "Service offering id not found in database")
+    @ExistInDatabase(repository = ServiceOfferingRepository.class, message = "Service offering id not found in database")
     @NotNull
     private Long serviceOfferingId;
 
-    @ExcistInDatabase(repository = AssignmentGroupRepository.class, message = "Assignment group id not found in database")
+    @ExistInDatabase(repository = AssignmentGroupRepository.class, message = "Assignment group id not found in database")
     @NotNull
     private Long assignmentGroupId;
 
-    @ExcistInDatabase(repository = AppUserRepository.class, message = "Opened for id not found in database")
+    @ExistInDatabase(repository = AppUserRepository.class, message = "Opened for id not found in database")
     @NotNull
     private Long openedForId;
 
@@ -66,20 +63,20 @@ public class InteractionInputDto {
         this.category = category;
     }
 
-    public InteractionState getState() {
-        return state;
-    }
-
-    public void setState(InteractionState state) {
-        this.state = state;
-    }
-
     public Channel getChannel() {
         return channel;
     }
 
     public void setChannel(Channel channel) {
         this.channel = channel;
+    }
+
+    public InteractionState getState() {
+        return state;
+    }
+
+    public void setState(InteractionState state) {
+        this.state = state;
     }
 
     public Long getServiceOfferingId() {

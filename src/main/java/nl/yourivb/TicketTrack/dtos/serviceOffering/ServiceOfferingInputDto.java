@@ -12,7 +12,7 @@ public class ServiceOfferingInputDto {
     @Min(value = 0)
     private int defaultSlaInDays;
 
-//    @ExcistInDatabase(repository = AssignmentGroupRepository.class, message = "Assignment group id not found in database")
+//    @ExistInDatabase(repository = AssignmentGroupRepository.class, message = "Assignment group id not found in database")
     @NotNull(message = "Assignmentgroup is required")
     private Long assignmentGroupId;
 

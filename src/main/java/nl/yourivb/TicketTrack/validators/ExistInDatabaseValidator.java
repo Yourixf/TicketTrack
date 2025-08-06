@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public class ExcistInDatabaseValidator implements ConstraintValidator<ExcistInDatabase, Long> {
+public class ExistInDatabaseValidator implements ConstraintValidator<ExistInDatabase, Long> {
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -15,7 +15,7 @@ public class ExcistInDatabaseValidator implements ConstraintValidator<ExcistInDa
     private JpaRepository<?, Long> repository;
 
     @Override
-    public void initialize(ExcistInDatabase constraintAnnotation) {
+    public void initialize(ExistInDatabase constraintAnnotation) {
         this.repositoryClass = constraintAnnotation.repository();
     }
 
