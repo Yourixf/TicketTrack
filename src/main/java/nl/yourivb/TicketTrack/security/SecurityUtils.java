@@ -1,6 +1,5 @@
 package nl.yourivb.TicketTrack.security;
 
-import nl.yourivb.TicketTrack.security.AppUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;

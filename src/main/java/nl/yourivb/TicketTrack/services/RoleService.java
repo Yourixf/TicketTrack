@@ -1,13 +1,12 @@
 package nl.yourivb.TicketTrack.services;
 
-import org.springframework.stereotype.Service;
-
-import nl.yourivb.TicketTrack.dtos.Role.RoleInputDto;
 import nl.yourivb.TicketTrack.dtos.Role.RoleDto;
-import nl.yourivb.TicketTrack.models.Role;
-import nl.yourivb.TicketTrack.repositories.RoleRepository;
+import nl.yourivb.TicketTrack.dtos.Role.RoleInputDto;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.RoleMapper;
+import nl.yourivb.TicketTrack.models.Role;
+import nl.yourivb.TicketTrack.repositories.RoleRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 

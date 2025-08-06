@@ -3,18 +3,17 @@ package nl.yourivb.TicketTrack.services;
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserDto;
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserInputDto;
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserPatchDto;
-import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
+import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AppUserMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
-import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-
-import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
 
 @Service
 public class AppUserService {

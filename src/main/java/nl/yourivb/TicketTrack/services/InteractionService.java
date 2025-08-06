@@ -19,9 +19,7 @@ import nl.yourivb.TicketTrack.security.SecurityUtils;
 import nl.yourivb.TicketTrack.utils.AppUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
 import static nl.yourivb.TicketTrack.utils.AppUtils.generateRegistrationNumber;
@@ -92,15 +90,12 @@ public class InteractionService {
 
         if (SecurityUtils.hasRole("CUSTOMER")) {
             interaction.setChannel(Channel.SELF_SERVICE);
-            interaction.setCategory(Category.INCIDENT);
-            // TODO fix opened for else null
+            interaction.setCategory(Category.USER_ASSISTANCE);
+
             if (dto.getOpenedForId() == interaction.getOpenedBy().getId()) {
-                interaction.setOpenedFor(null); // prevents customers selecting for someone else and using their own name/id.
+                interaction.setOpenedFor(null); // prevents customers selecting "for someone else" and using their own name/id.
             }
-            // TODO refine for error list
-        }  else {
-            if (dto.getChannel() == null) throw new BadRequestException("Channel is required.");
-            if (dto.getCategory() == null) throw new BadRequestException("Category is required.");
+
         }
 
         interactionRepository.save(interaction);

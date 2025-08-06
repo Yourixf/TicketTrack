@@ -1,17 +1,19 @@
 package nl.yourivb.TicketTrack.controllers;
 
+import nl.yourivb.TicketTrack.dtos.Auth.AuthRequestDto;
+import nl.yourivb.TicketTrack.dtos.Auth.AuthResponseDto;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
-import nl.yourivb.TicketTrack.security.JwtUtil;
 import nl.yourivb.TicketTrack.security.AppUserDetailsService;
-import nl.yourivb.TicketTrack.dtos.Auth.*;
-
+import nl.yourivb.TicketTrack.security.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 
