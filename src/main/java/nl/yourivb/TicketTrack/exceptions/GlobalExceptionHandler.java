@@ -5,6 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
+
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -74,6 +77,22 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleCustomException(CustomException ex) {
         ApiResponse<Object> response = new ApiResponse<>(ex.getMessage(), ex.getStatusCode(), null);
         return new ResponseEntity<>(response, ex.getStatusCode());
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<Object>> handleBadCredentials(BadCredentialsException ex) {
+        return new ResponseEntity<>(
+                new ApiResponse<>("Invalid email or password", HttpStatus.UNAUTHORIZED, null),
+                HttpStatus.UNAUTHORIZED
+        );
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAuth(AuthenticationException ex) {
+        return new ResponseEntity<>(
+                new ApiResponse<>("Authentication failed", HttpStatus.UNAUTHORIZED, null),
+                HttpStatus.UNAUTHORIZED
+        );
     }
 
 }

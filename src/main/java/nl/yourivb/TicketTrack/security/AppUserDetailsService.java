@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class AppUserDetailsService implements UserDetailsService {
 
@@ -25,4 +26,10 @@ public class AppUserDetailsService implements UserDetailsService {
         return new AppUserDetails(user);
     }
 
+    public UserDetails loadUserById (Long id) throws UsernameNotFoundException {
+        AppUser user = appUserRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("User not found: " + id));
+
+        return new AppUserDetails(user);
+    }
 }

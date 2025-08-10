@@ -5,13 +5,13 @@ VALUES
     (2, 'ROLE_IT', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (3, 'ROLE_CUSTOMER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-INSERT INTO app_user (id, name, phone_number, email, info, password, created, last_modified, role_id)
+INSERT INTO app_user (name, phone_number, email, info, password, created, last_modified, role_id)
 VALUES
-    (1, 'John Wick', 0612345678, 'johnwick@tickettrack.com', '', '$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-    (2, 'Tony Stark', 0612345679, 'tonystark@tickettrack.com', '', '$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 2),
-    (3, 'Shuri', 0612345680, 'shuri@tickettrack.com', '', '$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 2),
-    (4, 'Peter Parker', 0612345681, 'peterparker@tickettrack.com', '', '$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 3),
-    (5, 'Ethan Hunt', 0612345682, 'ethanhunt@tickettrack.com', '', '$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 3);
+    ('John Wick', 0612345678, 'johnwick@tickettrack.com', '', '$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+    ( 'Tony Stark', 0612345679, 'tonystark@tickettrack.com', '', '$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 2),
+    ( 'Shuri', 0612345680, 'shuri@tickettrack.com', '', '$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 2),
+    ( 'Peter Parker', 0612345681, 'peterparker@tickettrack.com', '', '$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 3),
+    ( 'Ethan Hunt', 0612345682, 'ethanhunt@tickettrack.com', '', '$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 3);
 
 
 -- Insert AssignmentGroups

@@ -8,7 +8,6 @@ public class AppUserDto {
     private int phoneNumber;
     private String email;
     private String info;
-    private String password;
     private LocalDateTime created;
     private LocalDateTime lastModified;
     private Long profilePictureId;
@@ -52,14 +51,6 @@ public class AppUserDto {
 
     public void setInfo(String info) {
         this.info = info;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public LocalDateTime getCreated() {

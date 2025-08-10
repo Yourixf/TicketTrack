@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Table(name = "app_user")
 public class AppUser {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // belangrijk voor Postgres
     private Long id;
     private String name;
     private int phoneNumber;
