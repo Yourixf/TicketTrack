@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Table(name = "assignment_group")
 public class AssignmentGroup {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String email;
