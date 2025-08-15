@@ -49,18 +49,15 @@ public class InteractionService {
         return interactionRepository.findAll()
                 .stream()
                 .map(interaction -> {
-                    InteractionDto dto = interactionMapper.toDto(interaction);
+                    AppUtils.enrichWithRelations(
+                            interaction,
+                            "Interaction",
+                            interaction.getId(),
+                            noteRepository,
+                            attachmentRepository
+                    );
 
-                    List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId());
-                    List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
-
-                    List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Interaction", interaction.getId());
-                    List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
-
-                    dto.setNoteIds(noteIds);
-                    dto.setAttachmentIds(attachmentIds);
-
-                    return dto;
+                    return interactionMapper.toDto(interaction);
                 })
                 .toList();
     }
@@ -68,18 +65,15 @@ public class InteractionService {
     public InteractionDto getInteractionById(Long id) {
         Interaction interaction = interactionRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Interaction " + id + " not found"));
 
-        InteractionDto interactionDto = interactionMapper.toDto(interaction);
+        AppUtils.enrichWithRelations(
+                interaction,
+                "Interaction",
+                id,
+                noteRepository,
+                attachmentRepository
+        );
 
-        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId());
-        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
-
-        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Interaction", interaction.getId());
-        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
-
-        interactionDto.setNoteIds(noteIds);
-        interactionDto.setAttachmentIds(attachmentIds);
-
-        return interactionDto;
+        return interactionMapper.toDto(interaction);
     }
 
     public InteractionDto addInteraction(InteractionInputDto dto) {
@@ -95,7 +89,6 @@ public class InteractionService {
             if (dto.getOpenedForId() == interaction.getOpenedBy().getId()) {
                 interaction.setOpenedFor(null); // prevents customers selecting "for someone else" and using their own name/id.
             }
-
         }
 
         interactionRepository.save(interaction);
@@ -109,18 +102,15 @@ public class InteractionService {
         interactionMapper.updateInteractionFromDto(newInteraction, interaction);
         interactionRepository.save(interaction);
 
-        InteractionDto interactionDto = interactionMapper.toDto(interaction);
+        AppUtils.enrichWithRelations(
+                interaction,
+                "Interaction",
+                id,
+                noteRepository,
+                attachmentRepository
+        );
 
-        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId());
-        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
-
-        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Interaction", interaction.getId());
-        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
-
-        interactionDto.setNoteIds(noteIds);
-        interactionDto.setAttachmentIds(attachmentIds);
-
-        return interactionDto;
+        return interactionMapper.toDto(interaction);
     }
 
     public InteractionDto patchInteraction(Long id, InteractionPatchDto patchedInteraction) {
@@ -133,18 +123,15 @@ public class InteractionService {
         interactionMapper.patchInteractionFromDto(patchedInteraction, interaction);
         interactionRepository.save(interaction);
 
-        InteractionDto interactionDto = interactionMapper.toDto(interaction);
+        AppUtils.enrichWithRelations(
+                interaction,
+                "Interaction",
+                id,
+                noteRepository,
+                attachmentRepository
+        );
 
-        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId());
-        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
-
-        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Interaction", interaction.getId());
-        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
-
-        interactionDto.setNoteIds(noteIds);
-        interactionDto.setAttachmentIds(attachmentIds);
-
-        return interactionDto;
+        return interactionMapper.toDto(interaction);
     }
 
     public void deleteInteraction(Long id) {

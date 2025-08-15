@@ -146,18 +146,16 @@ public class IncidentService {
                 .stream()
                 .map(incident -> {
                     checkIfClosedState(incident);
-                    IncidentDto dto = incidentMapper.toDto(incident);
 
-                    List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId());
-                    List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
+                    AppUtils.enrichWithRelations(
+                            incident,
+                            "Incident",
+                            incident.getId(),
+                            noteRepository,
+                            attachmentRepository
+                    );
 
-                    List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Incident", incident.getId());
-                    List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
-
-                    dto.setNoteIds(noteIds);
-                    dto.setAttachmentIds(attachmentIds);
-
-                    return dto;
+                    return incidentMapper.toDto(incident);
                 })
                 .toList();
     }
@@ -165,18 +163,16 @@ public class IncidentService {
     public IncidentDto getIncidentById(Long id) {
         Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found" ));
         checkIfClosedState(incident);
-        IncidentDto incidentDto = incidentMapper.toDto(incident);
 
-        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId());
-        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
+        AppUtils.enrichWithRelations(
+                incident,
+                "Incident",
+                id,
+                noteRepository,
+                attachmentRepository
+        );
 
-        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Incident", incident.getId());
-        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
-
-        incidentDto.setNoteIds(noteIds);
-        incidentDto.setAttachmentIds(attachmentIds);
-
-        return incidentDto;
+        return incidentMapper.toDto(incident);
     }
 
     public IncidentDto escalateFromInteraction (Long interactionId) {
@@ -240,18 +236,15 @@ public class IncidentService {
 
         incidentRepository.save(incident);
 
-        IncidentDto incidentDto = incidentMapper.toDto(incident);
+        AppUtils.enrichWithRelations(
+                incident,
+                "Incident",
+                id,
+                noteRepository,
+                attachmentRepository
+        );
 
-        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId());
-        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
-
-        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Incident", incident.getId());
-        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
-
-        incidentDto.setNoteIds(noteIds);
-        incidentDto.setAttachmentIds(attachmentIds);
-
-        return incidentDto;
+        return incidentMapper.toDto(incident);
     }
 
 
@@ -275,18 +268,14 @@ public class IncidentService {
                 ));
         incidentRepository.save(incident);
 
-        IncidentDto incidentDto = incidentMapper.toDto(incident);
-
-        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Incident", incident.getId());
-        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
-
-        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Incident", incident.getId());
-        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
-
-        incidentDto.setNoteIds(noteIds);
-        incidentDto.setAttachmentIds(attachmentIds);
-
-        return incidentDto;
+        AppUtils.enrichWithRelations(
+                incident,
+                "Incident",
+                id,
+                noteRepository,
+                attachmentRepository
+        );
+        return incidentMapper.toDto(incident);
     }
 
     public void deleteIncident(Long id) {

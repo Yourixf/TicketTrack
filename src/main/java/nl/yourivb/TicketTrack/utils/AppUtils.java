@@ -2,6 +2,8 @@ package nl.yourivb.TicketTrack.utils;
 
 import nl.yourivb.TicketTrack.dtos.Incident.IncidentDto;
 import nl.yourivb.TicketTrack.models.Attachment;
+import nl.yourivb.TicketTrack.models.Incident;
+import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.models.Note;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.NoteRepository;
@@ -47,20 +49,24 @@ public class AppUtils {
                 .toList();
     }
 
-    // TODO fix this mess
+    // this method removes a lot of duplicate code in getters service methods.
+    public static <T> void enrichWithRelations(
+            T parent,
+            String parentType,
+            Long parentId,
+            NoteRepository noteRepository,
+            AttachmentRepository attachmentRepository) {
 
-//
-//    public static <T> void addPolyRelationEntities (T dto,
-//                                                     Long id,
-//                                                     String table,
-//                                                     NoteRepository noteRepository,
-//                                                     AttachmentRepository attachmentRepository) {
-//
-//        var notes = noteRepository.findByNoteableTypeAndNoteableId(table, id);
-//        dto.setNoteIds(AppUtils.extractIds(notes, Note::getId));
-//
-//        var attachments = attachmentRepository.findByAttachableTypeAndAttachableId(table, id);
-//        dto.setAttachmentIds(AppUtils.extractIds(attachments, Attachment::getId));
-//    }
+        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId(parentType, parentId);
+        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId(parentType, parentId);
+
+        if (parent instanceof Incident incident) {
+            incident.setNotes(notes);
+            incident.setAttachments(attachments);
+        } else if (parent instanceof Interaction interaction) {
+            interaction.setNotes(notes);
+            interaction.setAttachments(attachments);
+        }
+    }
 
 }
