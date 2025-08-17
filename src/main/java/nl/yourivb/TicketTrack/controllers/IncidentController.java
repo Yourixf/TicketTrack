@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/incidents")
 public class IncidentController {
 
     private final IncidentService incidentService;
@@ -32,7 +33,7 @@ public class IncidentController {
         this.attachmentService = attachmentService;
     }
 
-    @GetMapping("/incidents")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<IncidentDto>>> getAllIncidents() {
         List<IncidentDto> dtos;
 
@@ -43,7 +44,7 @@ public class IncidentController {
         );
     }
 
-    @GetMapping("/incidents/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<IncidentDto>> getIncidentById(@PathVariable Long id) {
         IncidentDto incident = incidentService.getIncidentById(id);
 
@@ -52,7 +53,7 @@ public class IncidentController {
         );
     }
 
-    @PutMapping("/incidents/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<IncidentDto>> updateIncident(@PathVariable Long id, @Valid @RequestBody IncidentInputDto newIncident) {
         IncidentDto updatedIncident = incidentService.updateIncident(id, newIncident);
 
@@ -61,7 +62,7 @@ public class IncidentController {
         );
     }
 
-    @PatchMapping("/incidents/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<IncidentDto>> patchIncident(@PathVariable Long id, @Valid @RequestBody IncidentPatchDto patchedIncident) {
         IncidentDto updatedIncident = incidentService.patchIncident(id, patchedIncident);
 
@@ -70,7 +71,7 @@ public class IncidentController {
         );
     }
 
-    @DeleteMapping("/incidents/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteIncident(@PathVariable Long id) {
         incidentService.deleteIncident(id);
 
@@ -80,7 +81,7 @@ public class IncidentController {
         );
     }
 
-    @GetMapping("/incidents/{id}/notes")
+    @GetMapping("/{id}/notes")
     public ResponseEntity<ApiResponse<List<NoteDto>>> getIncidentNotes(@PathVariable Long id) {
         List<NoteDto> dtos = noteService.getAllNotesFromParent("Incident", id);
 
@@ -89,7 +90,7 @@ public class IncidentController {
         );
     }
 
-    @PostMapping("/incidents/{id}/notes")
+    @PostMapping("/{id}/notes")
     public ResponseEntity<ApiResponse<NoteDto>> addNote(@PathVariable Long id, @Valid @RequestBody NoteInputDto noteInputDto) {
         NoteDto note = noteService.addNote(noteInputDto, "Incident", id);
 
@@ -97,7 +98,7 @@ public class IncidentController {
         return ResponseEntity.created(uri).body(new ApiResponse<>("Added note", HttpStatus.CREATED, note));
     }
 
-    @GetMapping("/incidents/{id}/attachments")
+    @GetMapping("/{id}/attachments")
     public ResponseEntity<ApiResponse<List<AttachmentDto>>> getInteractionAttachments(@PathVariable Long id) {
         List<AttachmentDto> dtos = attachmentService.getAllAttachmentsFromParent("Incident", id);
 
@@ -106,7 +107,7 @@ public class IncidentController {
         );
     }
 
-    @PostMapping("/incidents/{id}/attachments")
+    @PostMapping("/{id}/attachments")
     public ResponseEntity<ApiResponse<AttachmentDto>> addAttachment(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         AttachmentDto attachment = attachmentService.addAttachment(file, "Incident", id);
 

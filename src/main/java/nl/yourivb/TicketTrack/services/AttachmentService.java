@@ -10,6 +10,7 @@ import nl.yourivb.TicketTrack.models.Attachment;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.IncidentRepository;
 import nl.yourivb.TicketTrack.repositories.InteractionRepository;
+import nl.yourivb.TicketTrack.security.SecurityUtils;
 import nl.yourivb.TicketTrack.utils.AppUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -86,7 +87,7 @@ public class AttachmentService {
         attachment.setAttachableType(attachableType);
         attachment.setAttachableId(attachableId);
         attachment.setFilePath(targetLocation.toString());
-        // attachment.setUploadedBy(...); // TODO SecurityContext
+        attachment.setUploadedBy(SecurityUtils.getCurrentUserDetails().getAppUser());
 
         attachmentRepository.save(attachment);
         return attachmentMapper.toDto(attachment);

@@ -8,10 +8,13 @@ import java.time.LocalDateTime;
 @Table(name = "app_user")
 public class AppUser {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true)
     private String name;
     private int phoneNumber;
+
     private String email;
     private String info;
     private String password;

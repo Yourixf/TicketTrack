@@ -14,6 +14,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/service-offerings")
 public class ServiceOfferingController {
 
     private final ServiceOfferingService serviceOfferingService;
@@ -22,7 +23,7 @@ public class ServiceOfferingController {
         this.serviceOfferingService = serviceOfferingService;
     }
 
-    @GetMapping("/service-offerings")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<ServiceOfferingDto>>> getAllServiceOfferings() {
         List<ServiceOfferingDto> dtos;
 
@@ -34,7 +35,7 @@ public class ServiceOfferingController {
         );
     }
 
-    @GetMapping("/service-offerings/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ServiceOfferingDto>> getServiceOfferingById(@PathVariable Long id){
         ServiceOfferingDto serviceOffering = serviceOfferingService.getServiceOfferingById(id);
 
@@ -44,7 +45,7 @@ public class ServiceOfferingController {
         );
     }
 
-    @PostMapping("/service-offerings")
+    @PostMapping
     public ResponseEntity<ApiResponse<ServiceOfferingDto>> addServiceOffering(@Valid @RequestBody ServiceOfferingInputDto serviceOfferingInputDto) {
         ServiceOfferingDto dto = serviceOfferingService.addServiceOffering(serviceOfferingInputDto);
         URI uri = URI.create("/service-offerings/" + dto.getId());
@@ -52,7 +53,7 @@ public class ServiceOfferingController {
         return ResponseEntity.created(uri).body(new ApiResponse<>("Created service offering", HttpStatus.CREATED, dto));
     }
 
-    @PutMapping("/service-offerings/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<ServiceOfferingDto>> updateServiceOffering(@PathVariable Long id, @Valid @RequestBody ServiceOfferingInputDto newServiceOffering) {
         ServiceOfferingDto updatedServiceOffering = serviceOfferingService.updateServiceOffering(id, newServiceOffering);
 
@@ -61,7 +62,7 @@ public class ServiceOfferingController {
         );
     }
 
-    @PatchMapping("/service-offerings/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<ServiceOfferingDto>> patchServiceOffering(@PathVariable Long id, @Valid @RequestBody ServiceOfferingPatchDto patchedServiceOffering) {
         ServiceOfferingDto updatedServiceOffering = serviceOfferingService.patchServiceOffering(id, patchedServiceOffering);
 
@@ -70,7 +71,7 @@ public class ServiceOfferingController {
         );
     }
 
-    @DeleteMapping("/service-offerings/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteServiceOffering(@PathVariable Long id) {
         serviceOfferingService.deleteServiceOffering(id);
 

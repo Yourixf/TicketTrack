@@ -4,19 +4,20 @@ import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
+import nl.yourivb.TicketTrack.exceptions.CustomException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.InteractionMapper;
 import nl.yourivb.TicketTrack.mappers.NoteMapper;
-import nl.yourivb.TicketTrack.models.Attachment;
 import nl.yourivb.TicketTrack.models.Interaction;
-import nl.yourivb.TicketTrack.models.Note;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
+import nl.yourivb.TicketTrack.models.enums.InteractionState;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.InteractionRepository;
 import nl.yourivb.TicketTrack.repositories.NoteRepository;
 import nl.yourivb.TicketTrack.security.SecurityUtils;
 import nl.yourivb.TicketTrack.utils.AppUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,23 +45,28 @@ public class InteractionService {
         this.noteMapper = noteMapper;
     }
 
+    private void validateStateTransition(InteractionState previousState, Interaction interaction) {
+        InteractionState newState = interaction.getState();
+
+        if (previousState == InteractionState.CLOSED) {
+            throw new CustomException("Cannot edit closed interaction", HttpStatus.CONFLICT);
+        }
+    }
+
     public List<InteractionDto> getAllInteractions() {
         // this finds alls interactions, loops through each, gets and sets the corresponding note & atta list.
         return interactionRepository.findAll()
                 .stream()
                 .map(interaction -> {
-                    InteractionDto dto = interactionMapper.toDto(interaction);
+                    AppUtils.enrichWithRelations(
+                            interaction,
+                            "Interaction",
+                            interaction.getId(),
+                            noteRepository,
+                            attachmentRepository
+                    );
 
-                    List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId());
-                    List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
-
-                    List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Interaction", interaction.getId());
-                    List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
-
-                    dto.setNoteIds(noteIds);
-                    dto.setAttachmentIds(attachmentIds);
-
-                    return dto;
+                    return interactionMapper.toDto(interaction);
                 })
                 .toList();
     }
@@ -68,18 +74,15 @@ public class InteractionService {
     public InteractionDto getInteractionById(Long id) {
         Interaction interaction = interactionRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Interaction " + id + " not found"));
 
-        InteractionDto interactionDto = interactionMapper.toDto(interaction);
+        AppUtils.enrichWithRelations(
+                interaction,
+                "Interaction",
+                id,
+                noteRepository,
+                attachmentRepository
+        );
 
-        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId());
-        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
-
-        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Interaction", interaction.getId());
-        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
-
-        interactionDto.setNoteIds(noteIds);
-        interactionDto.setAttachmentIds(attachmentIds);
-
-        return interactionDto;
+        return interactionMapper.toDto(interaction);
     }
 
     public InteractionDto addInteraction(InteractionInputDto dto) {
@@ -95,7 +98,6 @@ public class InteractionService {
             if (dto.getOpenedForId() == interaction.getOpenedBy().getId()) {
                 interaction.setOpenedFor(null); // prevents customers selecting "for someone else" and using their own name/id.
             }
-
         }
 
         interactionRepository.save(interaction);
@@ -106,21 +108,23 @@ public class InteractionService {
     public InteractionDto updateInteraction(Long id, InteractionInputDto newInteraction) {
         Interaction interaction = interactionRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Interaction " + id + " not found"));
 
+        InteractionState prevState = interaction.getState();
+
         interactionMapper.updateInteractionFromDto(newInteraction, interaction);
+
+        validateStateTransition(prevState, interaction);
+
         interactionRepository.save(interaction);
 
-        InteractionDto interactionDto = interactionMapper.toDto(interaction);
+        AppUtils.enrichWithRelations(
+                interaction,
+                "Interaction",
+                id,
+                noteRepository,
+                attachmentRepository
+        );
 
-        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId());
-        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
-
-        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Interaction", interaction.getId());
-        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
-
-        interactionDto.setNoteIds(noteIds);
-        interactionDto.setAttachmentIds(attachmentIds);
-
-        return interactionDto;
+        return interactionMapper.toDto(interaction);
     }
 
     public InteractionDto patchInteraction(Long id, InteractionPatchDto patchedInteraction) {
@@ -129,22 +133,23 @@ public class InteractionService {
         if (allFieldsNull(patchedInteraction)) {
             throw new BadRequestException("No valid fields provided for patch");
         }
+        InteractionState prevState = interaction.getState();
 
         interactionMapper.patchInteractionFromDto(patchedInteraction, interaction);
+
+        validateStateTransition(prevState, interaction);
+
         interactionRepository.save(interaction);
 
-        InteractionDto interactionDto = interactionMapper.toDto(interaction);
+        AppUtils.enrichWithRelations(
+                interaction,
+                "Interaction",
+                id,
+                noteRepository,
+                attachmentRepository
+        );
 
-        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId("Interaction", interaction.getId());
-        List<Long> noteIds = AppUtils.extractIds(notes, Note::getId);
-
-        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId("Interaction", interaction.getId());
-        List<Long> attachmentIds = AppUtils.extractIds(attachments, Attachment::getId);
-
-        interactionDto.setNoteIds(noteIds);
-        interactionDto.setAttachmentIds(attachmentIds);
-
-        return interactionDto;
+        return interactionMapper.toDto(interaction);
     }
 
     public void deleteInteraction(Long id) {

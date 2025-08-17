@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Table(name = "service_offering")
 public class ServiceOffering {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private int defaultSlaInDays;

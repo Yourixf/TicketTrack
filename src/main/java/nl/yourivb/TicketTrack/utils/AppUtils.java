@@ -1,5 +1,11 @@
 package nl.yourivb.TicketTrack.utils;
 
+import nl.yourivb.TicketTrack.models.Attachment;
+import nl.yourivb.TicketTrack.models.Incident;
+import nl.yourivb.TicketTrack.models.Interaction;
+import nl.yourivb.TicketTrack.models.Note;
+import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
+import nl.yourivb.TicketTrack.repositories.NoteRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.lang.reflect.Field;
@@ -42,4 +48,23 @@ public class AppUtils {
                 .toList();
     }
 
+    // this method gets and sets the note and attachments from parent entity.
+    public static <T> void enrichWithRelations(
+            T parent,
+            String parentType,
+            Long parentId,
+            NoteRepository noteRepository,
+            AttachmentRepository attachmentRepository) {
+
+        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId(parentType, parentId);
+        List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId(parentType, parentId);
+
+        if (parent instanceof Incident incident) {
+            incident.setNotes(notes);
+            incident.setAttachments(attachments);
+        } else if (parent instanceof Interaction interaction) {
+            interaction.setNotes(notes);
+            interaction.setAttachments(attachments);
+        }
+    }
 }

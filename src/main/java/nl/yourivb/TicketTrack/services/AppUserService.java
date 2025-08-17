@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
 
@@ -22,14 +23,39 @@ public class AppUserService {
     private final AppUserMapper appUserMapper;
     private final PasswordEncoder passwordEncoder;
 
-
-    public AppUserService(AppUserRepository repo, 
-                            AppUserMapper mapper, 
+ AppUserService(AppUserRepository repo,
+                            AppUserMapper appUserMapper,
                             PasswordEncoder passwordEncoder) {
     this.appUserRepository = repo;
-    this.appUserMapper = mapper;
+    this.appUserMapper = appUserMapper;
     this.passwordEncoder = passwordEncoder;
 }
+
+    private void checkIfEmailIsUsed(AppUser appUser, Long currentUserId) {
+        String email = appUser.getEmail();
+        Optional<AppUser> existingUser = appUserRepository.findByEmail(email);
+
+        if (existingUser.isPresent() && !existingUser.get().getId().equals(currentUserId)) {
+            throw new BadRequestException("Email address already registered to an account.");
+        }
+    }
+
+
+    private void validatePasswordPolicy(String password) {
+        if (password.length() < 8) {
+            throw new BadRequestException("Password must be at least 8 characters long");
+        }
+//        if (!password.matches(".*[A-Z].*")) {
+//            throw new BadRequestException("Password must contain at least one uppercase letter");
+//        }
+//        if (!password.matches(".*[a-z].*")) {
+//            throw new BadRequestException("Password must contain at least one lowercase letter");
+//        }
+//        if (!password.matches(".*[!@#$%^&*].*")) {
+//            throw new BadRequestException("Password must contain at least one special character (!@#$%^&*)");
+//        }
+    }
+
 
     public List<AppUserDto> getAllUsers() {
         return appUserRepository.findAll().stream()
@@ -48,7 +74,9 @@ public class AppUserService {
             dto.setRoleId(3L); // sets default role to customer
         }
 
+        validatePasswordPolicy(dto.getPassword());
         AppUser appUser = appUserMapper.toModel(dto);
+        checkIfEmailIsUsed(appUser, appUser.getId());
         
         appUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         
@@ -61,6 +89,7 @@ public class AppUserService {
                 .orElseThrow(() -> new RecordNotFoundException("User " + id + " not found"));
 
         appUserMapper.updateAppUserFromDto(dto, appUser);
+        checkIfEmailIsUsed(appUser, id);
         appUserRepository.save(appUser);
 
         return appUserMapper.toDto(appUser);
@@ -75,6 +104,10 @@ public class AppUserService {
         }
 
         appUserMapper.patchAppUserFromDto(dto, appUser);
+        if (dto.getEmail() != null) {
+            checkIfEmailIsUsed(appUser, id);
+        }
+
         appUserRepository.save(appUser);
 
         return appUserMapper.toDto(appUser);

@@ -26,6 +26,8 @@ public class Incident {
     private LocalDateTime lastModified;
     private LocalDateTime onHoldSince;
     private LocalDateTime resolveBefore;
+    private LocalDateTime canceled;
+
     private String shortDescription;
     private String description;
 
@@ -60,19 +62,23 @@ public class Incident {
 
     @ManyToOne
     @JoinColumn(name = "opened_by_id")
-    private AppUser openedBy; // TODO APPUSERDTO
+    private AppUser openedBy;
 
     @ManyToOne
     @JoinColumn(name = "opened_for_id")
-    private AppUser openedFor; // TODO APPUSERDTO
+    private AppUser openedFor;
 
     @ManyToOne
     @JoinColumn(name = "resolved_by_id")
-    private AppUser resolvedBy; // TODO APPUSERDTO
+    private AppUser resolvedBy;
 
     @ManyToOne
     @JoinColumn(name = "closed_by_id")
-    private AppUser closedBy; // TODO APPUSERDTO
+    private AppUser closedBy;
+
+    @ManyToOne
+    @JoinColumn(name = "canceled_by_id")
+    private AppUser canceledBy;
 
     @ManyToOne
     @JoinColumn(name = "escalated_from_id")
@@ -151,6 +157,14 @@ public class Incident {
 
     public void setResolveBefore(LocalDateTime resolveBefore) {
         this.resolveBefore = resolveBefore;
+    }
+
+    public LocalDateTime getCanceled() {
+        return canceled;
+    }
+
+    public void setCanceled(LocalDateTime canceled) {
+        this.canceled = canceled;
     }
 
     public String getShortDescription() {
@@ -271,6 +285,14 @@ public class Incident {
 
     public void setClosedBy(AppUser closedBy) {
         this.closedBy = closedBy;
+    }
+
+    public AppUser getCanceledBy() {
+        return canceledBy;
+    }
+
+    public void setCanceledBy(AppUser canceledBy) {
+        this.canceledBy = canceledBy;
     }
 
     public Interaction getEscalatedFrom() {

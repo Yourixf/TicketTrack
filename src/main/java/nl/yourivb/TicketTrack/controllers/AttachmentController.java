@@ -14,10 +14,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/attachments")
 public class AttachmentController {
 
     private final AttachmentService attachmentService;
@@ -30,7 +32,7 @@ public class AttachmentController {
         this.attachmentMapper = attachmentMapper;
     }
 
-    @GetMapping("/attachments")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<AttachmentDto>>> getAllAttachments () {
         List<AttachmentDto> dtos;
 
@@ -41,7 +43,7 @@ public class AttachmentController {
         );
     }
 
-    @GetMapping("/attachments/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<AttachmentDto>> getAttachmentById(@PathVariable Long id) {
         AttachmentDto attachment = attachmentService.getAttachmentById(id);
 
@@ -50,7 +52,7 @@ public class AttachmentController {
         );
     }
 
-    @DeleteMapping("/attachments/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteAttachment(@PathVariable Long id) {
         attachmentService.deleteAttachmentFromAllParents(id);
 
@@ -59,7 +61,7 @@ public class AttachmentController {
         );
     }
 
-    @GetMapping("/attachments/{id}/download")
+    @GetMapping("/{id}/download")
     public ResponseEntity<?> downloadAttachment(@PathVariable Long id) {
         AttachmentDownloadDto download = attachmentService.downloadAttachment(id);
 

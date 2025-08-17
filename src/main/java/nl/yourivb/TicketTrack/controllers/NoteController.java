@@ -5,14 +5,12 @@ import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.NoteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/notes")
 public class NoteController {
 
     private final NoteService noteService;
@@ -21,7 +19,7 @@ public class NoteController {
         this.noteService = noteService;
     }
 
-    @GetMapping("/notes")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<NoteDto>>> getAllNotes() {
         List<NoteDto> dtos;
 
@@ -33,7 +31,7 @@ public class NoteController {
         );
     }
 
-    @GetMapping("/notes/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<NoteDto>> getNoteById(@PathVariable Long id) {
         NoteDto note = noteService.getNoteById(id);
 
@@ -42,7 +40,7 @@ public class NoteController {
         );
     }
 
-    @DeleteMapping("/notes/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteNote(@PathVariable Long id) {
         noteService.deleteNote(id);
 

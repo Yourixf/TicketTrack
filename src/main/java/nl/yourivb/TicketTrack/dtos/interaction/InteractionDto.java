@@ -21,10 +21,10 @@ public class InteractionDto {
     private Channel channel;
     private Long serviceOfferingId;
     private Long assignmentGroupId;
-    private Long openedById; // TODO when finsihed with appuser, replace with dto instead of entity
-    private Long openedForId; // TODO APPUSERDTO
+    private Long openedById;
+    private Long openedForId;
     private Long closedById;
-    private Long incidentId; // TODO when finsihed with incidentId, replace with dto instead of entity
+    private Long incidentId;
     private List<Long> attachmentIds;
     private List<Long> noteIds;
 

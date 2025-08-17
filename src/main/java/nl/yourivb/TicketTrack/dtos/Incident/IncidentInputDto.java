@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import nl.yourivb.TicketTrack.models.enums.*;
 import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
 import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
-import nl.yourivb.TicketTrack.validators.ExcistInDatabase;
+import nl.yourivb.TicketTrack.validators.ExistInDatabase;
 
 import java.util.List;
 
@@ -36,15 +36,15 @@ public class IncidentInputDto {
     private CanceledReason canceledReason;
 
     @NotNull
-    @ExcistInDatabase(repository = ServiceOfferingRepository.class, message = "Service offering id not found in database")
+    @ExistInDatabase(repository = ServiceOfferingRepository.class, message = "Service offering id not found in database")
     private Long serviceOfferingId;
 
     @NotNull
-    @ExcistInDatabase(repository = AssignmentGroupRepository.class, message = "Assignment group id not found in database")
+    @ExistInDatabase(repository = AssignmentGroupRepository.class, message = "Assignment group id not found in database")
     private Long assignmentGroupId;
 
     @NotNull
-    @ExcistInDatabase(repository = AssignmentGroupRepository.class, message = "Opened for id not found in database")
+    @ExistInDatabase(repository = AssignmentGroupRepository.class, message = "Opened for id not found in database")
     private Long openedForId;
 
     private List<Long> childInteractionsId;

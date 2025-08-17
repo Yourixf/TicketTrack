@@ -14,6 +14,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/assignment-groups")
 public class AssignmentGroupController {
 
     private final AssignmentGroupService assignmentGroupService;
@@ -22,7 +23,7 @@ public class AssignmentGroupController {
         this.assignmentGroupService = assignmentGroupService;
     }
 
-    @GetMapping("/assignment-groups")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<AssignmentGroupDto>>> getAllAssignmentGroups() {
         List<AssignmentGroupDto> dtos;
 
@@ -34,7 +35,7 @@ public class AssignmentGroupController {
         );
     }
 
-    @GetMapping("/assignment-groups/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<AssignmentGroupDto>> getAssignmentGroupById(@PathVariable Long id){
         AssignmentGroupDto assignmentGroup = assignmentGroupService.getAssignmentGroupById(id);
 
@@ -44,7 +45,7 @@ public class AssignmentGroupController {
         );
     }
 
-    @PostMapping("/assignment-groups")
+    @PostMapping
     public ResponseEntity<ApiResponse<AssignmentGroupDto>> addAssignmentGroup(@Valid @RequestBody AssignmentGroupInputDto assignmentGroupInputDto) {
         AssignmentGroupDto dto = assignmentGroupService.addAssignmentGroup(assignmentGroupInputDto);
         URI uri = URI.create("/assignment-groups/" + dto.getId());
@@ -52,7 +53,7 @@ public class AssignmentGroupController {
         return ResponseEntity.created(uri).body(new ApiResponse<>("Created assignment group", HttpStatus.CREATED, dto));
     }
 
-    @PutMapping("/assignment-groups/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<AssignmentGroupDto>> updateAssignmentGroup(@PathVariable Long id, @Valid @RequestBody AssignmentGroupInputDto newAssignmentGroup) {
         AssignmentGroupDto updatedAssignmentGroup = assignmentGroupService.updateAssignmentGroup(id, newAssignmentGroup);
 
@@ -62,7 +63,7 @@ public class AssignmentGroupController {
         );
     }
 
-    @PatchMapping("/assignment-groups/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<AssignmentGroupDto>> patchAssignmentGroup(@PathVariable Long id, @Valid @RequestBody AssignmentGroupPatchDto patchedAssignmentGroup) {
         AssignmentGroupDto updatedAssignmentGroup = assignmentGroupService.patchAssignmentGroup(id, patchedAssignmentGroup);
 
@@ -72,7 +73,7 @@ public class AssignmentGroupController {
         );
     }
 
-    @DeleteMapping("/assignment-groups/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteAssignmentGroup(@PathVariable Long id) {
         assignmentGroupService.deleteAssignmentGroup(id);
 

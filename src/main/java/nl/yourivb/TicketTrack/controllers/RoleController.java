@@ -13,6 +13,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/roles")
 public class RoleController {
 
     private final RoleService roleService;
@@ -21,7 +22,7 @@ public class RoleController {
         this.roleService = roleService;
     }
 
-    @GetMapping("/roles") 
+    @GetMapping
     public ResponseEntity<ApiResponse<List<RoleDto>>> getAllRoles() {
         List<RoleDto> dtos = roleService.getAllRoles();
 
@@ -31,7 +32,7 @@ public class RoleController {
         );
     } 
 
-    @GetMapping("/roles/{id}") 
+    @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<RoleDto>> getRoleById(@PathVariable Long id) {
         RoleDto role = roleService.getRoleById(id);
 
@@ -41,7 +42,7 @@ public class RoleController {
         );
     }
 
-    @PostMapping("/roles")
+    @PostMapping
     public ResponseEntity<ApiResponse<RoleDto>> addRole(@Valid @RequestBody RoleInputDto dto) {
         RoleDto role = roleService.addRole(dto);
         URI uri = URI.create("/roles/" + role.getId());
@@ -51,7 +52,7 @@ public class RoleController {
         );
     }
 
-    @PutMapping("/roles/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<RoleDto>> updateRole(@PathVariable Long id, @Valid @RequestBody RoleInputDto dto) {
         RoleDto role = roleService.updateRole(id, dto);
 
@@ -61,7 +62,7 @@ public class RoleController {
         );
     }
 
-    @DeleteMapping("/roles/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteRole(@PathVariable Long id) {
         roleService.deleteRole(id);
 
