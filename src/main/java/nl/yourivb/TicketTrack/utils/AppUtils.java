@@ -49,7 +49,7 @@ public class AppUtils {
                 .toList();
     }
 
-    // this method removes a lot of duplicate code in getters service methods.
+    // this method gets and sets the note and attachments from parent entity.
     public static <T> void enrichWithRelations(
             T parent,
             String parentType,
@@ -68,5 +68,4 @@ public class AppUtils {
             interaction.setAttachments(attachments);
         }
     }
-
 }

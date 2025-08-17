@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 
-// TODO make this App_role and change mappers
 @Entity
 public class Role {
     @Id

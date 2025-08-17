@@ -50,15 +50,15 @@ public class Interaction {
 
     @ManyToOne
     @JoinColumn(name = "opened_by_id")
-    private AppUser openedBy;// TODO APPUSERDTO
+    private AppUser openedBy;
 
     @ManyToOne
     @JoinColumn(name = "opened_for_id")
-    private AppUser openedFor; // TODO APPUSERDTO
+    private AppUser openedFor;
 
     @ManyToOne
     @JoinColumn(name = "closed_by_id")
-    private AppUser closedBy; // TODO APPUSERDTO
+    private AppUser closedBy;
 
     @ManyToOne
     @JoinColumn(name = "incident_id")
