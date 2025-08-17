@@ -1,5 +1,6 @@
 package nl.yourivb.TicketTrack.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.security.AppUserDetailsService;
 import nl.yourivb.TicketTrack.security.JwtRequestFilter;
@@ -19,8 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 import javax.sql.DataSource;
 import java.util.List;

@@ -1,6 +1,5 @@
 package nl.yourivb.TicketTrack.utils;
 
-import nl.yourivb.TicketTrack.dtos.Incident.IncidentDto;
 import nl.yourivb.TicketTrack.models.Attachment;
 import nl.yourivb.TicketTrack.models.Incident;
 import nl.yourivb.TicketTrack.models.Interaction;

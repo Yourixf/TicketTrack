@@ -73,15 +73,13 @@ public class IncidentService {
     }
 
     // closes incident if eligible.
-    private boolean persistAutoCloseIfEligible(Incident incident) {
+    private void persistAutoCloseIfEligible(Incident incident) {
         if (isEligibleForAutoClose(incident)) {
             incident.setState(IncidentState.CLOSED);
             incident.setClosed(incident.getResolved().plusDays(7));
             incident.setClosedBy(incident.getResolvedBy());
             incidentRepository.save(incident);
-            return true; // zojuist gesloten
         }
-        return incident.getState() == IncidentState.CLOSED; // was al gesloten
     }
 
     // for the getter so we don't change data on get request but still show business logic.
