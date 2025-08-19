@@ -91,6 +91,7 @@ public class InteractionService {
         interaction.setNumber(generateRegistrationNumber("IMS", interactionRepository));
         interaction.setOpenedBy(SecurityUtils.getCurrentUserDetails().getAppUser());
 
+        // this is for when users create tickets themself via a self service portal
         if (SecurityUtils.hasRole("CUSTOMER")) {
             interaction.setChannel(Channel.SELF_SERVICE);
             interaction.setCategory(Category.USER_ASSISTANCE);

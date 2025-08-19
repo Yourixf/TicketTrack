@@ -2,10 +2,12 @@ package nl.yourivb.TicketTrack.services;
 
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
 import nl.yourivb.TicketTrack.mappers.InteractionMapper;
+import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.InteractionRepository;
 import nl.yourivb.TicketTrack.repositories.NoteRepository;
+import nl.yourivb.TicketTrack.security.SecurityUtils;
 import nl.yourivb.TicketTrack.utils.AppUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -109,7 +111,42 @@ class InteractionServiceTest {
     }
 
     @Test
-    void addInteraction() {
+    void addInteractionWithCustomerRole() {
+        // Arange
+        var inputDto = new InteractionInputDto();
+        dto.setOpenedFor(1L);
+
+        var i1 = new Interaction(); // for the mapper
+        var saved = i1; // for the repo.save(...)
+        var resultDto = new InteractionDto();
+        
+        var fakeUser = new AppUser();
+        fakeUser.setId(1L); 
+
+        when(interactionMapper.toModel(inputDto)).thenReturn(i1);
+        when(interactionMapper.toDto(saved)).thenReturn(resultDto);
+
+        when(interactionRepository.save(i1)).thenReturn(saved);
+
+        try (var mockedAppUtils = Mockito.mockStatic(AppUtils.class);
+            var mockedSecurityUtils = Mockito.mockStatic(SecurityUtils.class)) {
+            
+            mockedAppUtils.when(() -> AppUtils.generateRegistrationNumber("IMS", interactionRepository)).thenReturn("IMS0000001");
+        
+
+            mockedSecurityUtils.when(SecurityUtils::getCurrentUserDetails).thenReturn(new CustomerUserDetails(fakeUser));
+
+            mockedSecurityUtils.when(() -> SecurityUtils.hasRole("CUSTOMER")).thenReturn(true);
+
+            // Act
+            InteractionDto result = interactionService.addInteraction(inputDto);
+
+            // Assert (content)
+            assertSame(resultDto, result); 
+            assertEquals("IMS0000001", result.getNumber());
+            assertEquals(fakeUser, i1);
+
+        }
     }
 
     @Test
@@ -122,5 +159,6 @@ class InteractionServiceTest {
 
     @Test
     void deleteInteraction() {
+
     }
 }
