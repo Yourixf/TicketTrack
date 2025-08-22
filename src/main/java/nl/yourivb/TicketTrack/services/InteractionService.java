@@ -32,7 +32,6 @@ public class InteractionService {
     private final InteractionMapper interactionMapper;
     private final NoteRepository noteRepository;
     private final AttachmentRepository attachmentRepository;
-    private final NoteMapper noteMapper;
 
     public InteractionService(InteractionRepository interactionRepository,
                               InteractionMapper interactionMapper,
@@ -42,7 +41,6 @@ public class InteractionService {
         this.interactionMapper = interactionMapper;
         this.noteRepository = noteRepository;
         this.attachmentRepository = attachmentRepository;
-        this.noteMapper = noteMapper;
     }
 
     private void validateStateTransition(InteractionState previousState, Interaction interaction) {
