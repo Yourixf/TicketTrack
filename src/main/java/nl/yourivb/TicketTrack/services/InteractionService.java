@@ -7,7 +7,6 @@ import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.CustomException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.InteractionMapper;
-import nl.yourivb.TicketTrack.mappers.NoteMapper;
 import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
@@ -21,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
 import static nl.yourivb.TicketTrack.utils.AppUtils.generateRegistrationNumber;
@@ -36,7 +36,7 @@ public class InteractionService {
     public InteractionService(InteractionRepository interactionRepository,
                               InteractionMapper interactionMapper,
                               NoteRepository noteRepository,
-                              AttachmentRepository attachmentRepository, NoteMapper noteMapper) {
+                              AttachmentRepository attachmentRepository) {
         this.interactionRepository = interactionRepository;
         this.interactionMapper = interactionMapper;
         this.noteRepository = noteRepository;
@@ -94,7 +94,7 @@ public class InteractionService {
             interaction.setChannel(Channel.SELF_SERVICE);
             interaction.setCategory(Category.USER_ASSISTANCE);
 
-            if (dto.getOpenedForId() == interaction.getOpenedBy().getId()) {
+            if (Objects.equals(dto.getOpenedForId(), interaction.getOpenedBy().getId())) {
                 interaction.setOpenedFor(null); // prevents customers selecting "for someone else" and using their own name/id.
             }
         }

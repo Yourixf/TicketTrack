@@ -2,12 +2,16 @@ package nl.yourivb.TicketTrack.services;
 
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
+import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
+import nl.yourivb.TicketTrack.exceptions.BadRequestException;
+import nl.yourivb.TicketTrack.exceptions.CustomException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.InteractionMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
+import nl.yourivb.TicketTrack.models.enums.InteractionState;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.InteractionRepository;
 import nl.yourivb.TicketTrack.repositories.NoteRepository;
@@ -19,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -126,8 +131,7 @@ class InteractionServiceTest {
 
         // Assert (collaboration)
         verify(interactionRepository).findById(2L);
-
-        verifyNoInteractions(interactionMapper); // makes sure mapper is not called.
+        verifyNoInteractions(interactionMapper); // makes sure mapper is not called when not intended.
     }
 
     @Test
@@ -187,8 +191,7 @@ class InteractionServiceTest {
 
     @Test
     void addInteractionWithoutCustomerRole() {
-        // Arange
-
+        // Arrange
         InteractionInputDto inputDto = new InteractionInputDto();
         inputDto.setOpenedForId(42L);
 
@@ -224,6 +227,7 @@ class InteractionServiceTest {
             // Assert (collaboration)
             verify(interactionMapper).toModel(inputDto);
             verify(interactionMapper).toDto(entity);
+            verifyNoMoreInteractions(interactionRepository, interactionMapper);
 
             // Static verify
             mockedUtil.verify(() -> AppUtils.generateRegistrationNumber("IMS", interactionRepository));
@@ -275,10 +279,133 @@ class InteractionServiceTest {
     }
 
     @Test
+    void updateClosedInteraction() {
+        // Arrange
+        Interaction originalEntity = new Interaction();
+        originalEntity.setId(1L);
+        originalEntity.setState(InteractionState.CLOSED);
+        originalEntity.setClosed(LocalDateTime.now());
+
+        InteractionInputDto newInputDto = new InteractionInputDto();
+        newInputDto.setState(InteractionState.NEW);
+
+        when(interactionRepository.findById(1L)).thenReturn(Optional.of(originalEntity));
+
+        // this 'mocks' an actual mapper so later we can compare state in interaction
+        doAnswer(inv -> {
+            InteractionInputDto dto = inv.getArgument(0);
+            Interaction entity = inv.getArgument(1);
+            entity.setState(dto.getState());
+            return null;
+        }).when(interactionMapper).updateInteractionFromDto(eq(newInputDto), same(originalEntity));
+
+        // Act & Assert
+        assertThrows(CustomException.class, () -> interactionService.updateInteraction(1L, newInputDto));
+
+        // Assert (collaboration)
+        verify(interactionRepository, times(1)).findById(1L);
+        verify(interactionRepository, never()).save(any());
+        verify(interactionMapper, never()).toDto(any());
+        verifyNoMoreInteractions(interactionRepository, interactionMapper);
+
+
+    }
+
+    @Test
     void patchInteraction() {
+        // Arrange
+        Interaction originalEntity = new Interaction(); originalEntity.setId(1L); originalEntity.setNumber("IMS0000001");
+        InteractionPatchDto newPatchDto = new InteractionPatchDto();
+        InteractionDto outputDto = new InteractionDto(); outputDto.setId(1L);
+
+        when(interactionRepository.findById(1L)).thenReturn(Optional.of(originalEntity));
+        doNothing().when(interactionMapper)
+                .patchInteractionFromDto(eq(newPatchDto), same(originalEntity));
+        when(interactionRepository.save(any(Interaction.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(interactionMapper.toDto(originalEntity)).thenReturn(outputDto);
+
+
+        try (var mocked = Mockito.mockStatic(AppUtils.class)) {
+            mocked.when(() -> AppUtils.enrichWithRelations(any(), anyString(), anyLong(), any(), any()))
+                    .then(inv -> null);
+
+            mocked.when(() -> AppUtils.allFieldsNull(newPatchDto)).thenReturn(false);
+
+            // Act
+            InteractionDto result = interactionService.patchInteraction(1L, newPatchDto);
+
+            // Assert (content)
+            assertEquals(outputDto, result);
+
+            // Assert (repo validation)
+            verify(interactionRepository).save(interactionCaptor.capture());
+            Interaction saved = interactionCaptor.getValue();
+
+            assertEquals("IMS0000001", saved.getNumber());
+
+            // Assert (collaboration)
+            verify(interactionRepository, times(1)).findById(1L);
+            verify(interactionMapper).patchInteractionFromDto(newPatchDto, originalEntity);
+            verify(interactionRepository, times(1)).save(any(Interaction.class));
+            verify(interactionMapper).toDto(originalEntity);
+
+            // static verify
+            mocked.verify(() -> AppUtils.enrichWithRelations(eq(originalEntity), eq("Interaction"), eq(1L), eq(noteRepository), eq(attachmentRepository)));
+        }
+    }
+
+    @Test
+    void patchInteractionNoValidFields() {
+        // Arrange
+        Interaction originalEntity = new Interaction(); originalEntity.setId(1L);
+        InteractionPatchDto newPatchDto = new InteractionPatchDto();
+
+        when(interactionRepository.findById(1L)).thenReturn(Optional.of(originalEntity));
+
+        try (var mocked = Mockito.mockStatic(AppUtils.class)) {
+
+            mocked.when(() -> AppUtils.allFieldsNull(newPatchDto)).thenReturn(true);
+
+            // Act & Assert
+            assertThrows(BadRequestException.class, () -> interactionService.patchInteraction(1L, newPatchDto));
+
+            // Assert (collaboration)
+            verify(interactionRepository, times(1)).findById(1L);
+            verify(interactionRepository, never()).save(any());
+            verify(interactionMapper, never()).patchInteractionFromDto(any(), any());
+            verifyNoMoreInteractions(interactionRepository, interactionMapper);
+
+            // Static verify
+            mocked.verify(() -> AppUtils.allFieldsNull(eq(newPatchDto)));
+        }
     }
 
     @Test
     void deleteInteraction() {
+        // Arrange
+        Interaction entity = new Interaction(); entity.setId(1L);
+        when(interactionRepository.findById(1L)).thenReturn(Optional.of(entity));
+
+        // Act
+        interactionService.deleteInteraction(1L);
+
+        // Assert (collaboration)
+        verify(interactionRepository, times(1)).findById(1L);
+        verify(interactionRepository).deleteById(1L);
+        verifyNoMoreInteractions(interactionRepository);
+    }
+
+    @Test
+    void deleteInteractionNotFound() {
+        // Arrange
+        when(interactionRepository.findById(2L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(RecordNotFoundException.class, () -> interactionService.deleteInteraction(2L));
+
+        // Assert (collaboration)
+        verify(interactionRepository).findById(2L);
+        verify(interactionRepository, never()).deleteById(any());
+        verifyNoInteractions(interactionMapper);
     }
 }
