@@ -406,6 +406,6 @@ class InteractionServiceTest {
         // Assert (collaboration)
         verify(interactionRepository).findById(2L);
         verify(interactionRepository, never()).deleteById(any());
-        verifyNoInteractions(interactionMapper);
+        verifyNoMoreInteractions(interactionRepository);
     }
 }
