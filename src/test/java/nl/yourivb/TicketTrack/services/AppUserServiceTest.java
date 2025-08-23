@@ -1,12 +1,17 @@
 package nl.yourivb.TicketTrack.services;
 
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserDto;
+import nl.yourivb.TicketTrack.dtos.AppUser.AppUserInputDto;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AppUserMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
+import nl.yourivb.TicketTrack.models.Interaction;
+import nl.yourivb.TicketTrack.models.Role;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,6 +34,9 @@ class AppUserServiceTest {
 
     @Mock
     PasswordEncoder passwordEncoder;
+
+    @Captor
+    ArgumentCaptor<AppUser> appUserCaptor;
 
     @InjectMocks
     AppUserService appUserService;
@@ -95,6 +103,49 @@ class AppUserServiceTest {
 
     @Test
     void createUser() {
+        // Arrange
+        AppUserInputDto inputDto = new AppUserInputDto();
+        inputDto.setPassword("12345678");
+        inputDto.setRoleId(3L);
+
+        AppUser entity = new AppUser();
+        AppUserDto outputDto = new AppUserDto();
+
+        when(appUserMapper.toDto(entity)).thenReturn(outputDto);
+
+        // mocks the mapper so we can validate role id on inputDto after Act phase.
+        when(appUserMapper.toModel(any(AppUserInputDto.class))).thenAnswer(inv -> {
+            AppUserInputDto dto = inv.getArgument(0);
+            AppUser returnEntity = entity;
+            Role role = new Role();
+            role.setId(dto.getRoleId());
+            returnEntity.setRole(role);
+
+            return returnEntity;
+        });
+
+        // repo gives back the same object, no actual save.
+        when(appUserRepository.save(any(AppUser.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        // testing the actual encoder is done in an integrating test.
+        when(passwordEncoder.encode(inputDto.getPassword())).thenReturn("hashed123");
+
+        // Act
+        AppUserDto result = appUserService.createUser(inputDto);
+
+        // Assert (contract)
+        assertSame(outputDto, result);
+
+        // Assert (repo check)
+        verify(appUserRepository).save(appUserCaptor.capture());
+        AppUser saved = appUserCaptor.getValue();
+
+        assertEquals(3L, saved.getRole().getId());
+        assertEquals("hashed123", saved.getPassword());
+
+        // Assert (collaboration)
+        verify(appUserMapper).toModel(inputDto);
+        verify(appUserMapper).toDto(entity);
     }
 
     @Test
