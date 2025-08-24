@@ -2,6 +2,7 @@ package nl.yourivb.TicketTrack.services;
 
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserDto;
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserInputDto;
+import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AppUserMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
@@ -146,6 +147,37 @@ class AppUserServiceTest {
         // Assert (collaboration)
         verify(appUserMapper).toModel(inputDto);
         verify(appUserMapper).toDto(entity);
+    }
+
+    @Test
+    void createUserWithTakenEmail() {
+        // Arrange
+        AppUser originalUser = new AppUser();
+        originalUser.setEmail("john@wick.com");
+        originalUser.setId(1L);
+
+        AppUserInputDto inputDto = new AppUserInputDto();
+        inputDto.setEmail("john@wick.com");
+        inputDto.setPassword("12345678");
+
+        AppUser mappedEntity = new AppUser();
+
+        when(appUserMapper.toModel(any(AppUserInputDto.class))).thenAnswer(inv -> {
+            AppUserInputDto dto = inv.getArgument(0);
+            AppUser returnEntity = mappedEntity;
+            returnEntity.setEmail(dto.getEmail());
+
+            return returnEntity;
+        });
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> appUserService.createUser(inputDto));
+
+        // Assert (collaboration)
+        verify(appUserRepository, times(1)).findByEmail(inputDto.getEmail());
+        verify(appUserRepository, never()).save(any());
+        verify(appUserMapper, never()).toDto(any());
+
     }
 
     @Test

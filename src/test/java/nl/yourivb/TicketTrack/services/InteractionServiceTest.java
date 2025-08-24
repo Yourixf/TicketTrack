@@ -307,8 +307,6 @@ class InteractionServiceTest {
         verify(interactionRepository, never()).save(any());
         verify(interactionMapper, never()).toDto(any());
         verifyNoMoreInteractions(interactionRepository, interactionMapper);
-
-
     }
 
     @Test
