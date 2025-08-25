@@ -47,10 +47,6 @@ public class AssignmentGroupService {
     public AssignmentGroupDto updateAssignmentGroup(Long id, AssignmentGroupInputDto newAssignmentGroup) {
         AssignmentGroup assignmentGroup = assignmentGroupRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Assignment group " + id + " not found"));
 
-        if (allFieldsNull(newAssignmentGroup)) {
-            throw new BadRequestException("No valid fields provided for update");
-        }
-
         assignmentGroupMapper.updateAssignmentGroupFromDto(newAssignmentGroup, assignmentGroup);
         AssignmentGroup updatedAssignmentGroup = assignmentGroupRepository.save(assignmentGroup);
 
