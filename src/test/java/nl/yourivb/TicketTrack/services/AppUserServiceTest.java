@@ -2,19 +2,17 @@ package nl.yourivb.TicketTrack.services;
 
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserDto;
 import nl.yourivb.TicketTrack.dtos.AppUser.AppUserInputDto;
+import nl.yourivb.TicketTrack.dtos.AppUser.AppUserPatchDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AppUserMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
-import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.models.Role;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
+import nl.yourivb.TicketTrack.utils.AppUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -23,7 +21,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class AppUserServiceTest {
@@ -162,6 +159,8 @@ class AppUserServiceTest {
 
         AppUser mappedEntity = new AppUser();
 
+        when(appUserRepository.findByEmail("john@wick.com")).thenReturn(Optional.of(originalUser));
+
         when(appUserMapper.toModel(any(AppUserInputDto.class))).thenAnswer(inv -> {
             AppUserInputDto dto = inv.getArgument(0);
             AppUser returnEntity = mappedEntity;
@@ -177,15 +176,187 @@ class AppUserServiceTest {
         verify(appUserRepository, times(1)).findByEmail(inputDto.getEmail());
         verify(appUserRepository, never()).save(any());
         verify(appUserMapper, never()).toDto(any());
+        verifyNoMoreInteractions(appUserRepository, appUserMapper, passwordEncoder);
+    }
 
+    @Test
+    void createUserWithInvalidPassword() {
+        // Arrange
+        AppUserInputDto inputDto = new AppUserInputDto();
+        inputDto.setPassword("123456"); // current policy is minimal length of 8 characters.
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> appUserService.createUser(inputDto));
+
+        // Assert (collaboration)
+        verify(appUserRepository, never()).save(any());
+        verify(appUserMapper, never()).toDto(any());
+        verifyNoMoreInteractions(appUserRepository, appUserMapper, passwordEncoder);
     }
 
     @Test
     void updateUser() {
+        // Arrange
+        AppUser originalEntity = new AppUser();
+        originalEntity.setId(1L);
+        originalEntity.setName("Johnwick");
+
+        AppUserInputDto newInputDto = new AppUserInputDto();
+        newInputDto.setName("John Wick");
+
+        AppUserDto outputDto = new AppUserDto();
+
+        when(appUserRepository.findById(1L)).thenReturn(Optional.of(originalEntity));
+
+        doAnswer(inv -> {
+            AppUserInputDto dto = inv.getArgument(0);
+            AppUser entity = inv.getArgument(1);
+            entity.setName(dto.getName());
+            return null;
+        }).when(appUserMapper).updateAppUserFromDto(eq(newInputDto), same(originalEntity));
+
+        when(appUserRepository.save(any(AppUser.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(appUserMapper.toDto(originalEntity)).thenReturn(outputDto);
+
+        // Act
+        AppUserDto result = appUserService.updateUser(1L, newInputDto);
+
+        // Assert (contract)
+        assertEquals(outputDto, result);
+
+        // Assert (repo validation)
+        verify(appUserRepository).save(appUserCaptor.capture());
+        AppUser saved = appUserCaptor.getValue();
+
+        assertEquals("John Wick", saved.getName());
+
+        // Assert (collaboration)
+        verify(appUserRepository, times(1)).findById(1L);
+        verify(appUserMapper, times(1)).updateAppUserFromDto(newInputDto, originalEntity);
+        verify(appUserRepository, times(1)).findByEmail(any());
+        verify(appUserRepository, times(1)).save(any(AppUser.class));
+        verify(appUserMapper, times(1)).toDto(originalEntity);
+    }
+
+    @Test
+    void updateUserWithTakenEmail() {
+        // Arrange
+        AppUser originalEntity = new AppUser();
+        originalEntity.setId(1L);
+        originalEntity.setEmail("john@wck.com");
+
+        AppUser otherEntity = new AppUser();
+        otherEntity.setId(2L);
+        otherEntity.setEmail("john@wick.com");
+
+        AppUserInputDto newInputDto = new AppUserInputDto();
+        newInputDto.setEmail("john@wick.com");
+
+        when(appUserRepository.findById(1L)).thenReturn(Optional.of(originalEntity));
+
+        doAnswer(inv -> {
+            AppUserInputDto dto = inv.getArgument(0);
+            AppUser entity = inv.getArgument(1);
+            entity.setEmail(dto.getEmail());
+            return null;
+        }).when(appUserMapper).updateAppUserFromDto(eq(newInputDto), same(originalEntity));
+
+        when(appUserRepository.findByEmail(newInputDto.getEmail())).thenReturn(Optional.of(otherEntity));
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> appUserService.updateUser(1L, newInputDto));
+
+        // Assert (collaboration)
+        verify(appUserRepository, times(1)).findById(1L);
+        verify(appUserMapper, times(1)).updateAppUserFromDto(newInputDto, originalEntity);
+        verify(appUserRepository, times(1)).findByEmail(any());
+        verify(appUserRepository, never()).save(any(AppUser.class));
+        verify(appUserMapper, never()).toDto(any(AppUser.class));
+        verifyNoMoreInteractions(appUserRepository,appUserMapper);
     }
 
     @Test
     void patchUser() {
+        // Arrange
+        AppUser originalEntity = new AppUser();
+        originalEntity.setId(1L);
+        originalEntity.setName("Johnwick");
+        originalEntity.setEmail("john@wck.com");
+
+        AppUserPatchDto newPatchDto = new AppUserPatchDto();
+        newPatchDto.setName("John Wick");
+        newPatchDto.setEmail("john@wick.com");
+
+        AppUserDto outputDto = new AppUserDto();
+
+        when(appUserRepository.findById(1L)).thenReturn(Optional.of(originalEntity));
+
+        doAnswer(inv -> {
+            AppUserPatchDto dto = inv.getArgument(0);
+            AppUser entity = inv.getArgument(1);
+            entity.setName(dto.getName());
+            entity.setEmail(dto.getEmail());
+            return null;
+        }).when(appUserMapper).patchAppUserFromDto(eq(newPatchDto), same(originalEntity));
+
+        when(appUserRepository.save(any(AppUser.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(appUserMapper.toDto(originalEntity)).thenReturn(outputDto);
+
+        try (var mocked = Mockito.mockStatic(AppUtils.class)) {
+            mocked.when(() -> AppUtils.allFieldsNull(newPatchDto)).thenReturn(false);
+            // Act
+            AppUserDto result = appUserService.patchUser(1L, newPatchDto);
+
+            // Assert (contract)
+            assertEquals(outputDto, result);
+
+            // Assert (repo validation)
+            verify(appUserRepository).save(appUserCaptor.capture());
+            AppUser saved = appUserCaptor.getValue();
+
+            assertEquals("John Wick", saved.getName());
+            assertEquals("john@wick.com", saved.getEmail());
+
+            // Assert (collaboration)
+            verify(appUserRepository, times(1)).findById(1L);
+            verify(appUserMapper, times(1)).patchAppUserFromDto(newPatchDto, originalEntity);
+            verify(appUserRepository, times(1)).findByEmail(any());
+            verify(appUserRepository, times(1)).save(any(AppUser.class));
+            verify(appUserMapper, times(1)).toDto(originalEntity);
+
+            // Static verify
+            mocked.verify(() -> AppUtils.allFieldsNull(eq(newPatchDto)));
+        }
+    }
+
+    @Test
+    void patchUserNoValidFields() {
+        // Arrange
+        AppUser originalEntity = new AppUser();
+        originalEntity.setId(1L);
+
+        AppUserPatchDto newPatchDto = new AppUserPatchDto();
+        AppUserDto outputDto = new AppUserDto();
+
+        when(appUserRepository.findById(1L)).thenReturn(Optional.of(originalEntity));
+
+        try (var mocked = Mockito.mockStatic(AppUtils.class)) {
+            mocked.when(() -> AppUtils.allFieldsNull(newPatchDto)).thenReturn(true);
+            // Act & Assert
+
+            assertThrows(BadRequestException.class, () -> appUserService.patchUser(1L, newPatchDto));
+
+            // Assert (collaboration)
+            verify(appUserRepository, times(1)).findById(1L);
+            verify(appUserMapper, never()).patchAppUserFromDto(any(), any());
+            verify(appUserRepository, never()).findByEmail(any());
+            verify(appUserRepository, never()).save(any(AppUser.class));
+            verify(appUserMapper, never()).toDto(originalEntity);
+            verifyNoMoreInteractions(appUserRepository,appUserMapper);
+
+            // Static verify
+            mocked.verify(() -> AppUtils.allFieldsNull(eq(newPatchDto)));
+        }
     }
 
     @Test

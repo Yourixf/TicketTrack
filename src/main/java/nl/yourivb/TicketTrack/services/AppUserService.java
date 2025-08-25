@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
 
@@ -33,9 +32,6 @@ public class AppUserService {
 
     private void checkIfEmailIsUsed(String rawEmail, Long excludeUserId) {
         String email = rawEmail == null ? null : rawEmail.trim().toLowerCase();
-        if (email == null || email.isBlank()) {
-            throw new BadRequestException("Email is required.");
-        }
 
         appUserRepository.findByEmail(email).ifPresent(existing -> {
             if (!existing.getId().equals(excludeUserId)) {
@@ -93,7 +89,7 @@ public class AppUserService {
                 .orElseThrow(() -> new RecordNotFoundException("User " + id + " not found"));
 
         appUserMapper.updateAppUserFromDto(dto, appUser);
-        checkIfEmailIsUsed(appUser.getEmail(), id);
+        checkIfEmailIsUsed(dto.getEmail(), id);
         appUserRepository.save(appUser);
 
         return appUserMapper.toDto(appUser);

@@ -109,7 +109,7 @@ class InteractionServiceTest {
             // Act
             InteractionDto result = interactionService.getInteractionById(1L);
 
-            // Assert (content)
+            // Assert (contract)
             assertEquals(1L, result.getId());
 
             // Assert (collaboration)
@@ -258,7 +258,7 @@ class InteractionServiceTest {
             // Act
             InteractionDto result = interactionService.updateInteraction(1L, newInputDto);
 
-            // Assert (content)
+            // Assert (contract)
             assertEquals(outputDto, result);
 
             // Assert (repo validation)
@@ -332,7 +332,7 @@ class InteractionServiceTest {
             // Act
             InteractionDto result = interactionService.patchInteraction(1L, newPatchDto);
 
-            // Assert (content)
+            // Assert (contract)
             assertEquals(outputDto, result);
 
             // Assert (repo validation)
@@ -348,6 +348,7 @@ class InteractionServiceTest {
             verify(interactionMapper).toDto(originalEntity);
 
             // static verify
+            mocked.verify(() -> AppUtils.allFieldsNull(eq(newPatchDto)));
             mocked.verify(() -> AppUtils.enrichWithRelations(eq(originalEntity), eq("Interaction"), eq(1L), eq(noteRepository), eq(attachmentRepository)));
         }
     }
@@ -374,6 +375,7 @@ class InteractionServiceTest {
             verifyNoMoreInteractions(interactionRepository, interactionMapper);
 
             // Static verify
+            mocked.verify(() -> AppUtils.allFieldsNull(eq(newPatchDto)));
             mocked.verify(() -> AppUtils.allFieldsNull(eq(newPatchDto)));
         }
     }
