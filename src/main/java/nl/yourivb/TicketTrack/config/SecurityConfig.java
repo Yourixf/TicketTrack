@@ -109,7 +109,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/service-offerings/**").hasRole("ADMIN")
 
                         .requestMatchers("/authenticate").anonymous()
-                        .anyRequest().authenticated() // ✅ Fix: Allow authenticated requests
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
