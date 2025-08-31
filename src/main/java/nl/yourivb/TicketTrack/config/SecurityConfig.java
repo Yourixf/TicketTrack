@@ -115,8 +115,6 @@ public class SecurityConfig {
                 .build();
     }
 
-
-
     @Bean
     public AuthenticationManager authManager(HttpSecurity http,
                                              AppUserDetailsService uds) throws Exception {
