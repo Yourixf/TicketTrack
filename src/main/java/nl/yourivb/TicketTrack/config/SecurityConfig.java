@@ -122,6 +122,11 @@ public class SecurityConfig {
                                              AppUserDetailsService uds) throws Exception {
         var auth = http.getSharedObject(AuthenticationManagerBuilder.class);
         auth.userDetailsService(uds).passwordEncoder(passwordEncoder());
+
+        System.out.println(
+                new BCryptPasswordEncoder().matches("12345678", "$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a")
+        );
+
         return auth.build();
     }
 
