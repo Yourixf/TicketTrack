@@ -12,7 +12,7 @@ public class AppUserInputDto {
     @Size(min = 2, max = 255)
     private String name;
 
-    private int phoneNumber;
+    private Long phoneNumber;
 
     @NotBlank
     @Email
@@ -37,11 +37,11 @@ public class AppUserInputDto {
         this.name = name;
     }
 
-    public int getPhoneNumber() {
+    public Long getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(Long phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 

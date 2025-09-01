@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
 
@@ -31,13 +30,14 @@ public class AppUserService {
     this.passwordEncoder = passwordEncoder;
 }
 
-    private void checkIfEmailIsUsed(AppUser appUser, Long currentUserId) {
-        String email = appUser.getEmail();
-        Optional<AppUser> existingUser = appUserRepository.findByEmail(email);
+    private void checkIfEmailIsUsed(String rawEmail, Long excludeUserId) {
+        String email = rawEmail == null ? null : rawEmail.trim().toLowerCase();
 
-        if (existingUser.isPresent() && !existingUser.get().getId().equals(currentUserId)) {
-            throw new BadRequestException("Email address already registered to an account.");
-        }
+        appUserRepository.findByEmail(email).ifPresent(existing -> {
+            if (!existing.getId().equals(excludeUserId)) {
+                throw new BadRequestException("Email address already registered to an account.");
+            }
+        });
     }
 
 
@@ -76,7 +76,7 @@ public class AppUserService {
 
         validatePasswordPolicy(dto.getPassword());
         AppUser appUser = appUserMapper.toModel(dto);
-        checkIfEmailIsUsed(appUser, appUser.getId());
+        checkIfEmailIsUsed(appUser.getEmail(), null);
         
         appUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         
@@ -89,7 +89,7 @@ public class AppUserService {
                 .orElseThrow(() -> new RecordNotFoundException("User " + id + " not found"));
 
         appUserMapper.updateAppUserFromDto(dto, appUser);
-        checkIfEmailIsUsed(appUser, id);
+        checkIfEmailIsUsed(dto.getEmail(), id);
         appUserRepository.save(appUser);
 
         return appUserMapper.toDto(appUser);
@@ -105,7 +105,7 @@ public class AppUserService {
 
         appUserMapper.patchAppUserFromDto(dto, appUser);
         if (dto.getEmail() != null) {
-            checkIfEmailIsUsed(appUser, id);
+            checkIfEmailIsUsed(appUser.getEmail(), id);
         }
 
         appUserRepository.save(appUser);

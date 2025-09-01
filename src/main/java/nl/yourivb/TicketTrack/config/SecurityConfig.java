@@ -1,13 +1,12 @@
 package nl.yourivb.TicketTrack.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.security.AppUserDetailsService;
+import nl.yourivb.TicketTrack.security.CustomAuthenticationEntryPoint;
 import nl.yourivb.TicketTrack.security.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,19 +20,15 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import javax.sql.DataSource;
 import java.util.List;
 
 
 @Configuration
 public class SecurityConfig {
-  private final DataSource dataSource;
   private final JwtRequestFilter jwtRequestFilter;
   private final ObjectMapper objectMapper;
 
-
-    public SecurityConfig(DataSource dataSource, JwtRequestFilter jwtRequestFilter, ObjectMapper objectMapper) {
-        this.dataSource = dataSource;
+    public SecurityConfig(JwtRequestFilter jwtRequestFilter, ObjectMapper objectMapper) {
         this.jwtRequestFilter = jwtRequestFilter;
         this.objectMapper = objectMapper;
     }
@@ -52,19 +47,9 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .securityMatcher("/**")
+                // this way I can cover the internal exceptions that don't get caught by the globalExceptionHandler
                 .exceptionHandling(e -> e
-                        .authenticationEntryPoint((request, response, ex) -> {
-                            var body = new ApiResponse<>("Unauthorized", HttpStatus.UNAUTHORIZED, null);
-                            response.setStatus(401);
-                            response.setContentType("application/json");
-                            objectMapper.writeValue(response.getWriter(), body);
-                        })
-                        .accessDeniedHandler((request, response, ex) -> {
-                            var body = new ApiResponse<>("Forbidden", HttpStatus.FORBIDDEN, null);
-                            response.setStatus(403);
-                            response.setContentType("application/json");
-                            objectMapper.writeValue(response.getWriter(), body);
-                        })
+                        .authenticationEntryPoint(customAuthenticationEntryPoint())
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -109,19 +94,18 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/service-offerings/**").hasRole("ADMIN")
 
                         .requestMatchers("/authenticate").anonymous()
-                        .anyRequest().authenticated() // ✅ Fix: Allow authenticated requests
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
-
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http,
                                              AppUserDetailsService uds) throws Exception {
         var auth = http.getSharedObject(AuthenticationManagerBuilder.class);
         auth.userDetailsService(uds).passwordEncoder(passwordEncoder());
+
         return auth.build();
     }
 
@@ -140,4 +124,10 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
+    @Bean
+    public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() {
+        return new CustomAuthenticationEntryPoint(objectMapper);
+    }
+
 } 

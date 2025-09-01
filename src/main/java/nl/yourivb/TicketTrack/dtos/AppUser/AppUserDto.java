@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class AppUserDto {
     private Long id;
     private String name;
-    private int phoneNumber;
+    private Long phoneNumber;
     private String email;
     private String info;
     private LocalDateTime created;
@@ -29,11 +29,11 @@ public class AppUserDto {
         this.name = name;
     }
 
-    public int getPhoneNumber() {
+    public Long getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(Long phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
