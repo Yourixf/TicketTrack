@@ -8,6 +8,7 @@ import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AssignmentGroupMapper;
 import nl.yourivb.TicketTrack.models.AssignmentGroup;
 import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
+import nl.yourivb.TicketTrack.security.SecurityUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,6 +39,8 @@ public class AssignmentGroupService {
 
     public AssignmentGroupDto addAssignmentGroup(AssignmentGroupInputDto dto) {
         AssignmentGroup assignmentGroup = assignmentGroupMapper.toModel(dto);
+
+        assignmentGroup.setCreatedBy(SecurityUtils.getCurrentUserDetails().getAppUser());
 
         assignmentGroupRepository.save(assignmentGroup);
 

@@ -8,6 +8,7 @@ import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.ServiceOfferingMapper;
 import nl.yourivb.TicketTrack.models.ServiceOffering;
 import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
+import nl.yourivb.TicketTrack.security.SecurityUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,6 +46,7 @@ public class ServiceOfferingService {
     public ServiceOfferingDto addServiceOffering(ServiceOfferingInputDto dto) {
         ServiceOffering serviceOffering = serviceOfferingMapper.toModel(dto);
 
+        serviceOffering.setCreatedBy(SecurityUtils.getCurrentUserDetails().getAppUser());
         serviceOfferingRepository.save(serviceOffering);
 
         return serviceOfferingMapper.toDto(serviceOffering);

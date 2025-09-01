@@ -62,6 +62,7 @@ public class NoteService {
 
         note.setNoteableType(noteableType);
         note.setNoteableId(noteableId);
+        note.setCreatedBy(SecurityUtils.getCurrentUserDetails().getAppUser());
         noteRepository.save(note);
 
         return noteMapper.toDto(note);
