@@ -1,5 +1,6 @@
 package nl.yourivb.TicketTrack.controllers;
 
+import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
 import org.junit.jupiter.api.Test;
@@ -11,12 +12,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-// static imports
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.hamcrest.Matchers.*;
 
 
 @SpringBootTest
@@ -60,6 +60,36 @@ class AppUserControllerTest {
     }
 
     @Test
+    void getUserById() throws Exception {
+        mockMvc.perform(get("/users/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                // Status en content type
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+                // Response envelope
+                .andExpect(jsonPath("$.message", not(emptyOrNullString())))
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.error", anyOf(nullValue(), emptyString())))
+                .andExpect(jsonPath("$.timestamp", not(emptyOrNullString())))
+
+                // Data array
+                .andExpect(jsonPath("$.data", not(empty())))
+                .andExpect(jsonPath("$.data.length()", greaterThan(1)))
+
+                // Validation of 1 array item, the first
+                .andExpect(jsonPath("$.data.id", greaterThan(0)))
+                .andExpect(jsonPath("$.data.name", not(emptyOrNullString())))
+                .andExpect(jsonPath("$.data.phoneNumber", greaterThan(0)))
+                .andExpect(jsonPath("$.data.email", not(emptyOrNullString())))
+                .andExpect(jsonPath("$.data", hasKey("info")))
+                .andExpect(jsonPath("$.data.created", not(emptyOrNullString())))
+                .andExpect(jsonPath("$.data.lastModified", not(emptyOrNullString())))
+                .andExpect(jsonPath("$.data", hasKey("profilePictureId")))
+                .andExpect(jsonPath("$.data.roleId", greaterThan(0)));
+    }
+
+    @Test
     void createUser() throws Exception {
         String email = "brucewayne@tickettrack.com";
         String rawPassword = "12345678";
@@ -94,8 +124,47 @@ class AppUserControllerTest {
                 .andExpect(jsonPath("$.data.roleId").value(3));
 
         // Check password is encrypted in DB
-        AppUser savedUser = appUserRepository.findByEmail(email).orElseThrow();
+        AppUser savedUser = appUserRepository.findByEmail(email).orElseThrow(RecordNotFoundException::new);
         assertNotEquals(rawPassword, savedUser.getPassword()); // NOT plain text
         assertTrue(new BCryptPasswordEncoder().matches(rawPassword, savedUser.getPassword())); // ENCRYPTED match
+    }
+
+    @Test
+    void patchUser() throws Exception {
+        String newEmail = "john-wick@tickettrack.com";
+
+        String requestJson = """
+        {
+          "email": "%s"
+        }
+        """.formatted(newEmail);
+
+        mockMvc.perform(patch("/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                // Status en content type
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+                // Response envelope
+                .andExpect(jsonPath("$.message", not(emptyOrNullString())))
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.error", anyOf(nullValue(), emptyString())))
+                .andExpect(jsonPath("$.timestamp", not(emptyOrNullString())))
+
+                // Data array
+                .andExpect(jsonPath("$.data", not(empty())))
+                .andExpect(jsonPath("$.data.length()", greaterThan(1)))
+
+                // Validation of 1 array item, the first
+                .andExpect(jsonPath("$.data.id", greaterThan(0)))
+                .andExpect(jsonPath("$.data.name", not(emptyOrNullString())))
+                .andExpect(jsonPath("$.data.phoneNumber", greaterThan(0)))
+                .andExpect(jsonPath("$.data.email", equalTo(newEmail)))
+                .andExpect(jsonPath("$.data", hasKey("info")))
+                .andExpect(jsonPath("$.data.created", not(emptyOrNullString())))
+                .andExpect(jsonPath("$.data.lastModified", not(emptyOrNullString())))
+                .andExpect(jsonPath("$.data", hasKey("profilePictureId")))
+                .andExpect(jsonPath("$.data.roleId", greaterThan(0)));
     }
 }

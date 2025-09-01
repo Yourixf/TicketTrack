@@ -7,7 +7,7 @@ public class AppUserPatchDto {
     @Size(min = 2, max = 255)
     private String name;
 
-    private int phoneNumber;
+    private Long phoneNumber;
 
     @Email
     @Size(min = 2, max = 255)
@@ -27,11 +27,11 @@ public class AppUserPatchDto {
         this.name = name;
     }
 
-    public int getPhoneNumber() {
+    public Long getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(Long phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
