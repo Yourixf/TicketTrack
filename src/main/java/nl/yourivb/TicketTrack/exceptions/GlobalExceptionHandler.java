@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -94,4 +95,17 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(InternalAuthenticationServiceException.class)
+    public ResponseEntity<ApiResponse<Object>> handleInternalAuthException(InternalAuthenticationServiceException ex) {
+        return new ResponseEntity<>(
+                new ApiResponse<>(ex.getMessage(), HttpStatus.UNAUTHORIZED, null),
+                HttpStatus.UNAUTHORIZED
+        );
+    }
+
+    @ExceptionHandler(JwtAuthenticationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleJwtAuthenticationException(JwtAuthenticationException ex) {
+        ApiResponse<Object> response = new ApiResponse<>(ex.getMessage(), HttpStatus.UNAUTHORIZED, null);
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
 }

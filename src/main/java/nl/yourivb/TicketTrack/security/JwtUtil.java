@@ -92,7 +92,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setClaims(claims)
-                .setSubject(subject) // ← nu userId
+                .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 10))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)

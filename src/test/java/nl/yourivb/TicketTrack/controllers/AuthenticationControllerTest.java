@@ -52,7 +52,7 @@ class AuthenticationControllerTest {
     }
 
     @Test
-    void createAuthenticationTokenWithFalseCredentials() throws Exception {
+    void createAuthenticationTokenWithFalsePassword() throws Exception {
         String email = "johnwick@tickettrack.com";
         String rawPassword = "password";
 
@@ -71,13 +71,12 @@ class AuthenticationControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
 
                 // envelope fields
-                .andExpect(jsonPath("$.message").value("Authentication successful"))
+                .andExpect(jsonPath("$.message").value("Invalid email or password"))
                 .andExpect(jsonPath("$.status").value(401))
-                .andExpect(jsonPath("$.error", anyOf(nullValue(), emptyString())))
+                .andExpect(jsonPath("$.error"). value("Unauthorized"))
                 .andExpect(jsonPath("$.timestamp", not(emptyOrNullString())))
 
                 // nested data.* assertions
-                .andExpect(jsonPath("$.data.jwt", not(emptyOrNullString())))
-                .andExpect(jsonPath("$.data.expiresAt", not(emptyOrNullString())));
+                .andExpect(jsonPath("$.data", emptyOrNullString()));
     }
 }
