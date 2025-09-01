@@ -29,5 +29,4 @@ public class SecurityUtils {
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch(role -> role.equalsIgnoreCase("ROLE_" + roleName));
     }
-
 }

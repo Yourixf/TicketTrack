@@ -9,6 +9,8 @@ import nl.yourivb.TicketTrack.models.Note;
 import nl.yourivb.TicketTrack.repositories.IncidentRepository;
 import nl.yourivb.TicketTrack.repositories.InteractionRepository;
 import nl.yourivb.TicketTrack.repositories.NoteRepository;
+import nl.yourivb.TicketTrack.security.SecurityUtils;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,6 +43,12 @@ public class NoteService {
 
     public NoteDto addNote(NoteInputDto noteInputDto, String noteableType, Long noteableId) {
         Note note = noteMapper.toModel(noteInputDto);
+
+        // ensures work note integrity
+        if ("WORK".equalsIgnoreCase(noteInputDto.getVisibility()) &&
+                !(SecurityUtils.hasRole("ADMIN") || SecurityUtils.hasRole("IT"))) {
+            throw new AccessDeniedException("You are not allowed to create work notes.");
+        }
 
         switch (noteableType) {
             case "Interaction" -> {

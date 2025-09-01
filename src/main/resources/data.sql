@@ -32,6 +32,7 @@ INSERT INTO service_offering (name, default_sla_in_days, created, last_modified,
 -- users (FK via role.name; telefoon als text)
 INSERT INTO app_user (name, phone_number, email, info, password, created, last_modified, role_id) VALUES
       ('John Wick',    '0612345678', 'johnwick@tickettrack.com',   '', '$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM role WHERE name='ROLE_ADMIN')),
+      ('Natasha Romanoff', '0612345678', 'natasharomanoff@tickettrack.com', '', '$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM role WHERE name='ROLE_ADMIN')),
       ('Tony Stark',   '0612345679', 'tonystark@tickettrack.com',  '', '$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM role WHERE name='ROLE_IT')),
       ('Shuri',        '0612345680', 'shuri@tickettrack.com',      '', '$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM role WHERE name='ROLE_IT')),
       ('Peter Parker', '0612345681', 'peterparker@tickettrack.com','', '$2a$12$aIf/u0A4fLCytmiyOfxTwuNMoiouRQJWb/BHOlEsoMfByVgyRYP4a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM role WHERE name='ROLE_CUSTOMER')),

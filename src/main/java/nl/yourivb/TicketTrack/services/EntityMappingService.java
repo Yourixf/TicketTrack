@@ -4,6 +4,10 @@ import nl.yourivb.TicketTrack.models.*;
 import nl.yourivb.TicketTrack.repositories.*;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+
 @Service
 public class EntityMappingService {
 
@@ -94,5 +98,20 @@ public class EntityMappingService {
 
     public Long getRoleId(Role role) {
         return role != null ? role.getId() : null;
+    }
+
+
+    public List<Long> getAttachmentIds(List<Attachment> attachments) {
+        if (attachments == null) return null;
+        return attachments.stream()
+                .map(Attachment::getId)
+                .collect(Collectors.toList());
+    }
+
+    public List<Long> getNoteIds(List<Note> notes) {
+        if (notes == null) return null;
+        return notes.stream()
+                .map(Note::getId)
+                .collect(Collectors.toList());
     }
 }

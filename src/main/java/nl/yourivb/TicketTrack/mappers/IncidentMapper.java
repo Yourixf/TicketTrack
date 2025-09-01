@@ -8,6 +8,7 @@ import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.services.EntityMappingService;
 import org.mapstruct.*;
 
+
 @Mapper(componentModel = "spring", uses = EntityMappingService.class)
 public interface IncidentMapper {
     @Mapping(target = "serviceOfferingId", source = "serviceOffering")
@@ -18,6 +19,8 @@ public interface IncidentMapper {
     @Mapping(target = "closedById", source = "closedBy")
     @Mapping(target = "escalatedFromId", source = "escalatedFrom")
     @Mapping(target = "resolveBefore", source = "resolveBefore")
+    @Mapping(target = "noteIds", source = "notes")
+    @Mapping(target = "attachmentIds", source = "attachments")
     IncidentDto toDto(Incident incident);
 
     Incident toModel(IncidentDto dto);

@@ -4,6 +4,7 @@ import nl.yourivb.TicketTrack.payload.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -108,4 +109,18 @@ public class GlobalExceptionHandler {
         ApiResponse<Object> response = new ApiResponse<>(ex.getMessage(), HttpStatus.UNAUTHORIZED, null);
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
+
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAccessDeniedException(AccessDeniedException ex) {
+        ApiResponse<Object> response = new ApiResponse<>("Access denied: " + ex.getMessage(), HttpStatus.FORBIDDEN, null);
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Object>> handleIllegalArgument(IllegalArgumentException ex) {  ApiResponse<Object> response = new ApiResponse<>("Illegal argument: " + ex.getMessage(), HttpStatus.BAD_REQUEST, null);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+
 }

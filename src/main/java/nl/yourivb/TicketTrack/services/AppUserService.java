@@ -8,6 +8,8 @@ import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AppUserMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
+import nl.yourivb.TicketTrack.security.SecurityUtils;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -56,6 +58,12 @@ public class AppUserService {
 //        }
     }
 
+    private void verifyAccessToModifyUser(Long targetUserId, boolean isAdmin) {
+        AppUser currentUser = SecurityUtils.getCurrentUserDetails().getAppUser();
+        if (!isAdmin && !currentUser.getId().equals(targetUserId)) {
+            throw new AccessDeniedException("You can only change your own account.");
+        }
+    }
 
     public List<AppUserDto> getAllUsers() {
         return appUserRepository.findAll().stream()
@@ -88,8 +96,26 @@ public class AppUserService {
         AppUser appUser = appUserRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("User " + id + " not found"));
 
+        boolean isAdmin = SecurityUtils.hasRole("ADMIN");
+        verifyAccessToModifyUser(id, isAdmin);
+
+        // only admins are allowed to change roles
+        if (!isAdmin && dto.getRoleId() != null) {
+            throw new AccessDeniedException("Only admins can change user roles.");
+        }
+
+        // this prevents roleId being set to null if not updated.
+        if (dto.getRoleId() == null && appUser.getRole() != null) {
+            dto.setRoleId(appUser.getRole().getId());
+        }
+
         appUserMapper.updateAppUserFromDto(dto, appUser);
         checkIfEmailIsUsed(dto.getEmail(), id);
+
+        if (dto.getPassword() != null) {
+            appUser.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+
         appUserRepository.save(appUser);
 
         return appUserMapper.toDto(appUser);
@@ -99,6 +125,19 @@ public class AppUserService {
         AppUser appUser = appUserRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("User " + id + " not found"));
 
+        boolean isAdmin = SecurityUtils.hasRole("ADMIN");
+        verifyAccessToModifyUser(id, isAdmin);
+
+        // only admins are allowed to change roles
+        if (!isAdmin && dto.getRoleId() != null) {
+            throw new AccessDeniedException("Only admins can change user roles.");
+        }
+
+        // this prevents roleId being set to null if not updated.
+        if (dto.getRoleId() == null && appUser.getRole() != null) {
+            dto.setRoleId(appUser.getRole().getId());
+        }
+
         if (allFieldsNull(dto)) {
             throw new BadRequestException("No valid fields provided for patch");
         }
@@ -106,6 +145,10 @@ public class AppUserService {
         appUserMapper.patchAppUserFromDto(dto, appUser);
         if (dto.getEmail() != null) {
             checkIfEmailIsUsed(appUser.getEmail(), id);
+        }
+
+        if (dto.getPassword() != null) {
+            appUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
         appUserRepository.save(appUser);

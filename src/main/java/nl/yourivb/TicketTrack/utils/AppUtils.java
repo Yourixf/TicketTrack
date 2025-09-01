@@ -4,8 +4,10 @@ import nl.yourivb.TicketTrack.models.Attachment;
 import nl.yourivb.TicketTrack.models.Incident;
 import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.models.Note;
+import nl.yourivb.TicketTrack.models.enums.NoteVisibility;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.NoteRepository;
+import nl.yourivb.TicketTrack.security.SecurityUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.lang.reflect.Field;
@@ -56,7 +58,14 @@ public class AppUtils {
             NoteRepository noteRepository,
             AttachmentRepository attachmentRepository) {
 
-        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId(parentType, parentId);
+        // makes sure only allowed roles/employees see their notes.
+        boolean canSeeWorkNotes = SecurityUtils.hasRole("ADMIN") || SecurityUtils.hasRole("IT");
+
+        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId(parentType, parentId)
+                .stream()
+                .filter(note -> note.getVisibility() == NoteVisibility.PUBLIC || canSeeWorkNotes)
+                .toList();
+
         List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId(parentType, parentId);
 
         if (parent instanceof Incident incident) {

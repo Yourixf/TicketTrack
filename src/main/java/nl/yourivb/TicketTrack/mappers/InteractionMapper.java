@@ -5,9 +5,12 @@ import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
 import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.services.EntityMappingService;
+import nl.yourivb.TicketTrack.utils.AppUtils;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", uses = EntityMappingService.class)
+
+
+@Mapper(componentModel = "spring", uses = {EntityMappingService.class, AppUtils.class})
 
 public interface InteractionMapper {
     @Mapping(target = "serviceOfferingId", source = "serviceOffering")
@@ -16,6 +19,8 @@ public interface InteractionMapper {
     @Mapping(target = "openedForId", source = "openedFor")
     @Mapping(target = "closedById", source = "closedBy")
     @Mapping(target = "incidentId", source = "incident")
+    @Mapping(target = "noteIds", source = "notes")
+    @Mapping(target = "attachmentIds", source = "attachments")
     InteractionDto toDto(Interaction interaction);
 
     @Mapping(target = "serviceOffering", source = "serviceOfferingId")
