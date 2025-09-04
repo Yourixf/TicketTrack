@@ -11,6 +11,7 @@ public class IncidentDto {
     private LocalDateTime created;
     private LocalDateTime closed;
     private LocalDateTime resolved;
+    private LocalDateTime canceled;
     private LocalDateTime lastModified;
     private LocalDateTime onHoldSince;
     private LocalDateTime resolveBefore;
@@ -29,6 +30,7 @@ public class IncidentDto {
     private Long openedForId;
     private Long resolvedById;
     private Long closedById;
+    private Long canceledById;
     private Long escalatedFromId;
     private List<Long> childInteractionIds;
     private List<Long> attachmentIds;
@@ -72,6 +74,14 @@ public class IncidentDto {
 
     public void setResolved(LocalDateTime resolved) {
         this.resolved = resolved;
+    }
+
+    public LocalDateTime getCanceled() {
+        return canceled;
+    }
+
+    public void setCanceled(LocalDateTime canceled) {
+        this.canceled = canceled;
     }
 
     public LocalDateTime getLastModified() {
@@ -216,6 +226,14 @@ public class IncidentDto {
 
     public void setClosedById(Long closedById) {
         this.closedById = closedById;
+    }
+
+    public Long getCanceledById() {
+        return canceledById;
+    }
+
+    public void setCanceledById(Long canceledById) {
+        this.canceledById = canceledById;
     }
 
     public Long getEscalatedFromId() {

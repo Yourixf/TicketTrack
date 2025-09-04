@@ -32,7 +32,7 @@ public class AssignmentGroupService {
     }
 
     public AssignmentGroupDto getAssignmentGroupById(Long id) {
-        AssignmentGroup assignmentGroup = assignmentGroupRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Assignmentgroup " + id + " not found" ));
+        AssignmentGroup assignmentGroup = assignmentGroupRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Assignment group " + id + " not found" ));
 
         return assignmentGroupMapper.toDto(assignmentGroup);
     }

@@ -1,6 +1,7 @@
 package nl.yourivb.TicketTrack.exceptions;
 
 import nl.yourivb.TicketTrack.payload.ApiResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -110,17 +111,25 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
-
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Object>> handleAccessDeniedException(AccessDeniedException ex) {
-        ApiResponse<Object> response = new ApiResponse<>("Access denied: " + ex.getMessage(), HttpStatus.FORBIDDEN, null);
+        ApiResponse<Object> response = new ApiResponse<>("Access denied: " +
+                ex.getMessage(), HttpStatus.FORBIDDEN, null);
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiResponse<Object>> handleIllegalArgument(IllegalArgumentException ex) {  ApiResponse<Object> response = new ApiResponse<>("Illegal argument: " + ex.getMessage(), HttpStatus.BAD_REQUEST, null);
+    public ResponseEntity<ApiResponse<Object>> handleIllegalArgument(IllegalArgumentException ex) {
+        ApiResponse<Object> response = new ApiResponse<>("Illegal argument: " +
+                ex.getMessage(), HttpStatus.BAD_REQUEST, null);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        ApiResponse<Object> response = new ApiResponse<>("Database constraint violated: " +
+                ex.getMostSpecificCause().getMessage(), HttpStatus.CONFLICT, null);
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
 
 }

@@ -114,4 +114,7 @@ public class IncidentController {
         URI uri = URI.create("/attachments/" + attachment.getId());
         return ResponseEntity.created(uri).body(new ApiResponse<>("Added attachment", HttpStatus.CREATED, attachment));
     }
+
+    // TODO child interaction endpoint(s)
+//    @PutMapping("/{incidentId}/child-interactions/")
 }

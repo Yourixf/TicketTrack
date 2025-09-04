@@ -26,4 +26,3 @@ public interface AppUserMapper {
     void patchAppUserFromDto(AppUserPatchDto dto, @MappingTarget AppUser appUser);
 
 }
-
