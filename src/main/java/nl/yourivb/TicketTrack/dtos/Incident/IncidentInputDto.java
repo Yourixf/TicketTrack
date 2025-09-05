@@ -47,8 +47,6 @@ public class IncidentInputDto {
     @ExistInDatabase(repository = AssignmentGroupRepository.class, message = "Opened for id not found in database")
     private Long openedForId;
 
-    private List<Long> childInteractionsId;
-
     public String getShortDescription() {
         return shortDescription;
     }
@@ -145,11 +143,4 @@ public class IncidentInputDto {
         this.openedForId = openedForId;
     }
 
-    public List<Long> getChildInteractionsId() {
-        return childInteractionsId;
-    }
-
-    public void setChildInteractionsId(List<Long> childInteractionsId) {
-        this.childInteractionsId = childInteractionsId;
-    }
 }

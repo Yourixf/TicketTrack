@@ -21,6 +21,7 @@ public interface IncidentMapper {
     @Mapping(target = "resolveBefore", source = "resolveBefore")
     @Mapping(target = "noteIds", source = "notes")
     @Mapping(target = "attachmentIds", source = "attachments")
+    @Mapping(target = "childInteractionIds", source = "childInteractions")
     IncidentDto toDto(Incident incident);
 
     Incident toModel(IncidentDto dto);

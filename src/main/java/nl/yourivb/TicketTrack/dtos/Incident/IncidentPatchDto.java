@@ -23,7 +23,6 @@ public class IncidentPatchDto {
     private Long serviceOfferingId;
     private Long assignmentGroupId;
     private Long openedForId;
-    private List<Long> childInteractionsId;
 
     public String getShortDescription() {
         return shortDescription;
@@ -119,13 +118,5 @@ public class IncidentPatchDto {
 
     public void setOpenedForId(Long openedForId) {
         this.openedForId = openedForId;
-    }
-
-    public List<Long> getChildInteractionsId() {
-        return childInteractionsId;
-    }
-
-    public void setChildInteractionsId(List<Long> childInteractionsId) {
-        this.childInteractionsId = childInteractionsId;
     }
 }

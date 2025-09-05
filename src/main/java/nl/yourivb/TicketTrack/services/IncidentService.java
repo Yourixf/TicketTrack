@@ -16,13 +16,16 @@ import nl.yourivb.TicketTrack.models.enums.Priority;
 import nl.yourivb.TicketTrack.repositories.*;
 import nl.yourivb.TicketTrack.security.SecurityUtils;
 import nl.yourivb.TicketTrack.utils.AppUtils;
+import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
 import static nl.yourivb.TicketTrack.utils.AppUtils.generateRegistrationNumber;
@@ -42,7 +45,7 @@ public class IncidentService {
                            InteractionRepository interactionRepository,
                            IncidentMapper incidentMapper, NoteRepository noteRepository,
                            AttachmentRepository attachmentRepository,
-                           ServiceOfferingRepository serviceOfferingRepository) {
+                           ServiceOfferingRepository serviceOfferingRepository, MappingsEndpoint mappingsEndpoint) {
         this.incidentRepository = incidentRepository;
         this.interactionRepository = interactionRepository;
         this.incidentMapper = incidentMapper;
@@ -318,7 +321,24 @@ public class IncidentService {
     public void deleteIncident(Long id) {
         Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found"));
 
+
         incidentRepository.deleteById(id);
     }
+
+    public IncidentDto addChildInteractions(Long id, Set<Long> interactionIds) {
+        Incident incident = incidentRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found"));
+
+        List<Interaction> childInteractions = interactionIds.stream()
+                .map(childId -> interactionRepository.findById(childId)
+                        .orElseThrow(() -> new RecordNotFoundException("Interaction " + childId + " not found")))
+                .collect(Collectors.toList());
+
+        incident.setChildInteractions(childInteractions);
+        incidentRepository.save(incident);
+
+        return incidentMapper.toDto(incident);
+    }
+
 
 }

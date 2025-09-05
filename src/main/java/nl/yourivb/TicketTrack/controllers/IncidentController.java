@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/incidents")
@@ -116,5 +117,12 @@ public class IncidentController {
     }
 
     // TODO child interaction endpoint(s)
-//    @PutMapping("/{incidentId}/child-interactions/")
+    @PostMapping("/{id}/child-interactions")
+    public ResponseEntity<ApiResponse<IncidentDto>> addChildInteractions(@PathVariable Long id, @RequestBody Set<Long> interactionIds) {
+        IncidentDto incidentDto = incidentService.addChildInteractions(id, interactionIds);
+
+        return ResponseEntity.ok(new ApiResponse<>("Added child interaction(s)", HttpStatus.OK, incidentDto));
+
+    }
+
 }
