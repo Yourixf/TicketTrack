@@ -2,9 +2,7 @@ package nl.yourivb.TicketTrack.controllers;
 
 import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDownloadDto;
 import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
-import nl.yourivb.TicketTrack.mappers.AttachmentMapper;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
-import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.services.AttachmentService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

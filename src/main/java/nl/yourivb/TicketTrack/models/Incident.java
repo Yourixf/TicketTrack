@@ -1,6 +1,5 @@
 package nl.yourivb.TicketTrack.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import nl.yourivb.TicketTrack.models.enums.*;
 

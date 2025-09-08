@@ -6,8 +6,11 @@ import nl.yourivb.TicketTrack.dtos.assignmentgroup.AssignmentGroupPatchDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AssignmentGroupMapper;
+import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.models.AssignmentGroup;
 import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
+import nl.yourivb.TicketTrack.security.AppUserDetails;
+import nl.yourivb.TicketTrack.security.SecurityUtils;
 import nl.yourivb.TicketTrack.utils.AppUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -104,6 +107,8 @@ class AssignmentGroupServiceTest {
         AssignmentGroup entity = new AssignmentGroup();
         AssignmentGroupDto outputDto = new AssignmentGroupDto();
 
+        AppUser fakeUser = new AppUser(); fakeUser.setId(42L);
+
         when(assignmentGroupMapper.toDto(entity)).thenReturn(outputDto);
 
         // mocking the mapper so we can validate name after act phase
@@ -118,21 +123,28 @@ class AssignmentGroupServiceTest {
         // repo gives back the same object, no actual save.
         when(assignmentGroupRepository.save(any(AssignmentGroup.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        // Act
-        AssignmentGroupDto result = assignmentGroupService.addAssignmentGroup(inputDto);
+        try (var mockedSec = Mockito.mockStatic(SecurityUtils.class)) {
+            mockedSec.when(SecurityUtils::getCurrentUserDetails).thenReturn(new AppUserDetails(fakeUser));
 
-        // Assert (contract)
-        assertSame(outputDto, result);
+            // Act
+            AssignmentGroupDto result = assignmentGroupService.addAssignmentGroup(inputDto);
 
-        // Assert (repo check)
-        verify(assignmentGroupRepository).save(assignmentGroupCaptor.capture());
-        AssignmentGroup saved = assignmentGroupCaptor.getValue();
+            // Assert (contract)
+            assertSame(outputDto, result);
 
-        assertEquals("first line support", saved.getName());
+            // Assert (repo check)
+            verify(assignmentGroupRepository).save(assignmentGroupCaptor.capture());
+            AssignmentGroup saved = assignmentGroupCaptor.getValue();
 
-        // Assert (collaboration)
-        verify(assignmentGroupMapper).toModel(inputDto);
-        verify(assignmentGroupMapper).toDto(entity);
+            assertEquals("first line support", saved.getName());
+
+            // Assert (collaboration)
+            verify(assignmentGroupMapper).toModel(inputDto);
+            verify(assignmentGroupMapper).toDto(entity);
+
+            // Static verify
+            mockedSec.verify(SecurityUtils::getCurrentUserDetails);
+        }
     }
 
     @Test

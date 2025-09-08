@@ -1,7 +1,6 @@
 package nl.yourivb.TicketTrack.services;
 
 import nl.yourivb.TicketTrack.dtos.role.RoleDto;
-import nl.yourivb.TicketTrack.dtos.role.RoleInputDto;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.RoleMapper;
 import nl.yourivb.TicketTrack.models.Role;
@@ -32,29 +31,5 @@ public class RoleService {
         Role role = roleRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Role " + id + " not found"));
 
         return roleMapper.toDto(role);
-    }
-
-    public RoleDto addRole(RoleInputDto dto) {
-        Role role = roleMapper.toModel(dto);
-
-        roleRepository.save(role);
-
-        return roleMapper.toDto(role);
-    }
-
-    public RoleDto updateRole(Long id, RoleInputDto dto) {
-        Role role = roleRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Role " + id + " not found"));
-
-        roleMapper.updateRoleFromDto(dto, role);
-        roleRepository.save(role);
-
-        return roleMapper.toDto(role);
-    }
-
-    public void deleteRole(Long id) {
-        Role role = roleRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Role " + id + " not found"));
-
-        roleRepository.deleteById(id);
-
     }
 }

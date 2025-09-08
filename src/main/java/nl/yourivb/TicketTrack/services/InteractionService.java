@@ -57,9 +57,13 @@ public class InteractionService {
                 // this filters out the tickets for user without needed perms and skips access exception
                 .filter(interaction -> {
                     try {
+                        System.out.println("Checking access for interaction: " + interaction.getId()
+                                + " opened by: " + (interaction.getOpenedBy() != null ? interaction.getOpenedBy().getId() : "null"));
                         validateTicketAccess(interaction.getOpenedBy(), interaction.getOpenedFor());
                         return true;
                     } catch (Exception e){
+                        System.out.println("Access denied for interaction: " + interaction.getId());
+
                         return false;
                     }
                 })

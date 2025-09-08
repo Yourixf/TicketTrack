@@ -77,6 +77,8 @@ public class AppUtils {
 
     public static void validateTicketAccess(AppUser openedBy, AppUser openedFor) {
         AppUser currentUser = SecurityUtils.getCurrentUserDetails().getAppUser();
+        System.out.println(currentUser);
+        System.out.println(SecurityUtils.getCurrentUserDetails());
         if (SecurityUtils.hasRole("CUSTOMER")) {
             boolean isOwner = (openedBy != null && currentUser.equals(openedBy))
                     || (openedFor != null && currentUser.equals(openedFor));

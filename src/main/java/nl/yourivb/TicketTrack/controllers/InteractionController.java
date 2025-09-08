@@ -1,13 +1,13 @@
 package nl.yourivb.TicketTrack.controllers;
 
 import jakarta.validation.Valid;
-import nl.yourivb.TicketTrack.dtos.incident.IncidentDto;
-import nl.yourivb.TicketTrack.dtos.note.NoteDto;
-import nl.yourivb.TicketTrack.dtos.note.NoteInputDto;
 import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
+import nl.yourivb.TicketTrack.dtos.incident.IncidentDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
+import nl.yourivb.TicketTrack.dtos.note.NoteDto;
+import nl.yourivb.TicketTrack.dtos.note.NoteInputDto;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.AttachmentService;
 import nl.yourivb.TicketTrack.services.IncidentService;

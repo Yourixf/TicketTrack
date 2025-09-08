@@ -13,12 +13,14 @@ import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.models.enums.IncidentState;
 import nl.yourivb.TicketTrack.models.enums.InteractionState;
 import nl.yourivb.TicketTrack.models.enums.Priority;
-import nl.yourivb.TicketTrack.repositories.*;
+import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
+import nl.yourivb.TicketTrack.repositories.IncidentRepository;
+import nl.yourivb.TicketTrack.repositories.InteractionRepository;
+import nl.yourivb.TicketTrack.repositories.NoteRepository;
 import nl.yourivb.TicketTrack.security.SecurityUtils;
 import nl.yourivb.TicketTrack.utils.AppUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,7 +29,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static nl.yourivb.TicketTrack.utils.AppUtils.*;;
+import static nl.yourivb.TicketTrack.utils.AppUtils.*;
+
+;
 
 
 @Service

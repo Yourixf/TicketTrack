@@ -5,7 +5,6 @@ import nl.yourivb.TicketTrack.models.enums.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class IncidentDto {
     private Long id;

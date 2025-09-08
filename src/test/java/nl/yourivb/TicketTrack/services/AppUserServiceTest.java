@@ -9,6 +9,8 @@ import nl.yourivb.TicketTrack.mappers.AppUserMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.models.Role;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
+import nl.yourivb.TicketTrack.security.AppUserDetails;
+import nl.yourivb.TicketTrack.security.SecurityUtils;
 import nl.yourivb.TicketTrack.utils.AppUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -206,6 +208,8 @@ class AppUserServiceTest {
 
         AppUserDto outputDto = new AppUserDto();
 
+        AppUser fakeUser = new AppUser(); fakeUser.setId(1L);
+
         when(appUserRepository.findById(1L)).thenReturn(Optional.of(originalEntity));
 
         doAnswer(inv -> {
@@ -218,24 +222,31 @@ class AppUserServiceTest {
         when(appUserRepository.save(any(AppUser.class))).thenAnswer(inv -> inv.getArgument(0));
         when(appUserMapper.toDto(originalEntity)).thenReturn(outputDto);
 
-        // Act
-        AppUserDto result = appUserService.updateUser(1L, newInputDto);
+        try (var mockedSec = Mockito.mockStatic(SecurityUtils.class)) {
+            mockedSec.when(SecurityUtils::getCurrentUserDetails).thenReturn( new AppUserDetails(fakeUser));
 
-        // Assert (contract)
-        assertEquals(outputDto, result);
+            // Act
+            AppUserDto result = appUserService.updateUser(1L, newInputDto);
 
-        // Assert (repo validation)
-        verify(appUserRepository).save(appUserCaptor.capture());
-        AppUser saved = appUserCaptor.getValue();
+            // Assert (contract)
+            assertEquals(outputDto, result);
 
-        assertEquals("John Wick", saved.getName());
+            // Assert (repo validation)
+            verify(appUserRepository).save(appUserCaptor.capture());
+            AppUser saved = appUserCaptor.getValue();
 
-        // Assert (collaboration)
-        verify(appUserRepository, times(1)).findById(1L);
-        verify(appUserMapper, times(1)).updateAppUserFromDto(newInputDto, originalEntity);
-        verify(appUserRepository, times(1)).findByEmail(any());
-        verify(appUserRepository, times(1)).save(any(AppUser.class));
-        verify(appUserMapper, times(1)).toDto(originalEntity);
+            assertEquals("John Wick", saved.getName());
+
+            // Assert (collaboration)
+            verify(appUserRepository, times(1)).findById(1L);
+            verify(appUserMapper, times(1)).updateAppUserFromDto(newInputDto, originalEntity);
+            verify(appUserRepository, times(1)).findByEmail(any());
+            verify(appUserRepository, times(1)).save(any(AppUser.class));
+            verify(appUserMapper, times(1)).toDto(originalEntity);
+
+            // Static verify
+            mockedSec.verify(SecurityUtils::getCurrentUserDetails);
+        }
     }
 
     @Test
@@ -252,6 +263,8 @@ class AppUserServiceTest {
         AppUserInputDto newInputDto = new AppUserInputDto();
         newInputDto.setEmail("john@wick.com");
 
+        AppUser fakeUser = new AppUser(); fakeUser.setId(1L);
+
         when(appUserRepository.findById(1L)).thenReturn(Optional.of(originalEntity));
 
         doAnswer(inv -> {
@@ -263,16 +276,23 @@ class AppUserServiceTest {
 
         when(appUserRepository.findByEmail(newInputDto.getEmail())).thenReturn(Optional.of(otherEntity));
 
-        // Act & Assert
-        assertThrows(BadRequestException.class, () -> appUserService.updateUser(1L, newInputDto));
+        try (var mockedSec = Mockito.mockStatic(SecurityUtils.class)) {
+            mockedSec.when(SecurityUtils::getCurrentUserDetails).thenReturn(new AppUserDetails(fakeUser));
 
-        // Assert (collaboration)
-        verify(appUserRepository, times(1)).findById(1L);
-        verify(appUserMapper, times(1)).updateAppUserFromDto(newInputDto, originalEntity);
-        verify(appUserRepository, times(1)).findByEmail(any());
-        verify(appUserRepository, never()).save(any(AppUser.class));
-        verify(appUserMapper, never()).toDto(any(AppUser.class));
-        verifyNoMoreInteractions(appUserRepository,appUserMapper);
+            // Act & Assert
+            assertThrows(BadRequestException.class, () -> appUserService.updateUser(1L, newInputDto));
+
+            // Assert (collaboration)
+            verify(appUserRepository, times(1)).findById(1L);
+            verify(appUserMapper, times(1)).updateAppUserFromDto(newInputDto, originalEntity);
+            verify(appUserRepository, times(1)).findByEmail(any());
+            verify(appUserRepository, never()).save(any(AppUser.class));
+            verify(appUserMapper, never()).toDto(any(AppUser.class));
+            verifyNoMoreInteractions(appUserRepository, appUserMapper);
+
+            // Static mock
+            mockedSec.verify(SecurityUtils::getCurrentUserDetails);
+        }
     }
 
     @Test
@@ -288,6 +308,7 @@ class AppUserServiceTest {
         newPatchDto.setEmail("john@wick.com");
 
         AppUserDto outputDto = new AppUserDto();
+        AppUser fakeUser = new AppUser(); fakeUser.setId(1L);
 
         when(appUserRepository.findById(1L)).thenReturn(Optional.of(originalEntity));
 
@@ -302,8 +323,11 @@ class AppUserServiceTest {
         when(appUserRepository.save(any(AppUser.class))).thenAnswer(inv -> inv.getArgument(0));
         when(appUserMapper.toDto(originalEntity)).thenReturn(outputDto);
 
-        try (var mocked = Mockito.mockStatic(AppUtils.class)) {
-            mocked.when(() -> AppUtils.allFieldsNull(newPatchDto)).thenReturn(false);
+        try (var mockedUtil = Mockito.mockStatic(AppUtils.class);
+             var mockedSec = Mockito.mockStatic(SecurityUtils.class)) {
+            mockedUtil.when(() -> AppUtils.allFieldsNull(newPatchDto)).thenReturn(false);
+            mockedSec.when(SecurityUtils::getCurrentUserDetails).thenReturn(new AppUserDetails(fakeUser));
+
             // Act
             AppUserDto result = appUserService.patchUser(1L, newPatchDto);
 
@@ -325,7 +349,9 @@ class AppUserServiceTest {
             verify(appUserMapper, times(1)).toDto(originalEntity);
 
             // Static verify
-            mocked.verify(() -> AppUtils.allFieldsNull(eq(newPatchDto)));
+            mockedUtil.verify(() -> AppUtils.allFieldsNull(eq(newPatchDto)));
+            mockedSec.verify(SecurityUtils::getCurrentUserDetails);
+
         }
     }
 
@@ -338,10 +364,14 @@ class AppUserServiceTest {
         AppUserPatchDto newPatchDto = new AppUserPatchDto();
         AppUserDto outputDto = new AppUserDto();
 
+        AppUser fakeUser = new AppUser(); fakeUser.setId(1L);
+
         when(appUserRepository.findById(1L)).thenReturn(Optional.of(originalEntity));
 
-        try (var mocked = Mockito.mockStatic(AppUtils.class)) {
-            mocked.when(() -> AppUtils.allFieldsNull(newPatchDto)).thenReturn(true);
+        try (var mockedUtil = Mockito.mockStatic(AppUtils.class);
+             var mockedSec = Mockito.mockStatic(SecurityUtils.class)) {
+            mockedUtil.when(() -> AppUtils.allFieldsNull(newPatchDto)).thenReturn(true);
+            mockedSec.when(SecurityUtils::getCurrentUserDetails).thenReturn(new AppUserDetails(fakeUser));
             // Act & Assert
 
             assertThrows(BadRequestException.class, () -> appUserService.patchUser(1L, newPatchDto));
@@ -355,7 +385,8 @@ class AppUserServiceTest {
             verifyNoMoreInteractions(appUserRepository,appUserMapper);
 
             // Static verify
-            mocked.verify(() -> AppUtils.allFieldsNull(eq(newPatchDto)));
+            mockedUtil.verify(() -> AppUtils.allFieldsNull(eq(newPatchDto)));
+            mockedSec.verify(SecurityUtils::getCurrentUserDetails);
         }
     }
 

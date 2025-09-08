@@ -1,15 +1,15 @@
 package nl.yourivb.TicketTrack.controllers;
 
-import jakarta.validation.Valid;
 import nl.yourivb.TicketTrack.dtos.role.RoleDto;
-import nl.yourivb.TicketTrack.dtos.role.RoleInputDto;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.RoleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -41,35 +41,4 @@ public class RoleController {
                 HttpStatus.OK
         );
     }
-
-    @PostMapping
-    public ResponseEntity<ApiResponse<RoleDto>> addRole(@Valid @RequestBody RoleInputDto dto) {
-        RoleDto role = roleService.addRole(dto);
-        URI uri = URI.create("/roles/" + role.getId());
-
-        return ResponseEntity.created(uri).body(
-                new ApiResponse<>("Created role", HttpStatus.CREATED, role)
-        );
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<RoleDto>> updateRole(@PathVariable Long id, @Valid @RequestBody RoleInputDto dto) {
-        RoleDto role = roleService.updateRole(id, dto);
-
-        return new ResponseEntity<>(
-                new ApiResponse<>("Role updated", HttpStatus.OK, role),
-                HttpStatus.OK
-        );
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteRole(@PathVariable Long id) {
-        roleService.deleteRole(id);
-
-         return new ResponseEntity<>(
-                new ApiResponse<>("Role deleted", HttpStatus.OK, null),
-                HttpStatus.OK
-        );
-    }
-
 }
