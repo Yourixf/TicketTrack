@@ -9,6 +9,7 @@ import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.InteractionMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.models.Interaction;
+import nl.yourivb.TicketTrack.models.Role;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
 import nl.yourivb.TicketTrack.models.enums.InteractionState;
@@ -95,10 +96,15 @@ class InteractionServiceTest {
 
     // TODO fix this mess
     @Test
-    void getAllInteractionsWithAccessLevel()  {
+    void getAllInteractionsWithCustomerAccessLevel()  {
         // Arrange
+        Role role = new Role();
+        role.setName("ROLE_CUSTOMER");
+        role.setId(3L);
+
         AppUser currentUser = new AppUser();
         currentUser.setId(5L);
+        currentUser.setRole(role);
 
         AppUser otherUser = new AppUser();
         otherUser.setId(99L);
@@ -109,11 +115,13 @@ class InteractionServiceTest {
         Interaction i1 = new Interaction();
         i1.setId(1L);
         i1.setOpenedBy(currentUser);
+        i1.setOpenedFor(currentUser);
 
         // i2 is owned by otherUser
         Interaction i2 = new Interaction();
         i2.setId(2L);
         i2.setOpenedBy(otherUser);
+        i2.setOpenedFor(otherUser);
 
         // this code says: If interactionRepository.findAll()) is called, don't use DB/repository but return a list
         // existing of the above interactions
@@ -132,8 +140,7 @@ class InteractionServiceTest {
             mockedUtil.when(() -> AppUtils.enrichWithRelations(any(), anyString(), anyLong(), any(), any()))
                     .then(inv -> null);
 
-            mockedSec.when(SecurityUtils::getCurrentUserDetails).thenReturn(userDetails);
-            mockedSec.when(() -> SecurityUtils.hasRole("CUSTOMER")).thenReturn(true);
+            mockedSec.when(SecurityUtils::getCurrentUserId).thenReturn(currentUser.getId());
 
             // Act
             List<InteractionDto> result = interactionService.getAllInteractions();

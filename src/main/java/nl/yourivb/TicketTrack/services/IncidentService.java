@@ -173,7 +173,7 @@ public class IncidentService {
                 .stream()
                 .filter(incident -> {
                     try {
-                        validateTicketAccess(incident.getOpenedBy(), incident.getOpenedFor());
+                        validateTicketAccess(incident.getOpenedBy().getId(), incident.getOpenedFor().getId());
                         return true;
                     } catch (Exception e){
                         return false;
@@ -198,7 +198,7 @@ public class IncidentService {
 
     public IncidentDto getIncidentById(Long id) {
         Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found" ));
-        validateTicketAccess(incident.getOpenedBy(), incident.getOpenedFor());
+        validateTicketAccess(incident.getOpenedBy().getId(), incident.getOpenedFor().getId());
         AppUtils.enrichWithRelations(
                 incident,
                 "Incident",

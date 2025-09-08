@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -199,12 +200,18 @@ class AppUserServiceTest {
     @Test
     void updateUser() {
         // Arrange
+        Role role = new Role();
+        role.setId(1L);
+        role.setName("ROLE_ADMIN");
+
         AppUser originalEntity = new AppUser();
         originalEntity.setId(1L);
         originalEntity.setName("Johnwick");
+        originalEntity.setRole(role);
 
         AppUserInputDto newInputDto = new AppUserInputDto();
         newInputDto.setName("John Wick");
+        newInputDto.setPassword("12345678");
 
         AppUserDto outputDto = new AppUserDto();
 
@@ -218,6 +225,9 @@ class AppUserServiceTest {
             entity.setName(dto.getName());
             return null;
         }).when(appUserMapper).updateAppUserFromDto(eq(newInputDto), same(originalEntity));
+
+        when(passwordEncoder.encode(newInputDto.getPassword())).thenReturn("hashed123");
+
 
         when(appUserRepository.save(any(AppUser.class))).thenAnswer(inv -> inv.getArgument(0));
         when(appUserMapper.toDto(originalEntity)).thenReturn(outputDto);
@@ -296,16 +306,60 @@ class AppUserServiceTest {
     }
 
     @Test
+    void updateUserWithNoAccessToModifyUser() {
+        // Arrange
+        Role role = new Role();
+        role.setId(1L);
+        role.setName("ROLE_CUSTOMER");
+
+        AppUser originalEntity = new AppUser();
+        originalEntity.setId(1L);
+
+        AppUser loggedInEntity = new AppUser();
+        loggedInEntity.setId(2L);
+        loggedInEntity.setRole(role);
+
+        AppUserInputDto newInputDto = new AppUserInputDto();
+
+        when(appUserRepository.findById(1L)).thenReturn(Optional.of(originalEntity));
+
+        try (var mockedSec = Mockito.mockStatic(SecurityUtils.class)) {
+            mockedSec.when(SecurityUtils::getCurrentUserDetails).thenReturn(new AppUserDetails(loggedInEntity));
+
+            // Act & Assert
+            assertThrows(AccessDeniedException.class, () -> appUserService.updateUser(1L, newInputDto));
+
+            // Assert (collaboration)
+            verify(appUserRepository, times(1)).findById(1L);
+            verify(appUserMapper, never()   ).updateAppUserFromDto(any(), any());
+            verify(appUserRepository, never()).findByEmail(any());
+            verify(appUserRepository, never()).save(any(AppUser.class));
+            verify(appUserMapper, never()).toDto(any(AppUser.class));
+            verifyNoMoreInteractions(appUserRepository, appUserMapper);
+
+            // Static mock
+            mockedSec.verify(SecurityUtils::getCurrentUserDetails);
+        }
+    }
+
+    @Test
     void patchUser() {
         // Arrange
+        Role role = new Role();
+        role.setId(1L);
+        role.setName("ROLE_ADMIN");
+
+
         AppUser originalEntity = new AppUser();
         originalEntity.setId(1L);
         originalEntity.setName("Johnwick");
         originalEntity.setEmail("john@wck.com");
+        originalEntity.setRole(role);
 
         AppUserPatchDto newPatchDto = new AppUserPatchDto();
         newPatchDto.setName("John Wick");
         newPatchDto.setEmail("john@wick.com");
+        newPatchDto.setPassword("12345678");
 
         AppUserDto outputDto = new AppUserDto();
         AppUser fakeUser = new AppUser(); fakeUser.setId(1L);
@@ -319,6 +373,8 @@ class AppUserServiceTest {
             entity.setEmail(dto.getEmail());
             return null;
         }).when(appUserMapper).patchAppUserFromDto(eq(newPatchDto), same(originalEntity));
+
+        when(passwordEncoder.encode(newPatchDto.getPassword())).thenReturn("hashed123");
 
         when(appUserRepository.save(any(AppUser.class))).thenAnswer(inv -> inv.getArgument(0));
         when(appUserMapper.toDto(originalEntity)).thenReturn(outputDto);
@@ -386,6 +442,44 @@ class AppUserServiceTest {
 
             // Static verify
             mockedUtil.verify(() -> AppUtils.allFieldsNull(eq(newPatchDto)));
+            mockedSec.verify(SecurityUtils::getCurrentUserDetails);
+        }
+    }
+
+    @Test
+    void patchUserWithNoAccessToModifyRole() {
+        // Arrange
+        Role role = new Role();
+        role.setId(1L);
+        role.setName("ROLE_CUSTOMER");
+
+        AppUser originalEntity = new AppUser();
+        originalEntity.setId(1L);
+
+        AppUser loggedInEntity = new AppUser();
+        loggedInEntity.setId(1L);
+        loggedInEntity.setRole(role);
+
+        AppUserPatchDto newPatchDto = new AppUserPatchDto();
+        newPatchDto.setRoleId(1L);
+
+        when(appUserRepository.findById(1L)).thenReturn(Optional.of(originalEntity));
+
+        try (var mockedSec = Mockito.mockStatic(SecurityUtils.class)) {
+            mockedSec.when(SecurityUtils::getCurrentUserDetails).thenReturn(new AppUserDetails(loggedInEntity));
+
+            // Act & Assert
+            assertThrows(AccessDeniedException.class, () -> appUserService.patchUser(1L, newPatchDto));
+
+            // Assert (collaboration)
+            verify(appUserRepository, times(1)).findById(1L);
+            verify(appUserMapper, never()   ).updateAppUserFromDto(any(), any());
+            verify(appUserRepository, never()).findByEmail(any());
+            verify(appUserRepository, never()).save(any(AppUser.class));
+            verify(appUserMapper, never()).toDto(any(AppUser.class));
+            verifyNoMoreInteractions(appUserRepository, appUserMapper);
+
+            // Static mock
             mockedSec.verify(SecurityUtils::getCurrentUserDetails);
         }
     }

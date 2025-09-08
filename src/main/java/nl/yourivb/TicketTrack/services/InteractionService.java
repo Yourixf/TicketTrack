@@ -59,11 +59,9 @@ public class InteractionService {
                     try {
                         System.out.println("Checking access for interaction: " + interaction.getId()
                                 + " opened by: " + (interaction.getOpenedBy() != null ? interaction.getOpenedBy().getId() : "null"));
-                        validateTicketAccess(interaction.getOpenedBy(), interaction.getOpenedFor());
+                        validateTicketAccess(interaction.getOpenedBy().getId(), interaction.getOpenedFor().getId());
                         return true;
                     } catch (Exception e){
-                        System.out.println("Access denied for interaction: " + interaction.getId());
-
                         return false;
                     }
                 })
@@ -83,7 +81,7 @@ public class InteractionService {
 
     public InteractionDto getInteractionById(Long id) {
         Interaction interaction = interactionRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Interaction " + id + " not found"));
-        validateTicketAccess(interaction.getOpenedBy(), interaction.getOpenedFor());
+        validateTicketAccess(interaction.getOpenedBy().getId(), interaction.getOpenedFor().getId());
 
         AppUtils.enrichWithRelations(
                 interaction,

@@ -58,10 +58,21 @@ public class AppUserService {
 //        }
     }
 
-    private void verifyAccessToModifyUser(Long targetUserId, boolean isAdmin) {
+
+    private void verifyAccessToModifyUser(Long targetUserId) {
+        boolean isAdmin = SecurityUtils.hasRole("ADMIN");
+
         AppUser currentUser = SecurityUtils.getCurrentUserDetails().getAppUser();
         if (!isAdmin && !currentUser.getId().equals(targetUserId)) {
             throw new AccessDeniedException("You can only change your own account.");
+        }
+    }
+
+    private void validateAccessToModifyRole(Long roleId) {
+        boolean isAdmin = SecurityUtils.hasRole("ADMIN");
+
+        if (!isAdmin && roleId != null) {
+            throw new AccessDeniedException("Only admins can change user roles.");
         }
     }
 
@@ -96,13 +107,10 @@ public class AppUserService {
         AppUser appUser = appUserRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("User " + id + " not found"));
 
-        boolean isAdmin = SecurityUtils.hasRole("ADMIN");
-        verifyAccessToModifyUser(id, isAdmin);
+        verifyAccessToModifyUser(id);
 
         // only admins are allowed to change roles
-        if (!isAdmin && dto.getRoleId() != null) {
-            throw new AccessDeniedException("Only admins can change user roles.");
-        }
+        validateAccessToModifyRole(dto.getRoleId());
 
         // this prevents roleId being set to null if not updated.
         if (dto.getRoleId() == null && appUser.getRole() != null) {
@@ -125,13 +133,10 @@ public class AppUserService {
         AppUser appUser = appUserRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("User " + id + " not found"));
 
-        boolean isAdmin = SecurityUtils.hasRole("ADMIN");
-        verifyAccessToModifyUser(id, isAdmin);
+        verifyAccessToModifyUser(id);
 
         // only admins are allowed to change roles
-        if (!isAdmin && dto.getRoleId() != null) {
-            throw new AccessDeniedException("Only admins can change user roles.");
-        }
+        validateAccessToModifyRole(dto.getRoleId());
 
         // this prevents roleId being set to null if not updated.
         if (dto.getRoleId() == null && appUser.getRole() != null) {

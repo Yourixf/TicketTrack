@@ -75,13 +75,12 @@ public class AppUtils {
         }
     }
 
-    public static void validateTicketAccess(AppUser openedBy, AppUser openedFor) {
-        AppUser currentUser = SecurityUtils.getCurrentUserDetails().getAppUser();
-        System.out.println(currentUser);
-        System.out.println(SecurityUtils.getCurrentUserDetails());
+    public static void validateTicketAccess(Long openedById, Long openedForId) {
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+
         if (SecurityUtils.hasRole("CUSTOMER")) {
-            boolean isOwner = (openedBy != null && currentUser.equals(openedBy))
-                    || (openedFor != null && currentUser.equals(openedFor));
+            boolean isOwner = (openedById != null && currentUserId.equals(openedById))
+                    || (openedForId != null && currentUserId.equals(openedForId));
 
             if (!isOwner) {
                 throw new AccessDeniedException("You have no permission to view this record.");
