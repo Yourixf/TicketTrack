@@ -54,6 +54,7 @@ public class InteractionService {
         // this finds alls interactions, loops through each, gets and sets the corresponding note & atta list.
         return interactionRepository.findAll()
                 .stream()
+                // this filters out the tickets for user without needed perms and skips access exception
                 .filter(interaction -> {
                     try {
                         validateTicketAccess(interaction.getOpenedBy(), interaction.getOpenedFor());

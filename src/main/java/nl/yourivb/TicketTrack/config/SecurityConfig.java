@@ -61,11 +61,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/users/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/users/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/users/**").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/users/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/users/*/profile-picture").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/users/*/profile-picture").authenticated()
 
                         .requestMatchers(HttpMethod.GET, "/assignment-groups/**").hasAnyRole("ADMIN", "IT")
                         .requestMatchers(HttpMethod.POST, "/assignment-groups").hasRole("ADMIN")
@@ -74,6 +77,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/assignment-groups/**").hasRole("ADMIN")
 
                         .requestMatchers(HttpMethod.GET, "/attachments/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/attachments/*/download").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/attachments/**").hasAnyRole("ADMIN", "IT")
 
                         .requestMatchers(HttpMethod.GET, "/incidents/**").authenticated()
@@ -81,9 +85,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/incidents/**").hasAnyRole("ADMIN", "IT")
                         .requestMatchers(HttpMethod.PATCH, "/incidents/**").hasAnyRole("ADMIN", "IT")
                         .requestMatchers(HttpMethod.DELETE, "/incidents/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/incidents/*/attachments").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/incidents/*/notes").authenticated()
 
                         .requestMatchers(HttpMethod.GET, "/interactions/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/interactions").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/interactions/*/attachments").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/interactions/*/notes").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/interactions/*/escalate").hasAnyRole("ADMIN", "IT")
                         .requestMatchers(HttpMethod.POST, "/interactions/**").hasAnyRole("ADMIN", "IT")
                         .requestMatchers(HttpMethod.PUT, "/interactions/**").hasAnyRole("ADMIN", "IT")
                         .requestMatchers(HttpMethod.PATCH, "/interactions/**").hasAnyRole("ADMIN", "IT")
@@ -92,17 +101,17 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/notes/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/notes/**").hasRole("ADMIN")
 
-                        .requestMatchers("/roles/**").denyAll()
-
                         .requestMatchers(HttpMethod.GET, "/service-offerings/**").hasAnyRole("ADMIN", "IT")
                         .requestMatchers(HttpMethod.POST, "/service-offerings").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/service-offerings/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/service-offerings/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/service-offerings/**").hasRole("ADMIN")
 
+                        .requestMatchers("/roles/**").denyAll()
                         .requestMatchers("/authenticate").anonymous()
-                        .anyRequest().authenticated()
+                        .anyRequest().denyAll()
                 )
+
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

@@ -14,11 +14,9 @@ public interface AppUserMapper {
     @Mapping(target = "roleId", source = "role")
     AppUserDto toDto(AppUser user);
 
-    @Mapping(target = "profilePicture", source = "profilePictureId")
     @Mapping(target = "role", source = "roleId")
     AppUser toModel(AppUserInputDto dto);
 
-    @Mapping(target = "profilePicture", source = "profilePictureId")
     @Mapping(target = "role", source = "roleId")
     void updateAppUserFromDto(AppUserInputDto dto, @MappingTarget AppUser appUser);
 

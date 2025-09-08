@@ -23,9 +23,6 @@ public class AppUserInputDto {
     private String info;
     private String password;
 
-    @ExistInDatabase(repository = AttachmentRepository.class, message = "Attachment id not found in database")
-    private Long profilePictureId;
-
     @ExistInDatabase(repository = RoleRepository.class, message = "Role id not found in database")
     private Long roleId;
 
@@ -67,14 +64,6 @@ public class AppUserInputDto {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Long getProfilePictureId() {
-        return profilePictureId;
-    }
-
-    public void setProfilePictureId(Long profilePictureId) {
-        this.profilePictureId = profilePictureId;
     }
 
     public Long getRoleId() {

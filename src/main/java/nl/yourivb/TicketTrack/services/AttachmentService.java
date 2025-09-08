@@ -6,7 +6,9 @@ import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.FileStorageException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AttachmentMapper;
+import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.models.Attachment;
+import nl.yourivb.TicketTrack.repositories.AppUserRepository;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.IncidentRepository;
 import nl.yourivb.TicketTrack.repositories.InteractionRepository;
@@ -14,6 +16,7 @@ import nl.yourivb.TicketTrack.security.SecurityUtils;
 import nl.yourivb.TicketTrack.utils.AppUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -33,15 +37,32 @@ public class AttachmentService {
     private final AttachmentMapper attachmentMapper;
     private final InteractionRepository interactionRepository;
     private final IncidentRepository incidentRepository;
+    private final AppUserRepository appUserRepository;
 
     public AttachmentService(AttachmentRepository attachmentRepository,
                              AttachmentMapper attachmentMapper,
                              InteractionRepository interactionRepository,
-                             IncidentRepository incidentRepository) {
+                             IncidentRepository incidentRepository, AppUserRepository appUserRepository) {
         this.attachmentRepository = attachmentRepository;
         this.attachmentMapper = attachmentMapper;
         this.interactionRepository = interactionRepository;
         this.incidentRepository = incidentRepository;
+        this.appUserRepository = appUserRepository;
+    }
+
+    private void validateAttachable(String attachableType, Long attachableId) {
+        switch (attachableType) {
+            case "Interaction" -> {
+                interactionRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("Interaction " + attachableId  + " not found"));
+            }
+            case "Incident" -> {
+                incidentRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("Incident " + attachableId + " not found" ));
+            }
+            case "AppUser" -> {
+                appUserRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("User " + attachableId + " not found"));
+            }
+            default -> throw new BadRequestException("Unsupported parent type: " + attachableType);
+        }
     }
 
     public List<AttachmentDto> getAllAttachments() {
@@ -59,15 +80,15 @@ public class AttachmentService {
             throw new BadRequestException("Empty file is not allowed");
         }
 
-        switch (attachableType) {
-            case "Interaction" -> {
-                interactionRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("Interaction " + attachableId + " not found"));
-            }
-            case "Incident" -> {
-                incidentRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("Incident " + attachableId + " not found" ));
-            }
-            default -> throw new BadRequestException("Unsupported parent type: " + attachableType);
+        validateAttachable(attachableType, attachableId);
+
+        boolean hasAccess = attachableType.equals("AppUser") && attachableId == SecurityUtils.getCurrentUserId();
+        boolean isAdmin = SecurityUtils.hasRole("ADMIN");
+
+        if (!hasAccess && !isAdmin) {
+            throw new AccessDeniedException("You don't have permission to access this resource.");
         }
+
 
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         // to ensure unique fileName in uploads folder
@@ -90,6 +111,13 @@ public class AttachmentService {
         attachment.setUploadedBy(SecurityUtils.getCurrentUserDetails().getAppUser());
 
         attachmentRepository.save(attachment);
+
+        if (attachableType.equals("AppUser")) {
+            // no orElse, switch case covers that.
+            Optional<AppUser> user = appUserRepository.findById(attachableId);
+            user.get().setProfilePicture(attachment);
+            appUserRepository.save(user.get());
+        }
         return attachmentMapper.toDto(attachment);
     }
 
@@ -141,20 +169,11 @@ public class AttachmentService {
 
     public List<AttachmentDto> getAllAttachmentsFromParent(String attachableType, Long attachableId) {
 
-        switch (attachableType) {
-            case "Interaction" -> {
-                interactionRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("Interaction " + attachableId  + " not found"));
-            }
-            case "Incident" -> {
-                incidentRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("Incident " + attachableId + " not found" ));
-            }
-            default -> throw new BadRequestException("Unsupported parent type: " + attachableType);
-        }
+        validateAttachable(attachableType, attachableId);
         return attachmentMapper.toDto(
                 attachmentRepository.findByAttachableTypeAndAttachableId(attachableType, attachableId)
         );
     }
-
 
     public AttachmentDownloadDto downloadAttachment(Long id) {
         Attachment attachment = attachmentRepository.findById(id)

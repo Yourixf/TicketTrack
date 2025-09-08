@@ -4,11 +4,14 @@ import jakarta.validation.Valid;
 import nl.yourivb.TicketTrack.dtos.appuser.AppUserDto;
 import nl.yourivb.TicketTrack.dtos.appuser.AppUserInputDto;
 import nl.yourivb.TicketTrack.dtos.appuser.AppUserPatchDto;
+import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.AppUserService;
+import nl.yourivb.TicketTrack.services.AttachmentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.util.List;
@@ -18,9 +21,11 @@ import java.util.List;
 public class AppUserController {
 
     private final AppUserService appUserService;
+    private final AttachmentService attachmentService;
 
-    public AppUserController(AppUserService appUserService) {
+    public AppUserController(AppUserService appUserService, AttachmentService attachmentService) {
         this.appUserService = appUserService;
+        this.attachmentService = attachmentService;
     }
 
     @GetMapping
@@ -81,5 +86,23 @@ public class AppUserController {
                 new ApiResponse<>("User deleted", HttpStatus.OK, null),
                 HttpStatus.OK
         );
+    }
+
+    @GetMapping("/{id}/profile-picture")
+    public ResponseEntity<ApiResponse<List<AttachmentDto>>> getProfilePicture(@PathVariable Long id) {
+        // not getById so we can reuse existing parent validator code
+        List<AttachmentDto> attachmentDto = attachmentService.getAllAttachmentsFromParent("AppUser", id);
+
+        return new ResponseEntity<>(
+                new ApiResponse<>("Fetched profile picture from user " + id, HttpStatus.OK, attachmentDto), HttpStatus.OK
+        );
+    }
+
+    @PostMapping("/{id}/profile-picture")
+    public ResponseEntity<ApiResponse<AttachmentDto>> addProfilePicture(@PathVariable Long id, @RequestParam("file")MultipartFile file) {
+        AttachmentDto attachmentDto = attachmentService.addAttachment(file, "AppUser", id);
+
+        URI uri = URI.create("/attachments/" + attachmentDto.getId());
+        return ResponseEntity.created(uri).body(new ApiResponse<>("Added profile picture", HttpStatus.CREATED, attachmentDto));
     }
 }

@@ -77,10 +77,12 @@ public class AppUtils {
 
     public static void validateTicketAccess(AppUser openedBy, AppUser openedFor) {
         AppUser currentUser = SecurityUtils.getCurrentUserDetails().getAppUser();
-
         if (SecurityUtils.hasRole("CUSTOMER")) {
-            if (currentUser != openedBy && currentUser != openedFor) {
-                throw new AccessDeniedException("You have no permission to view this incident.");
+            boolean isOwner = (openedBy != null && currentUser.equals(openedBy))
+                    || (openedFor != null && currentUser.equals(openedFor));
+
+            if (!isOwner) {
+                throw new AccessDeniedException("You have no permission to view this record.");
             }
         }
     }

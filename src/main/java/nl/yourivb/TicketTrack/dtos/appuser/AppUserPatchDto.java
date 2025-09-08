@@ -16,7 +16,6 @@ public class AppUserPatchDto {
     @Size(min = 2, max = 500)
     private String info;
     private String password;
-    private Long profilePictureId;
     private Long roleId;
 
     public String getName() {
@@ -57,14 +56,6 @@ public class AppUserPatchDto {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Long getProfilePictureId() {
-        return profilePictureId;
-    }
-
-    public void setProfilePictureId(Long profilePictureId) {
-        this.profilePictureId = profilePictureId;
     }
 
     public Long getRoleId() {
