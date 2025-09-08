@@ -1,4 +1,4 @@
-package nl.yourivb.TicketTrack.dtos.Incident;
+package nl.yourivb.TicketTrack.dtos.incident;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -7,8 +7,6 @@ import nl.yourivb.TicketTrack.models.enums.*;
 import nl.yourivb.TicketTrack.repositories.AssignmentGroupRepository;
 import nl.yourivb.TicketTrack.repositories.ServiceOfferingRepository;
 import nl.yourivb.TicketTrack.validators.ExistInDatabase;
-
-import java.util.List;
 
 public class IncidentInputDto {
     @NotBlank

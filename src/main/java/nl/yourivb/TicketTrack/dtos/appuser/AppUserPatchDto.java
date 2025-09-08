@@ -1,20 +1,14 @@
-package nl.yourivb.TicketTrack.dtos.AppUser;
+package nl.yourivb.TicketTrack.dtos.appuser;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
-import nl.yourivb.TicketTrack.repositories.RoleRepository;
-import nl.yourivb.TicketTrack.validators.ExistInDatabase;
 
-public class AppUserInputDto {
-    @NotBlank
+public class AppUserPatchDto {
     @Size(min = 2, max = 255)
     private String name;
 
     private Long phoneNumber;
 
-    @NotBlank
     @Email
     @Size(min = 2, max = 255)
     private String email;
@@ -22,11 +16,7 @@ public class AppUserInputDto {
     @Size(min = 2, max = 500)
     private String info;
     private String password;
-
-    @ExistInDatabase(repository = AttachmentRepository.class, message = "Attachment id not found in database")
     private Long profilePictureId;
-
-    @ExistInDatabase(repository = RoleRepository.class, message = "Role id not found in database")
     private Long roleId;
 
     public String getName() {

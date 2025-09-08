@@ -1,4 +1,4 @@
-package nl.yourivb.TicketTrack.dtos.serviceOffering;
+package nl.yourivb.TicketTrack.dtos.serviceoffering;
 
 public class ServiceOfferingPatchDto {
     private String name;

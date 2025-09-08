@@ -1,4 +1,4 @@
-package nl.yourivb.TicketTrack.dtos.assignmentGroup;
+package nl.yourivb.TicketTrack.dtos.assignmentgroup;
 
 
 import jakarta.validation.constraints.Email;

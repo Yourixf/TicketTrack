@@ -1,4 +1,4 @@
-package nl.yourivb.TicketTrack.dtos.Note;
+package nl.yourivb.TicketTrack.dtos.note;
 
 import jakarta.persistence.Column;
 import nl.yourivb.TicketTrack.models.enums.NoteVisibility;

@@ -1,6 +1,6 @@
 package nl.yourivb.TicketTrack.controllers;
 
-import nl.yourivb.TicketTrack.dtos.Note.NoteDto;
+import nl.yourivb.TicketTrack.dtos.note.NoteDto;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.NoteService;
 import org.springframework.http.HttpStatus;

@@ -1,8 +1,8 @@
 package nl.yourivb.TicketTrack.services;
 
-import nl.yourivb.TicketTrack.dtos.AppUser.AppUserDto;
-import nl.yourivb.TicketTrack.dtos.AppUser.AppUserInputDto;
-import nl.yourivb.TicketTrack.dtos.AppUser.AppUserPatchDto;
+import nl.yourivb.TicketTrack.dtos.appuser.AppUserDto;
+import nl.yourivb.TicketTrack.dtos.appuser.AppUserInputDto;
+import nl.yourivb.TicketTrack.dtos.appuser.AppUserPatchDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AppUserMapper;

@@ -23,13 +23,9 @@ import java.util.List;
 public class AttachmentController {
 
     private final AttachmentService attachmentService;
-    private final AttachmentRepository attachmentRepository;
-    private final AttachmentMapper attachmentMapper;
 
-    public AttachmentController(AttachmentService attachmentService, AttachmentRepository attachmentRepository, AttachmentMapper attachmentMapper) {
+    public AttachmentController(AttachmentService attachmentService) {
         this.attachmentService = attachmentService;
-        this.attachmentRepository = attachmentRepository;
-        this.attachmentMapper = attachmentMapper;
     }
 
     @GetMapping

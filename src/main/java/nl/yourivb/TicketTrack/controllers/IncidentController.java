@@ -1,11 +1,11 @@
 package nl.yourivb.TicketTrack.controllers;
 
 import jakarta.validation.Valid;
-import nl.yourivb.TicketTrack.dtos.Incident.IncidentDto;
-import nl.yourivb.TicketTrack.dtos.Incident.IncidentInputDto;
-import nl.yourivb.TicketTrack.dtos.Incident.IncidentPatchDto;
-import nl.yourivb.TicketTrack.dtos.Note.NoteDto;
-import nl.yourivb.TicketTrack.dtos.Note.NoteInputDto;
+import nl.yourivb.TicketTrack.dtos.incident.IncidentDto;
+import nl.yourivb.TicketTrack.dtos.incident.IncidentInputDto;
+import nl.yourivb.TicketTrack.dtos.incident.IncidentPatchDto;
+import nl.yourivb.TicketTrack.dtos.note.NoteDto;
+import nl.yourivb.TicketTrack.dtos.note.NoteInputDto;
 import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.AttachmentService;
@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/incidents")
@@ -115,14 +114,4 @@ public class IncidentController {
         URI uri = URI.create("/attachments/" + attachment.getId());
         return ResponseEntity.created(uri).body(new ApiResponse<>("Added attachment", HttpStatus.CREATED, attachment));
     }
-
-    // TODO child interaction endpoint(s)
-    @PostMapping("/{id}/child-interactions")
-    public ResponseEntity<ApiResponse<IncidentDto>> addChildInteractions(@PathVariable Long id, @RequestBody Set<Long> interactionIds) {
-        IncidentDto incidentDto = incidentService.addChildInteractions(id, interactionIds);
-
-        return ResponseEntity.ok(new ApiResponse<>("Added child interaction(s)", HttpStatus.OK, incidentDto));
-
-    }
-
 }

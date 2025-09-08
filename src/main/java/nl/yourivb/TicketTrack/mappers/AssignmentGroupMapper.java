@@ -1,8 +1,8 @@
 package nl.yourivb.TicketTrack.mappers;
 
-import nl.yourivb.TicketTrack.dtos.assignmentGroup.AssignmentGroupDto;
-import nl.yourivb.TicketTrack.dtos.assignmentGroup.AssignmentGroupInputDto;
-import nl.yourivb.TicketTrack.dtos.assignmentGroup.AssignmentGroupPatchDto;
+import nl.yourivb.TicketTrack.dtos.assignmentgroup.AssignmentGroupDto;
+import nl.yourivb.TicketTrack.dtos.assignmentgroup.AssignmentGroupInputDto;
+import nl.yourivb.TicketTrack.dtos.assignmentgroup.AssignmentGroupPatchDto;
 import nl.yourivb.TicketTrack.models.AssignmentGroup;
 import nl.yourivb.TicketTrack.services.EntityMappingService;
 import org.mapstruct.*;

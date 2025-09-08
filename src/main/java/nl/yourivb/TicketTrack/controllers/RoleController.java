@@ -1,8 +1,8 @@
 package nl.yourivb.TicketTrack.controllers;
 
 import jakarta.validation.Valid;
-import nl.yourivb.TicketTrack.dtos.Role.RoleDto;
-import nl.yourivb.TicketTrack.dtos.Role.RoleInputDto;
+import nl.yourivb.TicketTrack.dtos.role.RoleDto;
+import nl.yourivb.TicketTrack.dtos.role.RoleInputDto;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.RoleService;
 import org.springframework.http.HttpStatus;

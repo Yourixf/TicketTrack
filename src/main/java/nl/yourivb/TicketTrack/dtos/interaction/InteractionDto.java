@@ -5,6 +5,7 @@ import nl.yourivb.TicketTrack.models.enums.Channel;
 import nl.yourivb.TicketTrack.models.enums.InteractionState;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -25,8 +26,8 @@ public class InteractionDto {
     private Long openedForId;
     private Long closedById;
     private Long incidentId;
-    private List<Long> attachmentIds;
-    private List<Long> noteIds;
+    private List<Long> attachmentIds = new ArrayList<>();
+    private List<Long> noteIds = new ArrayList<>();
 
     public Long getId() {
         return id;

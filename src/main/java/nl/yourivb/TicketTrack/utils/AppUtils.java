@@ -1,14 +1,12 @@
 package nl.yourivb.TicketTrack.utils;
 
-import nl.yourivb.TicketTrack.models.Attachment;
-import nl.yourivb.TicketTrack.models.Incident;
-import nl.yourivb.TicketTrack.models.Interaction;
-import nl.yourivb.TicketTrack.models.Note;
+import nl.yourivb.TicketTrack.models.*;
 import nl.yourivb.TicketTrack.models.enums.NoteVisibility;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.NoteRepository;
 import nl.yourivb.TicketTrack.security.SecurityUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -74,6 +72,16 @@ public class AppUtils {
         } else if (parent instanceof Interaction interaction) {
             interaction.setNotes(notes);
             interaction.setAttachments(attachments);
+        }
+    }
+
+    public static void validateTicketAccess(AppUser openedBy, AppUser openedFor) {
+        AppUser currentUser = SecurityUtils.getCurrentUserDetails().getAppUser();
+
+        if (SecurityUtils.hasRole("CUSTOMER")) {
+            if (currentUser != openedBy && currentUser != openedFor) {
+                throw new AccessDeniedException("You have no permission to view this incident.");
+            }
         }
     }
 }

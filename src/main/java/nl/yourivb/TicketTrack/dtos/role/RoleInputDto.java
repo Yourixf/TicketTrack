@@ -1,4 +1,4 @@
-package nl.yourivb.TicketTrack.dtos.Role;
+package nl.yourivb.TicketTrack.dtos.role;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

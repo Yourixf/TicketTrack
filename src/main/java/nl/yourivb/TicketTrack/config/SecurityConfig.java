@@ -1,12 +1,14 @@
 package nl.yourivb.TicketTrack.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.security.AppUserDetailsService;
 import nl.yourivb.TicketTrack.security.CustomAuthenticationEntryPoint;
 import nl.yourivb.TicketTrack.security.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -50,7 +52,12 @@ public class SecurityConfig {
                 // this way I can cover the internal exceptions that don't get caught by the globalExceptionHandler
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(customAuthenticationEntryPoint())
-                )
+                        .accessDeniedHandler((request, response, ex) -> {
+                            var body = new ApiResponse<>("Forbidden", HttpStatus.FORBIDDEN, null);
+                            response.setStatus(403);
+                            response.setContentType("application/json");
+                            objectMapper.writeValue(response.getWriter(), body);
+                        })                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 

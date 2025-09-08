@@ -84,10 +84,6 @@ public class Incident {
     @JoinColumn(name = "escalated_from_id")
     private Interaction escalatedFrom;
 
-    @OneToMany(mappedBy = "incident")
-    @JsonManagedReference
-    private List<Interaction> childInteractions;
-
     // This tag makes sure the underlying variable doesn't get saved into the database, but editable in service layer so you can easily export it via DTO
     @Transient
     private List<Attachment> attachments;
@@ -301,14 +297,6 @@ public class Incident {
 
     public void setEscalatedFrom(Interaction escalatedFrom) {
         this.escalatedFrom = escalatedFrom;
-    }
-
-    public List<Interaction> getChildInteractions() {
-        return childInteractions;
-    }
-
-    public void setChildInteractions(List<Interaction> childInteractions) {
-        this.childInteractions = childInteractions;
     }
 
     public List<Attachment> getAttachments() {

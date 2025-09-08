@@ -1,7 +1,7 @@
 package nl.yourivb.TicketTrack.services;
 
-import nl.yourivb.TicketTrack.dtos.Role.RoleDto;
-import nl.yourivb.TicketTrack.dtos.Role.RoleInputDto;
+import nl.yourivb.TicketTrack.dtos.role.RoleDto;
+import nl.yourivb.TicketTrack.dtos.role.RoleInputDto;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.RoleMapper;
 import nl.yourivb.TicketTrack.models.Role;

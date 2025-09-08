@@ -1,8 +1,9 @@
-package nl.yourivb.TicketTrack.dtos.Incident;
+package nl.yourivb.TicketTrack.dtos.incident;
 
 import nl.yourivb.TicketTrack.models.enums.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -33,9 +34,8 @@ public class IncidentDto {
     private Long closedById;
     private Long canceledById;
     private Long escalatedFromId;
-    private Set<Long> childInteractionIds;
-    private List<Long> attachmentIds;
-    private List<Long> noteIds;
+    private List<Long> attachmentIds = new ArrayList<>();
+    private List<Long> noteIds = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -243,14 +243,6 @@ public class IncidentDto {
 
     public void setEscalatedFromId(Long escalatedFromId) {
         this.escalatedFromId = escalatedFromId;
-    }
-
-    public Set<Long> getChildInteractionIds() {
-        return childInteractionIds;
-    }
-
-    public void setChildInteractionIds(Set<Long> childInteractionIds) {
-        this.childInteractionIds = childInteractionIds;
     }
 
     public List<Long> getAttachmentIds() {

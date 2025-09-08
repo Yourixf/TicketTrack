@@ -1,4 +1,4 @@
-package nl.yourivb.TicketTrack.dtos.serviceOffering;
+package nl.yourivb.TicketTrack.dtos.serviceoffering;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

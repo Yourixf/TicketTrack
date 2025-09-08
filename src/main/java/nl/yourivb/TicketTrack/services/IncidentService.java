@@ -1,8 +1,8 @@
 package nl.yourivb.TicketTrack.services;
 
-import nl.yourivb.TicketTrack.dtos.Incident.IncidentDto;
-import nl.yourivb.TicketTrack.dtos.Incident.IncidentInputDto;
-import nl.yourivb.TicketTrack.dtos.Incident.IncidentPatchDto;
+import nl.yourivb.TicketTrack.dtos.incident.IncidentDto;
+import nl.yourivb.TicketTrack.dtos.incident.IncidentInputDto;
+import nl.yourivb.TicketTrack.dtos.incident.IncidentPatchDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.CustomException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
@@ -16,9 +16,9 @@ import nl.yourivb.TicketTrack.models.enums.Priority;
 import nl.yourivb.TicketTrack.repositories.*;
 import nl.yourivb.TicketTrack.security.SecurityUtils;
 import nl.yourivb.TicketTrack.utils.AppUtils;
-import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,8 +27,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
-import static nl.yourivb.TicketTrack.utils.AppUtils.generateRegistrationNumber;
+import static nl.yourivb.TicketTrack.utils.AppUtils.*;;
 
 
 @Service
@@ -39,19 +38,16 @@ public class IncidentService {
     private final IncidentMapper incidentMapper;
     private final NoteRepository noteRepository;
     private final AttachmentRepository attachmentRepository;
-    private final ServiceOfferingRepository serviceOfferingRepository;
 
     public IncidentService(IncidentRepository incidentRepository,
                            InteractionRepository interactionRepository,
                            IncidentMapper incidentMapper, NoteRepository noteRepository,
-                           AttachmentRepository attachmentRepository,
-                           ServiceOfferingRepository serviceOfferingRepository, MappingsEndpoint mappingsEndpoint) {
+                           AttachmentRepository attachmentRepository) {
         this.incidentRepository = incidentRepository;
         this.interactionRepository = interactionRepository;
         this.incidentMapper = incidentMapper;
         this.noteRepository = noteRepository;
         this.attachmentRepository = attachmentRepository;
-        this.serviceOfferingRepository = serviceOfferingRepository;
     }
 
 
@@ -171,6 +167,14 @@ public class IncidentService {
     public List<IncidentDto> getAllIncidents() {
         return incidentRepository.findAll()
                 .stream()
+                .filter(incident -> {
+                    try {
+                        validateTicketAccess(incident.getOpenedBy(), incident.getOpenedFor());
+                        return true;
+                    } catch (Exception e){
+                        return false;
+                    }
+                })
                 .map(incident -> {
                     AppUtils.enrichWithRelations(
                             incident,
@@ -190,7 +194,7 @@ public class IncidentService {
 
     public IncidentDto getIncidentById(Long id) {
         Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found" ));
-
+        validateTicketAccess(incident.getOpenedBy(), incident.getOpenedFor());
         AppUtils.enrichWithRelations(
                 incident,
                 "Incident",
@@ -243,6 +247,14 @@ public class IncidentService {
         interaction.setClosedBy(SecurityUtils.getCurrentUserDetails().getAppUser());
         interaction.setClosed(LocalDateTime.now());
         interactionRepository.save(interaction);
+
+        AppUtils.enrichWithRelations(
+                incident,
+                "Incident",
+                incident.getId(),
+                noteRepository,
+                attachmentRepository
+        );
 
         return incidentMapper.toDto(incident);
     }
@@ -321,7 +333,6 @@ public class IncidentService {
     public void deleteIncident(Long id) {
         Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found"));
 
-
         incidentRepository.deleteById(id);
     }
 
@@ -334,7 +345,6 @@ public class IncidentService {
                         .orElseThrow(() -> new RecordNotFoundException("Interaction " + childId + " not found")))
                 .collect(Collectors.toList());
 
-        incident.setChildInteractions(childInteractions);
         incidentRepository.save(incident);
 
         return incidentMapper.toDto(incident);

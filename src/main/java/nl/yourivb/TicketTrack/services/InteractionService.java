@@ -22,8 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 
-import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
-import static nl.yourivb.TicketTrack.utils.AppUtils.generateRegistrationNumber;
+import static nl.yourivb.TicketTrack.utils.AppUtils.*;
 
 
 @Service
@@ -55,6 +54,14 @@ public class InteractionService {
         // this finds alls interactions, loops through each, gets and sets the corresponding note & atta list.
         return interactionRepository.findAll()
                 .stream()
+                .filter(interaction -> {
+                    try {
+                        validateTicketAccess(interaction.getOpenedBy(), interaction.getOpenedFor());
+                        return true;
+                    } catch (Exception e){
+                        return false;
+                    }
+                })
                 .map(interaction -> {
                     AppUtils.enrichWithRelations(
                             interaction,
@@ -71,6 +78,7 @@ public class InteractionService {
 
     public InteractionDto getInteractionById(Long id) {
         Interaction interaction = interactionRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Interaction " + id + " not found"));
+        validateTicketAccess(interaction.getOpenedBy(), interaction.getOpenedFor());
 
         AppUtils.enrichWithRelations(
                 interaction,

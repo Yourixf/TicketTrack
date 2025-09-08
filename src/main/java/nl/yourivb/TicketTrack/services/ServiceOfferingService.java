@@ -1,8 +1,8 @@
 package nl.yourivb.TicketTrack.services;
 
-import nl.yourivb.TicketTrack.dtos.serviceOffering.ServiceOfferingDto;
-import nl.yourivb.TicketTrack.dtos.serviceOffering.ServiceOfferingInputDto;
-import nl.yourivb.TicketTrack.dtos.serviceOffering.ServiceOfferingPatchDto;
+import nl.yourivb.TicketTrack.dtos.serviceoffering.ServiceOfferingDto;
+import nl.yourivb.TicketTrack.dtos.serviceoffering.ServiceOfferingInputDto;
+import nl.yourivb.TicketTrack.dtos.serviceoffering.ServiceOfferingPatchDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.ServiceOfferingMapper;

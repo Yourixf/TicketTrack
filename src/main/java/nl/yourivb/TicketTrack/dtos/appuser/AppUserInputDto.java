@@ -1,25 +1,33 @@
-package nl.yourivb.TicketTrack.dtos.AppUser;
+package nl.yourivb.TicketTrack.dtos.appuser;
 
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
+import nl.yourivb.TicketTrack.repositories.RoleRepository;
+import nl.yourivb.TicketTrack.validators.ExistInDatabase;
 
-public class AppUserDto {
-    private Long id;
+public class AppUserInputDto {
+    @NotBlank
+    @Size(min = 2, max = 255)
     private String name;
+
     private Long phoneNumber;
+
+    @NotBlank
+    @Email
+    @Size(min = 2, max = 255)
     private String email;
+
+    @Size(min = 2, max = 500)
     private String info;
-    private LocalDateTime created;
-    private LocalDateTime lastModified;
+    private String password;
+
+    @ExistInDatabase(repository = AttachmentRepository.class, message = "Attachment id not found in database")
     private Long profilePictureId;
+
+    @ExistInDatabase(repository = RoleRepository.class, message = "Role id not found in database")
     private Long roleId;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -53,20 +61,12 @@ public class AppUserDto {
         this.info = info;
     }
 
-    public LocalDateTime getCreated() {
-        return created;
+    public String getPassword() {
+        return password;
     }
 
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
-    }
-
-    public LocalDateTime getLastModified() {
-        return lastModified;
-    }
-
-    public void setLastModified(LocalDateTime lastModified) {
-        this.lastModified = lastModified;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Long getProfilePictureId() {

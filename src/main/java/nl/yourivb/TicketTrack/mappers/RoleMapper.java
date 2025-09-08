@@ -1,7 +1,7 @@
 package nl.yourivb.TicketTrack.mappers;
 
-import nl.yourivb.TicketTrack.dtos.Role.RoleDto;
-import nl.yourivb.TicketTrack.dtos.Role.RoleInputDto;
+import nl.yourivb.TicketTrack.dtos.role.RoleDto;
+import nl.yourivb.TicketTrack.dtos.role.RoleInputDto;
 import nl.yourivb.TicketTrack.models.Role;
 import nl.yourivb.TicketTrack.services.EntityMappingService;
 import org.mapstruct.Mapper;

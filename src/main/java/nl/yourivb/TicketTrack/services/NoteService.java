@@ -1,7 +1,7 @@
 package nl.yourivb.TicketTrack.services;
 
-import nl.yourivb.TicketTrack.dtos.Note.NoteDto;
-import nl.yourivb.TicketTrack.dtos.Note.NoteInputDto;
+import nl.yourivb.TicketTrack.dtos.note.NoteDto;
+import nl.yourivb.TicketTrack.dtos.note.NoteInputDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.NoteMapper;

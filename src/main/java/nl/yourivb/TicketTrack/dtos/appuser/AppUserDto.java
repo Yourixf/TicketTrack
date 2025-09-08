@@ -1,23 +1,25 @@
-package nl.yourivb.TicketTrack.dtos.AppUser;
+package nl.yourivb.TicketTrack.dtos.appuser;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
 
-public class AppUserPatchDto {
-    @Size(min = 2, max = 255)
+public class AppUserDto {
+    private Long id;
     private String name;
-
     private Long phoneNumber;
-
-    @Email
-    @Size(min = 2, max = 255)
     private String email;
-
-    @Size(min = 2, max = 500)
     private String info;
-    private String password;
+    private LocalDateTime created;
+    private LocalDateTime lastModified;
     private Long profilePictureId;
     private Long roleId;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -51,12 +53,20 @@ public class AppUserPatchDto {
         this.info = info;
     }
 
-    public String getPassword() {
-        return password;
+    public LocalDateTime getCreated() {
+        return created;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
+
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
     }
 
     public Long getProfilePictureId() {

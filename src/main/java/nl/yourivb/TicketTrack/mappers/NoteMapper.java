@@ -1,7 +1,7 @@
 package nl.yourivb.TicketTrack.mappers;
 
-import nl.yourivb.TicketTrack.dtos.Note.NoteDto;
-import nl.yourivb.TicketTrack.dtos.Note.NoteInputDto;
+import nl.yourivb.TicketTrack.dtos.note.NoteDto;
+import nl.yourivb.TicketTrack.dtos.note.NoteInputDto;
 import nl.yourivb.TicketTrack.models.Note;
 import nl.yourivb.TicketTrack.services.EntityMappingService;
 import org.mapstruct.Mapper;

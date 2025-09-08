@@ -1,8 +1,8 @@
 package nl.yourivb.TicketTrack.mappers;
 
-import nl.yourivb.TicketTrack.dtos.AppUser.AppUserDto;
-import nl.yourivb.TicketTrack.dtos.AppUser.AppUserInputDto;
-import nl.yourivb.TicketTrack.dtos.AppUser.AppUserPatchDto;
+import nl.yourivb.TicketTrack.dtos.appuser.AppUserDto;
+import nl.yourivb.TicketTrack.dtos.appuser.AppUserInputDto;
+import nl.yourivb.TicketTrack.dtos.appuser.AppUserPatchDto;
 import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.services.EntityMappingService;
 import org.mapstruct.*;

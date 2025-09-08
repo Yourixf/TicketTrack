@@ -1,8 +1,8 @@
 package nl.yourivb.TicketTrack.mappers;
 
-import nl.yourivb.TicketTrack.dtos.Incident.IncidentDto;
-import nl.yourivb.TicketTrack.dtos.Incident.IncidentInputDto;
-import nl.yourivb.TicketTrack.dtos.Incident.IncidentPatchDto;
+import nl.yourivb.TicketTrack.dtos.incident.IncidentDto;
+import nl.yourivb.TicketTrack.dtos.incident.IncidentInputDto;
+import nl.yourivb.TicketTrack.dtos.incident.IncidentPatchDto;
 import nl.yourivb.TicketTrack.models.Incident;
 import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.services.EntityMappingService;
@@ -21,7 +21,6 @@ public interface IncidentMapper {
     @Mapping(target = "resolveBefore", source = "resolveBefore")
     @Mapping(target = "noteIds", source = "notes")
     @Mapping(target = "attachmentIds", source = "attachments")
-    @Mapping(target = "childInteractionIds", source = "childInteractions")
     IncidentDto toDto(Incident incident);
 
     Incident toModel(IncidentDto dto);

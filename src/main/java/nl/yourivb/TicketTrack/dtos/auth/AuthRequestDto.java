@@ -1,4 +1,4 @@
-package nl.yourivb.TicketTrack.dtos.Auth;
+package nl.yourivb.TicketTrack.dtos.auth;
 
 public class AuthRequestDto {
     private String email;

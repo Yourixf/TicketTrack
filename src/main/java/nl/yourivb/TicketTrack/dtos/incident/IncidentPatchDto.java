@@ -1,9 +1,7 @@
-package nl.yourivb.TicketTrack.dtos.Incident;
+package nl.yourivb.TicketTrack.dtos.incident;
 
 import jakarta.validation.constraints.Size;
 import nl.yourivb.TicketTrack.models.enums.*;
-
-import java.util.List;
 
 public class IncidentPatchDto {
 

@@ -1,7 +1,7 @@
 package nl.yourivb.TicketTrack.payload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import nl.yourivb.TicketTrack.dtos.Auth.AuthResponseDto;
+import nl.yourivb.TicketTrack.dtos.auth.AuthResponseDto;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;

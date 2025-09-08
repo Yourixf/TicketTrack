@@ -1,8 +1,8 @@
 package nl.yourivb.TicketTrack.controllers;
 
 import jakarta.validation.Valid;
-import nl.yourivb.TicketTrack.dtos.Auth.AuthRequestDto;
-import nl.yourivb.TicketTrack.dtos.Auth.AuthResponseDto;
+import nl.yourivb.TicketTrack.dtos.auth.AuthRequestDto;
+import nl.yourivb.TicketTrack.dtos.auth.AuthResponseDto;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.security.AppUserDetails;
 import nl.yourivb.TicketTrack.security.AppUserDetailsService;

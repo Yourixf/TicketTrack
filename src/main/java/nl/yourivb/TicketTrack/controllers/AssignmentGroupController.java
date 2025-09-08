@@ -1,9 +1,9 @@
 package nl.yourivb.TicketTrack.controllers;
 
 import jakarta.validation.Valid;
-import nl.yourivb.TicketTrack.dtos.assignmentGroup.AssignmentGroupDto;
-import nl.yourivb.TicketTrack.dtos.assignmentGroup.AssignmentGroupInputDto;
-import nl.yourivb.TicketTrack.dtos.assignmentGroup.AssignmentGroupPatchDto;
+import nl.yourivb.TicketTrack.dtos.assignmentgroup.AssignmentGroupDto;
+import nl.yourivb.TicketTrack.dtos.assignmentgroup.AssignmentGroupInputDto;
+import nl.yourivb.TicketTrack.dtos.assignmentgroup.AssignmentGroupPatchDto;
 import nl.yourivb.TicketTrack.payload.ApiResponse;
 import nl.yourivb.TicketTrack.services.AssignmentGroupService;
 import org.springframework.http.HttpStatus;

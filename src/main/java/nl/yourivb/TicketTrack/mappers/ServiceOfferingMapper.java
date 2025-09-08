@@ -1,8 +1,8 @@
 package nl.yourivb.TicketTrack.mappers;
 
-import nl.yourivb.TicketTrack.dtos.serviceOffering.ServiceOfferingDto;
-import nl.yourivb.TicketTrack.dtos.serviceOffering.ServiceOfferingInputDto;
-import nl.yourivb.TicketTrack.dtos.serviceOffering.ServiceOfferingPatchDto;
+import nl.yourivb.TicketTrack.dtos.serviceoffering.ServiceOfferingDto;
+import nl.yourivb.TicketTrack.dtos.serviceoffering.ServiceOfferingInputDto;
+import nl.yourivb.TicketTrack.dtos.serviceoffering.ServiceOfferingPatchDto;
 import nl.yourivb.TicketTrack.models.ServiceOffering;
 import nl.yourivb.TicketTrack.services.EntityMappingService;
 import org.mapstruct.*;

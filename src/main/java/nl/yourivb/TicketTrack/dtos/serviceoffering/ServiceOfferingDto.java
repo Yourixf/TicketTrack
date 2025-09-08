@@ -1,4 +1,4 @@
-package nl.yourivb.TicketTrack.dtos.serviceOffering;
+package nl.yourivb.TicketTrack.dtos.serviceoffering;
 
 import java.time.LocalDateTime;
 
