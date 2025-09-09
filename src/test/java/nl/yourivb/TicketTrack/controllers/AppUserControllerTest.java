@@ -2,12 +2,16 @@ package nl.yourivb.TicketTrack.controllers;
 
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.models.AppUser;
+import nl.yourivb.TicketTrack.models.Role;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
+import nl.yourivb.TicketTrack.security.AppUserDetails;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -131,6 +135,21 @@ class AppUserControllerTest {
 
     @Test
     void patchUser() throws Exception {
+        // this covers the JWT Security logic for the logged-in user check in service layer
+        Role role = new Role();
+        role.setId(1L);
+        role.setName("ROLE_ADMIN");
+        AppUser mockUser = new AppUser();
+        mockUser.setId(1L);
+        mockUser.setRole(role);
+
+        AppUserDetails userDetails = new AppUserDetails(mockUser);
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities())
+        );
+
+
         String newEmail = "john-wick@tickettrack.com";
 
         String requestJson = """

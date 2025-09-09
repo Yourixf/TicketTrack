@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,62 +56,11 @@ class InteractionServiceTest {
     @Test
     void getAllInteractions() {
         // Arrange
-        Interaction i1 = new Interaction(); i1.setId(1L);
-        Interaction i2 = new Interaction(); i2.setId(2L);
-
-        // this code says: If interactionRepository.findAll()) is called, don't use DB/repository but return a list
-        // existing of the above interactions
-        when(interactionRepository.findAll()).thenReturn(List.of(i1, i2));
-
-        InteractionDto d1 = new InteractionDto(); d1.setId(1L);
-        InteractionDto d2 = new InteractionDto(); d2.setId(2L);
-        when(interactionMapper.toDto(i1)).thenReturn(d1);
-        when(interactionMapper.toDto(i2)).thenReturn(d2);
-
-        // this code mocks the method that gets the attachment and notes from the interaction.
-        try (var mocked = Mockito.mockStatic(AppUtils.class)) {
-            mocked.when(() -> AppUtils.enrichWithRelations(any(), anyString(), anyLong(), any(), any()))
-                    .then(inv -> null);
-
-            // Act
-            List<InteractionDto> result = interactionService.getAllInteractions();
-
-            // Assert (the content itself)
-            assertEquals(2, result.size()); // expects 2 interactions in the list.
-            assertEquals(1L, result.get(0).getId()); // expects interaction 1 to have ID 1.
-            assertEquals(2L, result.get(1).getId());
-
-            // Assert (the collaboration)
-
-            // this says, ensures the find all method has been called once in the unit test.
-            verify(interactionRepository, times(1)).findAll();
-
-            verify(interactionMapper).toDto(i1);
-            verify(interactionMapper).toDto(i2);
-
-            // static verify, makes sure enrich method has been used twice (which it does in the actual service method).
-            mocked.verify(() -> AppUtils.enrichWithRelations(eq(i1), eq("Interaction"), eq(1L), eq(noteRepository), eq(attachmentRepository)));
-            mocked.verify(() -> AppUtils.enrichWithRelations(eq(i2), eq("Interaction"), eq(2L), eq(noteRepository), eq(attachmentRepository)));
-        }
-    }
-
-    // TODO fix this mess
-    @Test
-    void getAllInteractionsWithCustomerAccessLevel()  {
-        // Arrange
-        Role role = new Role();
-        role.setName("ROLE_CUSTOMER");
-        role.setId(3L);
-
         AppUser currentUser = new AppUser();
         currentUser.setId(5L);
-        currentUser.setRole(role);
 
         AppUser otherUser = new AppUser();
         otherUser.setId(99L);
-
-        AppUserDetails userDetails = new AppUserDetails(currentUser);
-
         // i1 is owned by currentUser
         Interaction i1 = new Interaction();
         i1.setId(1L);
@@ -132,6 +82,71 @@ class InteractionServiceTest {
         when(interactionMapper.toDto(i1)).thenReturn(d1);
         when(interactionMapper.toDto(i2)).thenReturn(d2);
 
+        // this code mocks the method that gets the attachment and notes from the interaction.
+        try (var mockedUtil = Mockito.mockStatic(AppUtils.class);
+             var mockedSec = Mockito.mockStatic(SecurityUtils.class)) {
+            mockedUtil.when(() -> AppUtils.enrichWithRelations(any(), anyString(), anyLong(), any(), any()))
+                    .then(inv -> null);
+
+
+            mockedUtil.when(() -> AppUtils.validateTicketAccess(anyLong(), anyLong()))
+                    .thenAnswer(inv -> null); // of .then() met recente Mockito versie
+
+
+            mockedSec.when(SecurityUtils::getCurrentUserId).thenReturn(5L);
+            mockedSec.when(() -> SecurityUtils.hasRole("CUSTOMER")).thenReturn(true);
+            // Act
+            List<InteractionDto> result = interactionService.getAllInteractions();
+
+            // Assert (the content itself)
+            assertEquals(2, result.size()); // expects 2 interactions in the list.
+            assertEquals(1L, result.get(0).getId()); // expects interaction 1 to have ID 1.
+            assertEquals(2L, result.get(1).getId());
+
+            // Assert (the collaboration)
+
+            // this says, ensures the find all method has been called once in the unit test.
+            verify(interactionRepository, times(1)).findAll();
+
+            verify(interactionMapper).toDto(i1);
+            verify(interactionMapper).toDto(i2);
+
+            // static verify, makes sure enrich method has been used twice (which it does in the actual service method).
+            mockedUtil.verify(() -> AppUtils.enrichWithRelations(eq(i1), eq("Interaction"), eq(1L), eq(noteRepository), eq(attachmentRepository)));
+            mockedUtil.verify(() -> AppUtils.enrichWithRelations(eq(i2), eq("Interaction"), eq(2L), eq(noteRepository), eq(attachmentRepository)));
+            mockedUtil.verify(() -> AppUtils.validateTicketAccess(eq(5L), eq(5L)));
+            mockedUtil.verify(() -> AppUtils.validateTicketAccess(eq(99L), eq(99L)));
+
+        }
+    }
+
+    @Test
+    void getAllInteractionsWithCustomerAccessLevel()  {
+        // Arrange
+        AppUser currentUser = new AppUser();
+        currentUser.setId(5L);
+
+        AppUser otherUser = new AppUser();
+        otherUser.setId(99L);
+
+        // i1 is owned by currentUser
+        Interaction i1 = new Interaction();
+        i1.setId(1L);
+        i1.setOpenedBy(currentUser);
+        i1.setOpenedFor(currentUser);
+
+        // i2 is owned by otherUser
+        Interaction i2 = new Interaction();
+        i2.setId(2L);
+        i2.setOpenedBy(otherUser);
+        i2.setOpenedFor(otherUser);
+
+        // this code says: If interactionRepository.findAll()) is called, don't use DB/repository but return a list
+        // existing of the above interactions
+        when(interactionRepository.findAll()).thenReturn(List.of(i1, i2));
+
+        InteractionDto d1 = new InteractionDto(); d1.setId(1L);
+        when(interactionMapper.toDto(i1)).thenReturn(d1);
 
         // this code mocks the method that gets the attachment and notes from the interaction.
         try (var mockedUtil = Mockito.mockStatic(AppUtils.class);
@@ -140,17 +155,20 @@ class InteractionServiceTest {
             mockedUtil.when(() -> AppUtils.enrichWithRelations(any(), anyString(), anyLong(), any(), any()))
                     .then(inv -> null);
 
-            mockedSec.when(SecurityUtils::getCurrentUserId).thenReturn(currentUser.getId());
+            mockedUtil.when(() -> AppUtils.validateTicketAccess(eq(99L), any()))
+                    .thenThrow(new AccessDeniedException("error"));
+
+            mockedSec.when(SecurityUtils::getCurrentUserId).thenReturn(5L);
+            mockedSec.when(() -> SecurityUtils.hasRole("CUSTOMER")).thenReturn(true);
 
             // Act
             List<InteractionDto> result = interactionService.getAllInteractions();
 
-            // Assert (the content itself)
-            assertEquals(1, result.size()); // expects 2 interactions in the list.
-            assertEquals(1L, result.get(0).getId()); // expects interaction 1 to have ID 1.
+            // Assert (result)
+            assertEquals(1, result.size());
+            assertEquals(1L, result.get(0).getId());
 
             // Assert (the collaboration)
-
             // this says, ensures the find all method has been called once in the unit test.
             verify(interactionRepository, times(1)).findAll();
 
@@ -158,18 +176,27 @@ class InteractionServiceTest {
 
             // static verify, makes sure enrich method has been used twice (which it does in the actual service method).
             mockedUtil.verify(() -> AppUtils.enrichWithRelations(eq(i1), eq("Interaction"), eq(1L), eq(noteRepository), eq(attachmentRepository)));
-
-//            mockedSec.verify(SecurityUtils::getCurrentUserDetails);
         }
     }
 
     @Test
     void getInteractionById() {
         // Arrange
-        Interaction entity = new Interaction(); entity.setId(1L);
+        AppUser user = new AppUser();
+        user.setId(1L);
+
+        Interaction entity = new Interaction();
+        entity.setId(1L);
+        entity.setOpenedBy(user);
+        entity.setOpenedFor(user);
+
         when(interactionRepository.findById(1L)).thenReturn(Optional.of(entity));
 
-        InteractionDto dto = new InteractionDto(); dto.setId(1L);
+        InteractionDto dto = new InteractionDto();
+        dto.setId(1L);
+        dto.setOpenedForId(1L);
+        dto.setOpenedById(1L);
+
         when(interactionMapper.toDto(entity)).thenReturn(dto);
 
         try (var mocked = Mockito.mockStatic(AppUtils.class)){
