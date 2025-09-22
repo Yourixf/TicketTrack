@@ -4,11 +4,13 @@ import nl.yourivb.TicketTrack.dtos.appuser.AppUserDto;
 import nl.yourivb.TicketTrack.dtos.appuser.AppUserInputDto;
 import nl.yourivb.TicketTrack.dtos.appuser.AppUserPatchDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
+import nl.yourivb.TicketTrack.exceptions.CustomException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AppUserMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
 import nl.yourivb.TicketTrack.security.SecurityUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,7 +39,7 @@ public class AppUserService {
 
         appUserRepository.findByEmail(email).ifPresent(existing -> {
             if (!existing.getId().equals(excludeUserId)) {
-                throw new BadRequestException("Email address already registered to an account.");
+                throw new CustomException("Email address already registered to an account.", HttpStatus.CONFLICT);
             }
         });
     }
