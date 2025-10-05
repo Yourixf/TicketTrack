@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Entity
 public class Attachment {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String fileName;

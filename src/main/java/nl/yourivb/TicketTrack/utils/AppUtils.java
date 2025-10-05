@@ -1,6 +1,9 @@
 package nl.yourivb.TicketTrack.utils;
 
-import nl.yourivb.TicketTrack.models.*;
+import nl.yourivb.TicketTrack.models.Attachment;
+import nl.yourivb.TicketTrack.models.Incident;
+import nl.yourivb.TicketTrack.models.Interaction;
+import nl.yourivb.TicketTrack.models.Note;
 import nl.yourivb.TicketTrack.models.enums.NoteVisibility;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.NoteRepository;
@@ -79,8 +82,8 @@ public class AppUtils {
         Long currentUserId = SecurityUtils.getCurrentUserId();
 
         if (SecurityUtils.hasRole("CUSTOMER")) {
-            boolean isOwner = (openedById != null && currentUserId.equals(openedById))
-                    || (openedForId != null && currentUserId.equals(openedForId));
+            boolean isOwner = (currentUserId.equals(openedById))
+                    || (currentUserId.equals(openedForId));
 
             if (!isOwner) {
                 throw new AccessDeniedException("You have no permission to view this record.");

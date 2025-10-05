@@ -31,8 +31,6 @@ import java.util.stream.Collectors;
 
 import static nl.yourivb.TicketTrack.utils.AppUtils.*;
 
-;
-
 
 @Service
 public class IncidentService {

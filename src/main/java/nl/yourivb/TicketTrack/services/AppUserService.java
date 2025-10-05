@@ -123,6 +123,7 @@ public class AppUserService {
         checkIfEmailIsUsed(dto.getEmail(), id);
 
         if (dto.getPassword() != null) {
+            validatePasswordPolicy(dto.getPassword());
             appUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
@@ -155,6 +156,7 @@ public class AppUserService {
         }
 
         if (dto.getPassword() != null) {
+            validatePasswordPolicy(dto.getPassword());
             appUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
