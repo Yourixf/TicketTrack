@@ -109,6 +109,8 @@ public class AppUserService {
         AppUser appUser = appUserRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("User " + id + " not found"));
 
+        String originalPassword = appUser.getPassword();
+
         verifyAccessToModifyUser(id);
 
         // only admins are allowed to change roles
@@ -125,6 +127,8 @@ public class AppUserService {
         if (dto.getPassword() != null) {
             validatePasswordPolicy(dto.getPassword());
             appUser.setPassword(passwordEncoder.encode(dto.getPassword()));
+        } else if (dto.getPassword() == null) {
+            appUser.setPassword(originalPassword);
         }
 
         appUserRepository.save(appUser);
@@ -135,6 +139,9 @@ public class AppUserService {
     public AppUserDto patchUser(Long id, AppUserPatchDto dto) {
         AppUser appUser = appUserRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("User " + id + " not found"));
+
+        String originalPassword = appUser.getPassword();
+
 
         verifyAccessToModifyUser(id);
 
@@ -158,6 +165,8 @@ public class AppUserService {
         if (dto.getPassword() != null) {
             validatePasswordPolicy(dto.getPassword());
             appUser.setPassword(passwordEncoder.encode(dto.getPassword()));
+        } else if (dto.getPassword() == null) {
+            appUser.setPassword(originalPassword);
         }
 
         appUserRepository.save(appUser);

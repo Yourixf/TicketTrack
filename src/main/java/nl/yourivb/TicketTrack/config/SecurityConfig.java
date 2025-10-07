@@ -107,7 +107,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/service-offerings/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/service-offerings/**").hasRole("ADMIN")
 
-                        .requestMatchers("/roles/**").denyAll()
+                        .requestMatchers(HttpMethod.GET, "/roles/**").hasAnyRole("ADMIN", "IT")
                         .requestMatchers("/authenticate").anonymous()
                         .anyRequest().denyAll()
                 )
