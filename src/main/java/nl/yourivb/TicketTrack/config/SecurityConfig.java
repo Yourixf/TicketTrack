@@ -70,7 +70,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/users/*/profile-picture").authenticated()
                         .requestMatchers(HttpMethod.POST, "/users/*/profile-picture").authenticated()
 
-                        .requestMatchers(HttpMethod.GET, "/assignment-groups/**").hasAnyRole("ADMIN", "IT")
+                        .requestMatchers(HttpMethod.GET, "/assignment-groups/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/assignment-groups").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/assignment-groups/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/assignment-groups/**").hasRole("ADMIN")
@@ -101,7 +101,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/notes/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/notes/**").hasRole("ADMIN")
 
-                        .requestMatchers(HttpMethod.GET, "/service-offerings/**").hasAnyRole("ADMIN", "IT")
+                        .requestMatchers(HttpMethod.GET, "/service-offerings/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/service-offerings").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/service-offerings/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/service-offerings/**").hasRole("ADMIN")
