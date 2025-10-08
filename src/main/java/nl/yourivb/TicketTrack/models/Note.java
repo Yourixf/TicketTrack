@@ -2,6 +2,8 @@ package nl.yourivb.TicketTrack.models;
 
 import jakarta.persistence.*;
 import nl.yourivb.TicketTrack.models.enums.NoteVisibility;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import java.time.LocalDateTime;
 
@@ -21,7 +23,8 @@ public class Note {
     private NoteVisibility visibility;
 
     @ManyToOne
-    @JoinColumn(name = "created_by_id")
+    @JoinColumn(name = "created_by_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @NotFound(action = NotFoundAction.IGNORE)
     private AppUser createdBy;
 
     public Long getId() {

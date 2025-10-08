@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
 import nl.yourivb.TicketTrack.models.enums.InteractionState;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,28 +43,34 @@ public class Interaction {
     private Channel channel;
 
     @ManyToOne
-    @JoinColumn(name = "service_offering_id")
+    @JoinColumn(name = "service_offering_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @NotFound(action = NotFoundAction.IGNORE)
     private ServiceOffering serviceOffering;
 
     @ManyToOne
-    @JoinColumn(name = "assignment_group_id")
+    @JoinColumn(name = "assignment_group_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @NotFound(action = NotFoundAction.IGNORE)
     private AssignmentGroup assignmentGroup;
 
     @ManyToOne
-    @JoinColumn(name = "opened_by_id")
+    @JoinColumn(name = "opened_by_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @NotFound(action = NotFoundAction.IGNORE)
     private AppUser openedBy;
 
     @ManyToOne
-    @JoinColumn(name = "opened_for_id")
+    @JoinColumn(name = "opened_for_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @NotFound(action = NotFoundAction.IGNORE)
     private AppUser openedFor;
 
     @ManyToOne
-    @JoinColumn(name = "closed_by_id")
+    @JoinColumn(name = "closed_by_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @NotFound(action = NotFoundAction.IGNORE)
     private AppUser closedBy;
 
     @ManyToOne
-    @JoinColumn(name = "incident_id")
+    @JoinColumn(name = "incident_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @JsonBackReference
+    @NotFound(action = NotFoundAction.IGNORE)
     private Incident incident;
 
     // This tag makes sure the underlying variable doesn't get saved into the database, but editable in service layer so you can easily export it via DTO

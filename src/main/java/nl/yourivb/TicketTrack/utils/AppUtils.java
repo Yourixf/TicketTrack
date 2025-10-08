@@ -4,7 +4,6 @@ import nl.yourivb.TicketTrack.models.Attachment;
 import nl.yourivb.TicketTrack.models.Incident;
 import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.models.Note;
-import nl.yourivb.TicketTrack.models.enums.NoteVisibility;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.NoteRepository;
 import nl.yourivb.TicketTrack.security.SecurityUtils;
@@ -15,6 +14,8 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+
+import static nl.yourivb.TicketTrack.services.NoteService.filterNotesWithAccess;
 
 public class AppUtils {
 
@@ -59,21 +60,16 @@ public class AppUtils {
             NoteRepository noteRepository,
             AttachmentRepository attachmentRepository) {
 
-        // makes sure only allowed roles/employees see their notes.
-        boolean canSeeWorkNotes = SecurityUtils.hasRole("ADMIN") || SecurityUtils.hasRole("IT");
-
-        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId(parentType, parentId)
-                .stream()
-                .filter(note -> note.getVisibility() == NoteVisibility.PUBLIC || canSeeWorkNotes)
-                .toList();
+        List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId(parentType, parentId);
+        List<Note> filteredNotes = filterNotesWithAccess(notes);
 
         List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId(parentType, parentId);
 
         if (parent instanceof Incident incident) {
-            incident.setNotes(notes);
+            incident.setNotes(filteredNotes);
             incident.setAttachments(attachments);
         } else if (parent instanceof Interaction interaction) {
-            interaction.setNotes(notes);
+            interaction.setNotes(filteredNotes);
             interaction.setAttachments(attachments);
         }
     }

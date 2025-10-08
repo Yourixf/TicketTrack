@@ -1,6 +1,8 @@
 package nl.yourivb.TicketTrack.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import java.time.LocalDateTime;
 
@@ -19,11 +21,13 @@ public class ServiceOffering {
     private LocalDateTime  lastModified;
 
     @ManyToOne
-    @JoinColumn(name = "assignment_group_id")
+    @JoinColumn(name = "assignment_group_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @NotFound(action = NotFoundAction.IGNORE)
     private AssignmentGroup assignmentGroup;
 
     @ManyToOne
-    @JoinColumn(name = "created_by_id")
+    @JoinColumn(name = "created_by_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @NotFound(action = NotFoundAction.IGNORE)
     private AppUser createdBy;
 
     public Long getId() {

@@ -6,6 +6,7 @@ import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.NoteMapper;
 import nl.yourivb.TicketTrack.models.Note;
+import nl.yourivb.TicketTrack.models.enums.NoteVisibility;
 import nl.yourivb.TicketTrack.repositories.IncidentRepository;
 import nl.yourivb.TicketTrack.repositories.InteractionRepository;
 import nl.yourivb.TicketTrack.repositories.NoteRepository;
@@ -31,13 +32,25 @@ public class NoteService {
         this.incidentRepository = incidentRepository;
     }
 
+    public static List<Note> filterNotesWithAccess(List<Note> notes) {
+        boolean canSeeWorkNotes = SecurityUtils.hasRole("ADMIN") || SecurityUtils.hasRole("IT");
+
+        List<Note> filteredNotes = notes.stream().filter(note -> note.getVisibility() == NoteVisibility.PUBLIC || canSeeWorkNotes).toList();
+
+        return filteredNotes;
+    }
+
     public List<NoteDto> getAllNotes() {
-        return noteRepository.findAll().stream().map(noteMapper::toDto).toList();
+        List<Note> filteredNotes = filterNotesWithAccess(noteRepository.findAll().stream().toList());
+        return filteredNotes.stream().map(noteMapper::toDto).toList();
     }
 
     public NoteDto getNoteById(Long id) {
         Note note = noteRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Note " + id + " not found"));
-
+        if (note.getVisibility() == NoteVisibility.WORK &&
+                !(SecurityUtils.hasRole("ADMIN") || SecurityUtils.hasRole("IT"))) {
+            throw new AccessDeniedException("You are not allowed to view this note");
+        }
         return noteMapper.toDto(note);
     }
 
@@ -76,6 +89,7 @@ public class NoteService {
     }
 
     public List<NoteDto> getAllNotesFromParent(String noteableType, Long noteableId) {
+        boolean canSeeWorkNotes = SecurityUtils.hasRole("ADMIN") || SecurityUtils.hasRole("IT");
 
         switch (noteableType) {
             case "Interaction" -> {
@@ -86,9 +100,10 @@ public class NoteService {
             }
             default -> throw new BadRequestException("Unsupported parent type: " + noteableType);
         }
-        return noteMapper.toDto(
-                noteRepository.findByNoteableTypeAndNoteableId(noteableType, noteableId)
-        );
+
+        List<Note> noteList = noteRepository.findByNoteableTypeAndNoteableId(noteableType, noteableId);
+
+        return noteMapper.toDto(filterNotesWithAccess(noteList));
 
     }
 
