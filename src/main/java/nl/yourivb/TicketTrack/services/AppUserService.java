@@ -3,17 +3,22 @@ package nl.yourivb.TicketTrack.services;
 import nl.yourivb.TicketTrack.dtos.appuser.AppUserDto;
 import nl.yourivb.TicketTrack.dtos.appuser.AppUserInputDto;
 import nl.yourivb.TicketTrack.dtos.appuser.AppUserPatchDto;
+import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.CustomException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AppUserMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
+import nl.yourivb.TicketTrack.models.Attachment;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
+import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.security.SecurityUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,14 +30,18 @@ public class AppUserService {
     private final AppUserRepository appUserRepository;
     private final AppUserMapper appUserMapper;
     private final PasswordEncoder passwordEncoder;
+    private final AttachmentRepository attachmentRepository;
+    private final AttachmentService attachmentService;
 
- AppUserService(AppUserRepository repo,
-                            AppUserMapper appUserMapper,
-                            PasswordEncoder passwordEncoder) {
+    AppUserService(AppUserRepository repo,
+                   AppUserMapper appUserMapper,
+                   PasswordEncoder passwordEncoder, AttachmentRepository attachmentRepository, AttachmentService attachmentService) {
     this.appUserRepository = repo;
     this.appUserMapper = appUserMapper;
     this.passwordEncoder = passwordEncoder;
-}
+        this.attachmentRepository = attachmentRepository;
+        this.attachmentService = attachmentService;
+    }
 
     private void checkIfEmailIsUsed(String rawEmail, Long excludeUserId) {
         String email = rawEmail == null ? null : rawEmail.trim().toLowerCase();
@@ -178,5 +187,16 @@ public class AppUserService {
         AppUser appUser = appUserRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("User " + id + " not found"));
 
         appUserRepository.deleteById(id);
+    }
+
+    @Transactional
+    public AttachmentDto addProfilePicture(MultipartFile file, String attachableType, Long attachableId) {
+        List<Attachment> attachmentList = attachmentRepository.findByAttachableTypeAndAttachableId(attachableType, attachableId);
+
+       attachmentList.stream()
+                .map(Attachment::getId)
+                .forEach(attachmentService::deleteAttachmentFromAllParents);
+
+        return attachmentService.addAttachment(file, attachableType, attachableId);
     }
 }

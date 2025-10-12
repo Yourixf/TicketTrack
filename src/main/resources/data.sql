@@ -144,7 +144,7 @@ VALUES
 
 
 INSERT INTO incident
-(number, created, last_modified, resolved, resolved_by_id, canceled, canceled_reason, canceled_by_id,
+(number, created, last_modified, resolved, resolved_by_id, resolved_reason, canceled, canceled_reason, canceled_by_id,
  on_hold_since, on_hold_reason, resolve_before,
  short_description, description, category, state, channel, priority,
  service_offering_id, assignment_group_id, opened_by_id, opened_for_id, escalated_from_id)
@@ -153,7 +153,8 @@ VALUES
     ('INC0000001',
     CURRENT_TIMESTAMP - INTERVAL '12 days', CURRENT_TIMESTAMP,
     NULL, NULL,
-    NULL, NULL, NULL,
+     null,
+     NULL, NULL, NULL,
     NULL, NULL,
     (CURRENT_TIMESTAMP - INTERVAL '12 days') + INTERVAL '12 days',
     'E-mailstoring – MX-fouten', 'Mailflow verstoord; berichten geweigerd door MX-records.', 'INCIDENT', 'IN_PROGRESS', 'EMAIL', 'HIGH',
@@ -168,6 +169,7 @@ VALUES
     ('INC0000002',
     CURRENT_TIMESTAMP - INTERVAL '8 days', CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP - INTERVAL '7 days', (SELECT id FROM app_user WHERE email='shuri@tickettrack.com'),
+     'SERVICE_RESTORED',
     NULL, NULL, NULL,
     NULL, NULL,
     (CURRENT_TIMESTAMP - INTERVAL '8 days') + INTERVAL '7 days',
@@ -182,8 +184,8 @@ VALUES
 -- 3) Van IMS0000010  -> Network Storage (10), LOW => 13 dagen
     ('INC0000003',
     CURRENT_TIMESTAMP - INTERVAL '5 days', CURRENT_TIMESTAMP,
-    NULL, NULL,
     NULL, NULL, NULL,
+     NULL, NULL, NULL,
     CURRENT_TIMESTAMP - INTERVAL '4 days', 'AWAITING_THIRD_PARTY',
     (CURRENT_TIMESTAMP - INTERVAL '5 days') + INTERVAL '13 days',
     'Schrijfrechten op gedeelde map', 'Gebruiker kan niet schrijven naar projectshare; wijziging vereist.', 'INCIDENT', 'ON_HOLD', 'SELF_SERVICE', 'LOW',
@@ -197,8 +199,8 @@ VALUES
 -- 4) Van IMS0000011  -> Security Audit (21), HIGH => 19 dagen
     ('INC0000004',
     CURRENT_TIMESTAMP - INTERVAL '2 days', CURRENT_TIMESTAMP,
-    NULL, NULL,
-    NULL, NULL, NULL,
+    NULL, NULL,      NULL,
+     NULL, NULL, NULL,
     NULL, NULL,
     (CURRENT_TIMESTAMP - INTERVAL '2 days') + INTERVAL '19 days',
     'Beveiligingsalerts', 'Meerdere mislukte inlogpogingen vanaf onbekende IP-adressen.', 'INCIDENT', 'NEW', 'EMAIL', 'HIGH',
@@ -212,8 +214,8 @@ VALUES
 -- 5) Van IMS0000012  -> Cloud Backup (30), NORMAL => 30 dagen
     ('INC0000005',
     CURRENT_TIMESTAMP - INTERVAL '5 days', CURRENT_TIMESTAMP,
-    NULL, NULL,
-    CURRENT_TIMESTAMP - INTERVAL '4 days', 'OUT_OF_SCOPE', (SELECT id FROM app_user WHERE email='johnwick@tickettrack.com'),
+    NULL, NULL,NULL,
+     CURRENT_TIMESTAMP - INTERVAL '4 days', 'OUT_OF_SCOPE', (SELECT id FROM app_user WHERE email='johnwick@tickettrack.com'),
     NULL, NULL,
     (CURRENT_TIMESTAMP - INTERVAL '5 days') + INTERVAL '30 days',
     'Back-upquota overschreden', 'Dagelijkse back-up mislukt door overschreden opslagquotum.', 'INCIDENT', 'CANCELED', 'SELF_SERVICE', 'NORMAL',

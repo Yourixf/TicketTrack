@@ -100,7 +100,7 @@ public class AppUserController {
 
     @PostMapping("/{id}/profile-picture")
     public ResponseEntity<ApiResponse<AttachmentDto>> addProfilePicture(@PathVariable Long id, @RequestParam("file")MultipartFile file) {
-        AttachmentDto attachmentDto = attachmentService.addAttachment(file, "AppUser", id);
+        AttachmentDto attachmentDto = appUserService.addProfilePicture(file, "AppUser", id);
 
         URI uri = URI.create("/attachments/" + attachmentDto.getId());
         return ResponseEntity.created(uri).body(new ApiResponse<>("Added profile picture", HttpStatus.CREATED, attachmentDto));

@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface AttachmentRepository extends JpaRepository<Attachment, Long> {
-    List<Attachment> findByAttachableTypeAndAttachableId(String noteableType, Long noteableId);
+    List<Attachment> findByAttachableTypeAndAttachableId(String attachableType, Long attachableId);
     List<Attachment> findByFileName(String fileName);
 }

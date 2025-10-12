@@ -55,43 +55,43 @@ public class Incident {
 
     @ManyToOne
     @JoinColumn(name = "service_offering_id",  foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @NotFound(action = NotFoundAction.IGNORE) // <— als de user verdwijnt: niet crashen
+    @NotFound(action = NotFoundAction.IGNORE)
 
     private ServiceOffering serviceOffering;
 
     @ManyToOne
     @JoinColumn(name = "assignment_group_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @NotFound(action = NotFoundAction.IGNORE) // <— als de user verdwijnt: niet crashen
+    @NotFound(action = NotFoundAction.IGNORE)
     private AssignmentGroup assignmentGroup;
 
     @ManyToOne
     @JoinColumn(name = "opened_by_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @NotFound(action = NotFoundAction.IGNORE) // <— als de user verdwijnt: niet crashen
+    @NotFound(action = NotFoundAction.IGNORE)
     private AppUser openedBy;
 
     @ManyToOne
     @JoinColumn(name = "opened_for_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @NotFound(action = NotFoundAction.IGNORE) // <— als de user verdwijnt: niet crashen
+    @NotFound(action = NotFoundAction.IGNORE)
     private AppUser openedFor;
 
     @ManyToOne
     @JoinColumn(name = "resolved_by_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @NotFound(action = NotFoundAction.IGNORE) // <— als de user verdwijnt: niet crashen
+    @NotFound(action = NotFoundAction.IGNORE)
     private AppUser resolvedBy;
 
     @ManyToOne
     @JoinColumn(name = "closed_by_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @NotFound(action = NotFoundAction.IGNORE) // <— als de user verdwijnt: niet crashen
+    @NotFound(action = NotFoundAction.IGNORE)
     private AppUser closedBy;
 
     @ManyToOne
     @JoinColumn(name = "canceled_by_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @NotFound(action = NotFoundAction.IGNORE) // <— als de user verdwijnt: niet crashen
+    @NotFound(action = NotFoundAction.IGNORE)
     private AppUser canceledBy;
 
     @ManyToOne
     @JoinColumn(name = "escalated_from_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @NotFound(action = NotFoundAction.IGNORE) // <— als de user verdwijnt: niet crashen
+    @NotFound(action = NotFoundAction.IGNORE)
     private Interaction escalatedFrom;
 
     // This tag makes sure the underlying variable doesn't get saved into the database, but editable in service layer so you can easily export it via DTO

@@ -18,6 +18,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -125,8 +126,8 @@ public class AttachmentService {
         Attachment attachment = attachmentRepository.findById(attachmentId)
                 .orElseThrow(() -> new RecordNotFoundException("Attachment " + attachmentId + " not found"));
 
-        if (attachment.getAttachableId().equals(attachableId) ||
-                attachment.getAttachableType().equals(attachableType)) {
+        if (!attachment.getAttachableId().equals(attachableId) ||
+                !attachment.getAttachableType().equals(attachableType)) {
             throw new BadRequestException("Attachment does not belong to given parent resource arguments");
         }
 
