@@ -21,9 +21,9 @@ public class AssignmentGroup {
     @ManyToOne
     @JoinColumn(
             name = "created_by_id",
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT) // <— geen DB-FK
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
     )
-    @NotFound(action = NotFoundAction.IGNORE) // <— als de user verdwijnt: niet crashen
+    @NotFound(action = NotFoundAction.IGNORE)
     private AppUser createdBy;
 
     public Long getId() {

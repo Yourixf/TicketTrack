@@ -56,7 +56,6 @@ public class Incident {
     @ManyToOne
     @JoinColumn(name = "service_offering_id",  foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @NotFound(action = NotFoundAction.IGNORE)
-
     private ServiceOffering serviceOffering;
 
     @ManyToOne

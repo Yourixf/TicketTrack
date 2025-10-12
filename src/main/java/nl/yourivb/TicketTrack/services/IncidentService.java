@@ -23,10 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static nl.yourivb.TicketTrack.utils.AppUtils.*;
@@ -334,6 +331,13 @@ public class IncidentService {
 
     public void deleteIncident(Long id) {
         Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found"));
+
+//        Interaction escalatedInteraction = incident.getEscalatedFrom();
+//        escalatedInteraction.setIncident(null);
+
+        Optional<Interaction> interaction = interactionRepository.findById(incident.getEscalatedFrom().getId());
+        interaction.get().setIncident(null);
+        interactionRepository.save(interaction.get());
 
         incidentRepository.deleteById(id);
     }
