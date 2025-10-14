@@ -25,9 +25,7 @@ public class ServiceOfferingController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<ServiceOfferingDto>>> getAllServiceOfferings() {
-        List<ServiceOfferingDto> dtos;
-
-        dtos = serviceOfferingService.getAllServiceOfferings();
+        List<ServiceOfferingDto> dtos = serviceOfferingService.getAllServiceOfferings();
 
         return new ResponseEntity<>(
                 new ApiResponse<>("Service offerings fetched", HttpStatus.OK, dtos),

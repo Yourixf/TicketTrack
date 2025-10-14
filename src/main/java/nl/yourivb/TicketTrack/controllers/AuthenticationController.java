@@ -25,7 +25,6 @@ public class AuthenticationController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<AuthResponseDto>> createAuthenticationToken(@Valid @RequestBody AuthRequestDto authRequest) {
-
         AuthResponseDto authResponse = authenticationService.authenticate(authRequest);
 
         return ResponseEntity.ok(

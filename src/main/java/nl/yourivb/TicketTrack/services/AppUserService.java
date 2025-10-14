@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 import static nl.yourivb.TicketTrack.utils.AppUtils.allFieldsNull;
 
@@ -198,9 +199,15 @@ public class AppUserService {
 
     @Transactional
     public AttachmentDto addProfilePicture(MultipartFile file, String attachableType, Long attachableId) {
+        AppUser appUser = appUserRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("User " + attachableId + " not found"));
+
         List<Attachment> attachmentList = attachmentRepository.findByAttachableTypeAndAttachableId(attachableType, attachableId);
 
-       attachmentList.stream()
+        if (!SecurityUtils.hasRole("ADMIN") && !Objects.equals(SecurityUtils.getCurrentUserId(), appUser.getId())) {
+            throw new AccessDeniedException("You are not allowed to change other users profile picture.");
+        }
+
+        attachmentList.stream()
                 .map(Attachment::getId)
                 .forEach(attachmentService::deleteAttachmentFromParent);
 

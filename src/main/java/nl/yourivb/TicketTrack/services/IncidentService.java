@@ -1,5 +1,6 @@
 package nl.yourivb.TicketTrack.services;
 
+import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
 import nl.yourivb.TicketTrack.dtos.incident.IncidentDto;
 import nl.yourivb.TicketTrack.dtos.incident.IncidentInputDto;
 import nl.yourivb.TicketTrack.dtos.incident.IncidentPatchDto;
@@ -19,6 +20,8 @@ import nl.yourivb.TicketTrack.repositories.InteractionRepository;
 import nl.yourivb.TicketTrack.repositories.NoteRepository;
 import nl.yourivb.TicketTrack.security.SecurityUtils;
 import nl.yourivb.TicketTrack.utils.AppUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -32,21 +35,25 @@ import static nl.yourivb.TicketTrack.utils.AppUtils.*;
 @Service
 public class IncidentService {
 
+    private static final Logger log = LoggerFactory.getLogger(IncidentService.class);
     private final IncidentRepository incidentRepository;
     private final InteractionRepository interactionRepository;
     private final IncidentMapper incidentMapper;
     private final NoteRepository noteRepository;
     private final AttachmentRepository attachmentRepository;
+    private final AttachmentService attachmentService;
 
     public IncidentService(IncidentRepository incidentRepository,
                            InteractionRepository interactionRepository,
                            IncidentMapper incidentMapper, NoteRepository noteRepository,
-                           AttachmentRepository attachmentRepository) {
+                           AttachmentRepository attachmentRepository,
+                           AttachmentService attachmentService) {
         this.incidentRepository = incidentRepository;
         this.interactionRepository = interactionRepository;
         this.incidentMapper = incidentMapper;
         this.noteRepository = noteRepository;
         this.attachmentRepository = attachmentRepository;
+        this.attachmentService = attachmentService;
     }
 
 
@@ -210,6 +217,10 @@ public class IncidentService {
     public IncidentDto escalateFromInteraction (Long interactionId) {
         Interaction interaction = interactionRepository.findById(interactionId).orElseThrow(() -> new RecordNotFoundException("Interaction " + interactionId + " not found"));
 
+        if (interaction.getState() == InteractionState.CLOSED || interaction.getIncident() != null) {
+            throw new CustomException("Cannot escalate closed interaction", HttpStatus.CONFLICT);
+        }
+
         Incident incident = incidentMapper.fromInteraction(interaction);
         incident.setNumber(generateRegistrationNumber("INC", incidentRepository));
 
@@ -332,29 +343,21 @@ public class IncidentService {
     public void deleteIncident(Long id) {
         Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found"));
 
-//        Interaction escalatedInteraction = incident.getEscalatedFrom();
-//        escalatedInteraction.setIncident(null);
-
         Optional<Interaction> interaction = interactionRepository.findById(incident.getEscalatedFrom().getId());
-        interaction.get().setIncident(null);
-        interactionRepository.save(interaction.get());
+
+        if (interaction.isPresent()) {
+            interaction.get().setIncident(null);
+            interactionRepository.save(interaction.get());
+        }
+
+        List<AttachmentDto> attachmentsList = attachmentService.getAllAttachmentsFromParent("Incident", id);
+
+        if (attachmentsList != null) {
+            for (AttachmentDto attachment : attachmentsList) {
+                attachmentService.deleteAttachmentFromParent(attachment.getId());
+            }
+        }
 
         incidentRepository.deleteById(id);
     }
-
-    public IncidentDto addChildInteractions(Long id, Set<Long> interactionIds) {
-        Incident incident = incidentRepository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException("Incident " + id + " not found"));
-
-        List<Interaction> childInteractions = interactionIds.stream()
-                .map(childId -> interactionRepository.findById(childId)
-                        .orElseThrow(() -> new RecordNotFoundException("Interaction " + childId + " not found")))
-                .collect(Collectors.toList());
-
-        incidentRepository.save(incident);
-
-        return incidentMapper.toDto(incident);
-    }
-
-
 }

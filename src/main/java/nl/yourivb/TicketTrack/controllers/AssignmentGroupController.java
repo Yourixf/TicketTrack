@@ -25,9 +25,7 @@ public class AssignmentGroupController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<AssignmentGroupDto>>> getAllAssignmentGroups() {
-        List<AssignmentGroupDto> dtos;
-
-        dtos = assignmentGroupService.getAllAssignmentGroups();
+        List<AssignmentGroupDto> dtos = assignmentGroupService.getAllAssignmentGroups();
 
         return new ResponseEntity<>(
                 new ApiResponse<>("Assignment groups fetched", HttpStatus.OK, dtos),

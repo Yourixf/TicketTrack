@@ -1,5 +1,6 @@
 package nl.yourivb.TicketTrack.services;
 
+import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
@@ -7,6 +8,7 @@ import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.CustomException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.InteractionMapper;
+import nl.yourivb.TicketTrack.models.Attachment;
 import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.models.enums.Category;
 import nl.yourivb.TicketTrack.models.enums.Channel;
@@ -31,15 +33,18 @@ public class InteractionService {
     private final InteractionMapper interactionMapper;
     private final NoteRepository noteRepository;
     private final AttachmentRepository attachmentRepository;
+    private final AttachmentService attachmentService;
 
     public InteractionService(InteractionRepository interactionRepository,
                               InteractionMapper interactionMapper,
                               NoteRepository noteRepository,
-                              AttachmentRepository attachmentRepository) {
+                              AttachmentRepository attachmentRepository,
+                              AttachmentService attachmentService) {
         this.interactionRepository = interactionRepository;
         this.interactionMapper = interactionMapper;
         this.noteRepository = noteRepository;
         this.attachmentRepository = attachmentRepository;
+        this.attachmentService = attachmentService;
     }
 
     private void validateStateTransition(InteractionState previousState, Interaction interaction) {
@@ -162,6 +167,14 @@ public class InteractionService {
 
     public void deleteInteraction(Long id) {
         Interaction interaction = interactionRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Interaction " + id + " not found"));
+
+        List<AttachmentDto> attachmentsList = attachmentService.getAllAttachmentsFromParent("Interaction", id);
+
+        if (attachmentsList != null) {
+            for (AttachmentDto attachment : attachmentsList) {
+                attachmentService.deleteAttachmentFromParent(attachment.getId());
+            }
+        }
 
         interactionRepository.deleteById(id);
     }

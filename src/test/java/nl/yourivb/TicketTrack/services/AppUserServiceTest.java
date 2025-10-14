@@ -4,6 +4,7 @@ import nl.yourivb.TicketTrack.dtos.appuser.AppUserDto;
 import nl.yourivb.TicketTrack.dtos.appuser.AppUserInputDto;
 import nl.yourivb.TicketTrack.dtos.appuser.AppUserPatchDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
+import nl.yourivb.TicketTrack.exceptions.CustomException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AppUserMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
@@ -173,7 +174,7 @@ class AppUserServiceTest {
         });
 
         // Act & Assert
-        assertThrows(BadRequestException.class, () -> appUserService.createUser(inputDto));
+        assertThrows(CustomException.class, () -> appUserService.createUser(inputDto));
 
         // Assert (collaboration)
         verify(appUserRepository, times(1)).findByEmail(inputDto.getEmail());
@@ -290,7 +291,7 @@ class AppUserServiceTest {
             mockedSec.when(SecurityUtils::getCurrentUserDetails).thenReturn(new AppUserDetails(fakeUser));
 
             // Act & Assert
-            assertThrows(BadRequestException.class, () -> appUserService.updateUser(1L, newInputDto));
+            assertThrows(CustomException.class, () -> appUserService.updateUser(1L, newInputDto));
 
             // Assert (collaboration)
             verify(appUserRepository, times(1)).findById(1L);

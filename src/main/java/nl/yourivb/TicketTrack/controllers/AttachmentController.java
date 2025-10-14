@@ -28,9 +28,7 @@ public class AttachmentController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<AttachmentDto>>> getAllAttachments () {
-        List<AttachmentDto> dtos;
-
-        dtos = attachmentService.getAllAttachments();
+        List<AttachmentDto> dtos = attachmentService.getAllAttachments();
 
         return new ResponseEntity<>(
                 new ApiResponse<>("Attachments fetched", HttpStatus.OK, dtos), HttpStatus.OK

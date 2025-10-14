@@ -39,9 +39,7 @@ public class InteractionController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<InteractionDto>>>  getAllInteractions() {
-        List<InteractionDto> dtos;
-
-        dtos = interactionService.getAllInteractions();
+        List<InteractionDto> dtos = interactionService.getAllInteractions();
 
         return new ResponseEntity<>(
                 new ApiResponse<>("Interactions fetched", HttpStatus.OK, dtos),

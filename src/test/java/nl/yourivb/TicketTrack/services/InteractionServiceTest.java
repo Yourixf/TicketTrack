@@ -482,6 +482,7 @@ class InteractionServiceTest {
         Interaction entity = new Interaction(); entity.setId(1L);
         when(interactionRepository.findById(1L)).thenReturn(Optional.of(entity));
 
+
         // Act
         interactionService.deleteInteraction(1L);
 
