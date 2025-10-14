@@ -21,9 +21,7 @@ public class NoteController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<NoteDto>>> getAllNotes() {
-        List<NoteDto> dtos;
-
-        dtos = noteService.getAllNotes();
+        List<NoteDto> dtos = noteService.getAllNotes();
 
         return new ResponseEntity<>(
                 new ApiResponse<>("Notes fetched", HttpStatus.OK, dtos),

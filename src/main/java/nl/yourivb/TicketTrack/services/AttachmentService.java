@@ -13,12 +13,10 @@ import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.IncidentRepository;
 import nl.yourivb.TicketTrack.repositories.InteractionRepository;
 import nl.yourivb.TicketTrack.security.SecurityUtils;
-import nl.yourivb.TicketTrack.utils.AppUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -122,19 +120,23 @@ public class AttachmentService {
         return attachmentMapper.toDto(attachment);
     }
 
-    public void deleteAttachmentFromParent(String attachableType, Long attachableId, Long attachmentId) {
-        Attachment attachment = attachmentRepository.findById(attachmentId)
-                .orElseThrow(() -> new RecordNotFoundException("Attachment " + attachmentId + " not found"));
-
-        if (!attachment.getAttachableId().equals(attachableId) ||
-                !attachment.getAttachableType().equals(attachableType)) {
-            throw new BadRequestException("Attachment does not belong to given parent resource arguments");
-        }
+    public void deleteAttachmentFromParent(Long id) {
+        Attachment attachment = attachmentRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Attachment " + id + " not found"));
 
         Path path = Paths.get(attachment.getFilePath());
         String fileName = attachment.getFileName();
 
-        attachmentRepository.deleteById(attachmentId);
+        if (attachment.getAttachableType().equals("AppUser")) {
+            Optional<AppUser> user = appUserRepository.findById(attachment.getAttachableId());
+
+            if (user.isPresent()) {
+                user.get().setProfilePicture(null);
+                appUserRepository.save(user.get());
+            }
+        }
+
+        attachmentRepository.deleteById(id);
 
         List<Attachment> remainingAttachments = attachmentRepository.findByFileName(fileName);
 
@@ -145,27 +147,6 @@ public class AttachmentService {
                 throw new FileStorageException("Failed to delete file from disk: " + path.getFileName(), e);
             }
         }
-    }
-
-    // this is for the admin endpoint
-    public void deleteAttachmentFromAllParents(Long id) {
-        Attachment attachment = attachmentRepository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException("Attachment " + id + " not found"));
-
-        Path path = Paths.get(attachment.getFilePath());
-        String fileName = attachment.getFileName();
-
-        List<Attachment> allAttachments = attachmentRepository.findByFileName(attachment.getFileName());
-        List<Long> allAttachmentsIds = AppUtils.extractIds(allAttachments, Attachment::getId);
-
-        attachmentRepository.deleteAllById(allAttachmentsIds);
-
-        try {
-            Files.deleteIfExists(path);
-        } catch (IOException e) {
-            throw new FileStorageException("Failed to delete file from disk: " + path.getFileName(), e);
-        }
-
     }
 
     public List<AttachmentDto> getAllAttachmentsFromParent(String attachableType, Long attachableId) {

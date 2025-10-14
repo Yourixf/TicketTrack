@@ -130,15 +130,6 @@ public class InteractionController {
         return ResponseEntity.created(uri).body(new ApiResponse<>("Added attachment", HttpStatus.CREATED, attachment));
     }
 
-    @DeleteMapping("/{interactionId}/attachments/{attachmentId}")
-    public ResponseEntity<ApiResponse<Void>> deleteAttachment(@PathVariable Long interactionId, @PathVariable Long attachmentId) {
-        attachmentService.deleteAttachmentFromParent("Interaction", interactionId, attachmentId);
-
-        return new ResponseEntity<>(
-                new ApiResponse<>("Attachment deleted", HttpStatus.OK, null), HttpStatus.OK
-        );
-    }
-
     @PostMapping("/{id}/escalate")
     public ResponseEntity<ApiResponse<IncidentDto>> escalateFromInteraction(@PathVariable Long id) {
         IncidentDto incident = incidentService.escalateFromInteraction(id);

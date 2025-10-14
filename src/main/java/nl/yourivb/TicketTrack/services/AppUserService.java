@@ -186,6 +186,13 @@ public class AppUserService {
     public void deleteUser(Long id) {
         AppUser appUser = appUserRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("User " + id + " not found"));
 
+        if (appUser.getProfilePicture() != null) {
+            Long attachmentId = appUser.getProfilePicture().getId();
+
+            attachmentService.deleteAttachmentFromParent(attachmentId);
+            appUserRepository.save(appUser);
+        }
+
         appUserRepository.deleteById(id);
     }
 
@@ -195,7 +202,7 @@ public class AppUserService {
 
        attachmentList.stream()
                 .map(Attachment::getId)
-                .forEach(attachmentService::deleteAttachmentFromAllParents);
+                .forEach(attachmentService::deleteAttachmentFromParent);
 
         return attachmentService.addAttachment(file, attachableType, attachableId);
     }

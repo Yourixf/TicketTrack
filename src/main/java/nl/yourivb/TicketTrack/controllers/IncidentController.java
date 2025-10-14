@@ -35,9 +35,7 @@ public class IncidentController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<IncidentDto>>> getAllIncidents() {
-        List<IncidentDto> dtos;
-
-        dtos = incidentService.getAllIncidents();
+        List<IncidentDto> dtos = incidentService.getAllIncidents();
 
         return new ResponseEntity<>(
                 new ApiResponse<>("Incidents fetched", HttpStatus.OK, dtos), HttpStatus.OK

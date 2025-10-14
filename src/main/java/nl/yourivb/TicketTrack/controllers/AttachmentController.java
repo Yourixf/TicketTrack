@@ -48,7 +48,7 @@ public class AttachmentController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteAttachment(@PathVariable Long id) {
-        attachmentService.deleteAttachmentFromAllParents(id);
+        attachmentService.deleteAttachmentFromParent(id);
 
         return new ResponseEntity<>(
                 new ApiResponse<>("Attachment deleted", HttpStatus.OK, null), HttpStatus.OK
