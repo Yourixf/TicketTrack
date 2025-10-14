@@ -2,12 +2,14 @@ package nl.yourivb.TicketTrack.services;
 
 import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDownloadDto;
 import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
+import nl.yourivb.TicketTrack.exceptions.AccessDeniedException;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.FileStorageException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AttachmentMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
 import nl.yourivb.TicketTrack.models.Attachment;
+import nl.yourivb.TicketTrack.models.Role;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.IncidentRepository;
@@ -15,7 +17,6 @@ import nl.yourivb.TicketTrack.repositories.InteractionRepository;
 import nl.yourivb.TicketTrack.security.SecurityUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -65,7 +67,12 @@ public class AttachmentService {
     }
 
     private void validateAttachmentPermissions(Attachment attachment) {
-        if ()
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+        Boolean isAdminOrIT = SecurityUtils.hasRole("ADMIN") || SecurityUtils.hasRole("IT");
+
+        if (!Objects.equals(attachment.getUploadedBy().getId(), currentUserId) && !isAdminOrIT){
+            throw new AccessDeniedException("You have no permission to alter this attachment");
+        }
     }
 
     public List<AttachmentDto> getAllAttachments() {
@@ -127,6 +134,8 @@ public class AttachmentService {
     public void deleteAttachmentFromParent(Long id) {
         Attachment attachment = attachmentRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Attachment " + id + " not found"));
+
+        validateAttachmentPermissions(attachment);
 
         Path path = Paths.get(attachment.getFilePath());
         String fileName = attachment.getFileName();

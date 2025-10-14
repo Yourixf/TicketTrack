@@ -152,7 +152,6 @@ public class AppUserService {
 
         String originalPassword = appUser.getPassword();
 
-
         verifyAccessToModifyUser(id);
 
         // only admins are allowed to change roles
