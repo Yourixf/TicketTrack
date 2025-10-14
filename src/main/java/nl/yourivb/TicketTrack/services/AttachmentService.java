@@ -64,6 +64,10 @@ public class AttachmentService {
         }
     }
 
+    private void validateAttachmentPermissions(Attachment attachment) {
+        if ()
+    }
+
     public List<AttachmentDto> getAllAttachments() {
         return attachmentRepository.findAll().stream().map(attachmentMapper::toDto).toList();
     }

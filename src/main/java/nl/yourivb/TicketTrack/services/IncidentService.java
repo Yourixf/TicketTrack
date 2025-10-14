@@ -35,7 +35,6 @@ import static nl.yourivb.TicketTrack.utils.AppUtils.*;
 @Service
 public class IncidentService {
 
-    private static final Logger log = LoggerFactory.getLogger(IncidentService.class);
     private final IncidentRepository incidentRepository;
     private final InteractionRepository interactionRepository;
     private final IncidentMapper incidentMapper;
@@ -74,7 +73,7 @@ public class IncidentService {
     private boolean isEligibleForAutoClose(Incident inc) {
         return inc.getState() == IncidentState.RESOLVED
                 && inc.getResolved() != null
-                && !inc.getResolved().plusDays(7).isAfter(LocalDateTime.now()); // >= 7 dagen
+                && !inc.getResolved().plusDays(7).isAfter(LocalDateTime.now()); // >= 7 days
     }
 
     // closes incident if eligible.

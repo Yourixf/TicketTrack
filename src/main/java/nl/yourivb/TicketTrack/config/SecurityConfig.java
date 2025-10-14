@@ -78,7 +78,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.GET, "/attachments/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/attachments/*/download").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/attachments/**").hasAnyRole("ADMIN", "IT")
+                        .requestMatchers(HttpMethod.DELETE, "/attachments/**").authenticated()
 
                         .requestMatchers(HttpMethod.GET, "/incidents/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/incidents/**").hasAnyRole("ADMIN", "IT")
