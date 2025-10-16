@@ -7,9 +7,7 @@ import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.FileStorageException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AttachmentMapper;
-import nl.yourivb.TicketTrack.models.AppUser;
-import nl.yourivb.TicketTrack.models.Attachment;
-import nl.yourivb.TicketTrack.models.Role;
+import nl.yourivb.TicketTrack.models.*;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.IncidentRepository;
@@ -66,6 +64,31 @@ public class AttachmentService {
         }
     }
 
+    private void validateAccess(String attachableType, long attachableId){
+        // no 404 exception, validateAttachable covers that.
+        switch (attachableType) {
+            case "Interaction" -> {
+                Optional<Interaction> interaction = interactionRepository.findById(attachableId);
+
+                if (SecurityUtils.hasRole("ADMIN")) {
+                    break;
+                }
+
+                else if (interaction.get().getOpenedBy().getId() != SecurityUtils.getCurrentUserId() &&
+                        interaction.get().getOpenedFor().getId() != SecurityUtils.getCurrentUserId()) {
+
+                }
+            }
+            case "Incident" -> {
+                Optional<Incident> incident = incidentRepository.findById(attachableId);
+            }
+            case "AppUser" -> {
+                Optional<AppUser> appUser = appUserRepository.findById(attachableId);
+            }
+
+        }
+    }
+
     private void validateAttachmentPermissions(Attachment attachment) {
         Long currentUserId = SecurityUtils.getCurrentUserId();
         Boolean isAdminOrIT = SecurityUtils.hasRole("ADMIN") || SecurityUtils.hasRole("IT");
@@ -92,12 +115,19 @@ public class AttachmentService {
 
         validateAttachable(attachableType, attachableId);
 
-        boolean hasAccess = attachableType.equals("AppUser") && attachableId == SecurityUtils.getCurrentUserId();
-        boolean isAdmin = SecurityUtils.hasRole("ADMIN");
-
-        if (!hasAccess && !isAdmin) {
-            throw new AccessDeniedException("You don't have permission to access this resource.");
-        }
+        boolean hasAccess;
+//
+//        if( attachableType.equals("AppUser") && attachableId == SecurityUtils.getCurrentUserId()) {
+//            hasAccess = true;
+//        } else if (attachableType.equals("Interaction")) {
+//             Interaction interaction =  interactionRepository.findById(attachableId);
+//        }
+//
+//        boolean isAdmin = SecurityUtils.hasRole("ADMIN");
+//
+//        if (!hasAccess && !isAdmin) {
+//            throw new AccessDeniedException("You don't have permission to access this resource.");
+//        }
 
 
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
