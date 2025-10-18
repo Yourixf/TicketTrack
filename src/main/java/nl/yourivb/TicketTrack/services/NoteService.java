@@ -47,6 +47,7 @@ public class NoteService {
 
     public NoteDto getNoteById(Long id) {
         Note note = noteRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Note " + id + " not found"));
+
         if (note.getVisibility() == NoteVisibility.WORK &&
                 !(SecurityUtils.hasRole("ADMIN") || SecurityUtils.hasRole("IT"))) {
             throw new AccessDeniedException("You are not allowed to view this note");

@@ -2,7 +2,7 @@ package nl.yourivb.TicketTrack.services;
 
 import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDownloadDto;
 import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
-import nl.yourivb.TicketTrack.exceptions.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.FileStorageException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
@@ -49,61 +49,79 @@ public class AttachmentService {
         this.appUserRepository = appUserRepository;
     }
 
-    private void validateAttachable(String attachableType, Long attachableId) {
+
+    public void validateAttachableAndAccess(String attachableType, Long attachableId){
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+        Boolean isAdmin = SecurityUtils.hasRole("ADMIN");
+        Boolean isIT =  SecurityUtils.hasRole("IT");
+
         switch (attachableType) {
             case "Interaction" -> {
-                interactionRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("Interaction " + attachableId  + " not found"));
+                Interaction interaction = interactionRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("Interaction " + attachableId  + " not found"));
+
+                if (isAdmin || isIT) {
+                    return;
+                }
+
+                Long openedById = interaction.getOpenedBy().getId();
+                Long openedForId = interaction.getOpenedFor().getId();
+
+                if (!Objects.equals(openedForId, currentUserId) && !Objects.equals(openedById, currentUserId)) {
+                    throw new AccessDeniedException("You have no permission to access or alter this interaction");
+                }
             }
             case "Incident" -> {
-                incidentRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("Incident " + attachableId + " not found" ));
+                Incident incident = incidentRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("Incident " + attachableId + " not found" ));
+
+                if (isAdmin || isIT) {
+                    return;
+                }
+
+                Long openedById = incident.getOpenedBy().getId();
+                Long openedForId = incident.getOpenedFor().getId();
+
+                if (!Objects.equals(openedForId, currentUserId) && !Objects.equals(openedById, currentUserId)) {
+                    throw new AccessDeniedException("You have no permission to access or alter this incident");
+                }
+
             }
             case "AppUser" -> {
-                appUserRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("User " + attachableId + " not found"));
+                AppUser appUser = appUserRepository.findById(attachableId).orElseThrow(() -> new RecordNotFoundException("User " + attachableId + " not found"));
+
+                if (isAdmin) {
+                    return;
+                }
+
+                if (!Objects.equals(attachableId, currentUserId)) {
+                    throw new AccessDeniedException("You have no permission to access or alter this user");
+                }
             }
             default -> throw new BadRequestException("Unsupported parent type: " + attachableType);
         }
     }
 
-    private void validateAccess(String attachableType, long attachableId){
-        // no 404 exception, validateAttachable covers that.
-        switch (attachableType) {
-            case "Interaction" -> {
-                Optional<Interaction> interaction = interactionRepository.findById(attachableId);
-
-                if (SecurityUtils.hasRole("ADMIN")) {
-                    break;
-                }
-
-                else if (interaction.get().getOpenedBy().getId() != SecurityUtils.getCurrentUserId() &&
-                        interaction.get().getOpenedFor().getId() != SecurityUtils.getCurrentUserId()) {
-
-                }
-            }
-            case "Incident" -> {
-                Optional<Incident> incident = incidentRepository.findById(attachableId);
-            }
-            case "AppUser" -> {
-                Optional<AppUser> appUser = appUserRepository.findById(attachableId);
-            }
-
-        }
-    }
-
-    private void validateAttachmentPermissions(Attachment attachment) {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
-        Boolean isAdminOrIT = SecurityUtils.hasRole("ADMIN") || SecurityUtils.hasRole("IT");
-
-        if (!Objects.equals(attachment.getUploadedBy().getId(), currentUserId) && !isAdminOrIT){
-            throw new AccessDeniedException("You have no permission to alter this attachment");
-        }
-    }
 
     public List<AttachmentDto> getAllAttachments() {
-        return attachmentRepository.findAll().stream().map(attachmentMapper::toDto).toList();
+//        return attachmentRepository.findAll().stream().map(attachmentMapper::toDto).toList();
+
+
+        return attachmentRepository.findAll()
+                .stream()
+                .filter(attachment -> {
+                    try {
+                        validateAttachableAndAccess(attachment.getAttachableType(), attachment.getAttachableId());
+                        return true;
+                    } catch (Exception e) {
+                        return false;
+                    }
+                })
+                .map(attachmentMapper::toDto).toList();
     }
 
     public AttachmentDto getAttachmentById(Long id) {
         Attachment attachment = attachmentRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Attachment " + id + " not found"));
+
+        validateAttachableAndAccess(attachment.getAttachableType(), id);
 
         return attachmentMapper.toDto(attachment);
     }
@@ -113,22 +131,7 @@ public class AttachmentService {
             throw new BadRequestException("Empty file is not allowed");
         }
 
-        validateAttachable(attachableType, attachableId);
-
-        boolean hasAccess;
-//
-//        if( attachableType.equals("AppUser") && attachableId == SecurityUtils.getCurrentUserId()) {
-//            hasAccess = true;
-//        } else if (attachableType.equals("Interaction")) {
-//             Interaction interaction =  interactionRepository.findById(attachableId);
-//        }
-//
-//        boolean isAdmin = SecurityUtils.hasRole("ADMIN");
-//
-//        if (!hasAccess && !isAdmin) {
-//            throw new AccessDeniedException("You don't have permission to access this resource.");
-//        }
-
+        validateAttachableAndAccess(attachableType, attachableId);
 
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         // to ensure unique fileName in uploads folder
@@ -165,7 +168,7 @@ public class AttachmentService {
         Attachment attachment = attachmentRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Attachment " + id + " not found"));
 
-        validateAttachmentPermissions(attachment);
+        validateAttachableAndAccess(attachment.getAttachableType(), id);
 
         Path path = Paths.get(attachment.getFilePath());
         String fileName = attachment.getFileName();
@@ -193,8 +196,7 @@ public class AttachmentService {
     }
 
     public List<AttachmentDto> getAllAttachmentsFromParent(String attachableType, Long attachableId) {
-
-        validateAttachable(attachableType, attachableId);
+        validateAttachableAndAccess(attachableType, attachableId);
         return attachmentMapper.toDto(
                 attachmentRepository.findByAttachableTypeAndAttachableId(attachableType, attachableId)
         );

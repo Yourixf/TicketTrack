@@ -202,9 +202,7 @@ public class AppUserService {
 
         List<Attachment> attachmentList = attachmentRepository.findByAttachableTypeAndAttachableId(attachableType, attachableId);
 
-        if (!SecurityUtils.hasRole("ADMIN") && !Objects.equals(SecurityUtils.getCurrentUserId(), appUser.getId())) {
-            throw new AccessDeniedException("You are not allowed to change other users profile picture.");
-        }
+        attachmentService.validateAttachableAndAccess(attachableType, attachableId);
 
         attachmentList.stream()
                 .map(Attachment::getId)
