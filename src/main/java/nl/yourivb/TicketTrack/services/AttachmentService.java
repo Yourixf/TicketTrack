@@ -2,12 +2,14 @@ package nl.yourivb.TicketTrack.services;
 
 import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDownloadDto;
 import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
-import org.springframework.security.access.AccessDeniedException;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.FileStorageException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AttachmentMapper;
-import nl.yourivb.TicketTrack.models.*;
+import nl.yourivb.TicketTrack.models.AppUser;
+import nl.yourivb.TicketTrack.models.Attachment;
+import nl.yourivb.TicketTrack.models.Incident;
+import nl.yourivb.TicketTrack.models.Interaction;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
 import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.repositories.IncidentRepository;
@@ -15,6 +17,7 @@ import nl.yourivb.TicketTrack.repositories.InteractionRepository;
 import nl.yourivb.TicketTrack.security.SecurityUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -102,9 +105,6 @@ public class AttachmentService {
 
 
     public List<AttachmentDto> getAllAttachments() {
-//        return attachmentRepository.findAll().stream().map(attachmentMapper::toDto).toList();
-
-
         return attachmentRepository.findAll()
                 .stream()
                 .filter(attachment -> {

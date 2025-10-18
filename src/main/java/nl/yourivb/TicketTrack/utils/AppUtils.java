@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static nl.yourivb.TicketTrack.services.NoteService.filterNotesWithAccess;
+import static nl.yourivb.TicketTrack.services.NoteService.filterNotesWithVisibilityAccess;
 
 public class AppUtils {
 
@@ -61,7 +61,7 @@ public class AppUtils {
             AttachmentRepository attachmentRepository) {
 
         List<Note> notes = noteRepository.findByNoteableTypeAndNoteableId(parentType, parentId);
-        List<Note> filteredNotes = filterNotesWithAccess(notes);
+        List<Note> filteredNotes = filterNotesWithVisibilityAccess(notes);
 
         List<Attachment> attachments = attachmentRepository.findByAttachableTypeAndAttachableId(parentType, parentId);
 

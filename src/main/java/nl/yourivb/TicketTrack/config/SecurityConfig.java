@@ -81,12 +81,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/attachments/**").authenticated()
 
                         .requestMatchers(HttpMethod.GET, "/incidents/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/incidents/*/notes").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/incidents/*/attachments").authenticated()
                         .requestMatchers(HttpMethod.POST, "/incidents/**").hasAnyRole("ADMIN", "IT")
                         .requestMatchers(HttpMethod.PUT, "/incidents/**").hasAnyRole("ADMIN", "IT")
                         .requestMatchers(HttpMethod.PATCH, "/incidents/**").hasAnyRole("ADMIN", "IT")
                         .requestMatchers(HttpMethod.DELETE, "/incidents/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/incidents/*/attachments").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/incidents/*/notes").authenticated()
 
                         .requestMatchers(HttpMethod.GET, "/interactions/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/interactions").authenticated()
