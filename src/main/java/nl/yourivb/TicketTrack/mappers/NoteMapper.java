@@ -13,7 +13,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", uses = EntityMappingService.class)
 public interface NoteMapper {
-
     @Mapping(target = "createdById", source = "createdBy")
     NoteDto toDto(Note note);
 

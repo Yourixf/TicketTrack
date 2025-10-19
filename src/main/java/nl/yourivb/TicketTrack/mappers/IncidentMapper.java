@@ -29,7 +29,6 @@ public interface IncidentMapper {
     @Mapping(target = "assignmentGroup", source = "assignmentGroupId")
     void updateIncidentFromDto(IncidentInputDto dto, @MappingTarget Incident incident);
 
-
     @Mapping(target = "serviceOffering", source = "serviceOfferingId")
     @Mapping(target = "assignmentGroup", source = "assignmentGroupId")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

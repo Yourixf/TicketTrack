@@ -9,7 +9,6 @@ import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", uses = EntityMappingService.class)
 public interface AppUserMapper {
-
     @Mapping(target = "profilePictureId", source = "profilePicture")
     @Mapping(target = "roleId", source = "role")
     AppUserDto toDto(AppUser user);

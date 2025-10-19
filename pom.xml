@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>nl.yourivb</groupId>
 	<artifactId>TicketTrack</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>TicketTrack</name>
 	<description>Novi Backend leerlijn eindopdracht</description>
 

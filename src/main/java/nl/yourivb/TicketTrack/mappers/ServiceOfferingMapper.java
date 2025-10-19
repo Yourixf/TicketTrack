@@ -13,7 +13,6 @@ public interface ServiceOfferingMapper {
     @Mapping(target = "createdById", source = "createdBy")
     ServiceOfferingDto toDto(ServiceOffering serviceOffering);
 
-
     @Mapping(target = "assignmentGroup", source = "assignmentGroupId")
     ServiceOffering toModel(ServiceOfferingInputDto dto);
     void updateServiceOfferingFromDto(ServiceOfferingInputDto dto, @MappingTarget ServiceOffering serviceOffering);
