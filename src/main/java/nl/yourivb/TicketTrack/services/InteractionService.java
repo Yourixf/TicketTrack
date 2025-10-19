@@ -4,6 +4,7 @@ import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
+import nl.yourivb.TicketTrack.dtos.note.NoteDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.CustomException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
@@ -33,17 +34,19 @@ public class InteractionService {
     private final NoteRepository noteRepository;
     private final AttachmentRepository attachmentRepository;
     private final AttachmentService attachmentService;
+    private final NoteService noteService;
 
     public InteractionService(InteractionRepository interactionRepository,
                               InteractionMapper interactionMapper,
                               NoteRepository noteRepository,
                               AttachmentRepository attachmentRepository,
-                              AttachmentService attachmentService) {
+                              AttachmentService attachmentService, NoteService noteService) {
         this.interactionRepository = interactionRepository;
         this.interactionMapper = interactionMapper;
         this.noteRepository = noteRepository;
         this.attachmentRepository = attachmentRepository;
         this.attachmentService = attachmentService;
+        this.noteService = noteService;
     }
 
     private void validateStateTransition(InteractionState previousState, Interaction interaction) {
@@ -168,10 +171,17 @@ public class InteractionService {
         Interaction interaction = interactionRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Interaction " + id + " not found"));
 
         List<AttachmentDto> attachmentsList = attachmentService.getAllAttachmentsFromParent("Interaction", id);
+        List<NoteDto> noteList = noteService.getAllNotesFromParent("Interaction", id);
 
         if (attachmentsList != null) {
             for (AttachmentDto attachment : attachmentsList) {
                 attachmentService.deleteAttachmentFromParent(attachment.getId());
+            }
+        }
+
+        if (noteList != null) {
+            for (NoteDto note : noteList) {
+                noteService.deleteNote(note.getId());
             }
         }
 

@@ -3,13 +3,16 @@ package nl.yourivb.TicketTrack.services;
 import nl.yourivb.TicketTrack.dtos.appuser.AppUserDto;
 import nl.yourivb.TicketTrack.dtos.appuser.AppUserInputDto;
 import nl.yourivb.TicketTrack.dtos.appuser.AppUserPatchDto;
+import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.CustomException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
 import nl.yourivb.TicketTrack.mappers.AppUserMapper;
 import nl.yourivb.TicketTrack.models.AppUser;
+import nl.yourivb.TicketTrack.models.Attachment;
 import nl.yourivb.TicketTrack.models.Role;
 import nl.yourivb.TicketTrack.repositories.AppUserRepository;
+import nl.yourivb.TicketTrack.repositories.AttachmentRepository;
 import nl.yourivb.TicketTrack.security.AppUserDetails;
 import nl.yourivb.TicketTrack.security.SecurityUtils;
 import nl.yourivb.TicketTrack.utils.AppUtils;
@@ -19,6 +22,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +40,15 @@ class AppUserServiceTest {
 
     @Mock
     PasswordEncoder passwordEncoder;
+
+    @Mock
+    AttachmentService attachmentService;
+
+    @Mock
+    AttachmentRepository attachmentRepository;
+
+    @Mock
+    MultipartFile file;
 
     @Captor
     ArgumentCaptor<AppUser> appUserCaptor;
@@ -344,6 +357,64 @@ class AppUserServiceTest {
     }
 
     @Test
+    void updateUserWithNoNewPassword() {
+        // Arrange
+        Role role = new Role();
+        role.setId(1L);
+        role.setName("ROLE_ADMIN");
+
+        AppUser originalEntity = new AppUser();
+        originalEntity.setId(1L);
+        originalEntity.setName("Johnwick");
+        originalEntity.setRole(role);
+
+        AppUserInputDto newInputDto = new AppUserInputDto();
+        newInputDto.setName("John Wick");
+
+        AppUserDto outputDto = new AppUserDto();
+
+        AppUser fakeUser = new AppUser(); fakeUser.setId(1L);
+
+        when(appUserRepository.findById(1L)).thenReturn(Optional.of(originalEntity));
+
+        doAnswer(inv -> {
+            AppUserInputDto dto = inv.getArgument(0);
+            AppUser entity = inv.getArgument(1);
+            entity.setName(dto.getName());
+            return null;
+        }).when(appUserMapper).updateAppUserFromDto(eq(newInputDto), same(originalEntity));
+
+        when(appUserRepository.save(any(AppUser.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(appUserMapper.toDto(originalEntity)).thenReturn(outputDto);
+
+        try (var mockedSec = Mockito.mockStatic(SecurityUtils.class)) {
+            mockedSec.when(SecurityUtils::getCurrentUserDetails).thenReturn( new AppUserDetails(fakeUser));
+
+            // Act
+            AppUserDto result = appUserService.updateUser(1L, newInputDto);
+
+            // Assert (contract)
+            assertEquals(outputDto, result);
+
+            // Assert (repo validation)
+            verify(appUserRepository).save(appUserCaptor.capture());
+            AppUser saved = appUserCaptor.getValue();
+
+            assertEquals("John Wick", saved.getName());
+
+            // Assert (collaboration)
+            verify(appUserRepository, times(1)).findById(1L);
+            verify(appUserMapper, times(1)).updateAppUserFromDto(newInputDto, originalEntity);
+            verify(appUserRepository, times(1)).findByEmail(any());
+            verify(appUserRepository, times(1)).save(any(AppUser.class));
+            verify(appUserMapper, times(1)).toDto(originalEntity);
+
+            // Static verify
+            mockedSec.verify(SecurityUtils::getCurrentUserDetails);
+        }
+    }
+
+    @Test
     void patchUser() {
         // Arrange
         Role role = new Role();
@@ -486,6 +557,73 @@ class AppUserServiceTest {
     }
 
     @Test
+    void patchUserWithNoNewPassword() {
+        // Arrange
+        Role role = new Role();
+        role.setId(1L);
+        role.setName("ROLE_ADMIN");
+
+
+        AppUser originalEntity = new AppUser();
+        originalEntity.setId(1L);
+        originalEntity.setName("Johnwick");
+        originalEntity.setEmail("john@wck.com");
+        originalEntity.setRole(role);
+
+        AppUserPatchDto newPatchDto = new AppUserPatchDto();
+        newPatchDto.setName("John Wick");
+        newPatchDto.setEmail("john@wick.com");
+
+        AppUserDto outputDto = new AppUserDto();
+        AppUser fakeUser = new AppUser(); fakeUser.setId(1L);
+
+        when(appUserRepository.findById(1L)).thenReturn(Optional.of(originalEntity));
+
+        doAnswer(inv -> {
+            AppUserPatchDto dto = inv.getArgument(0);
+            AppUser entity = inv.getArgument(1);
+            entity.setName(dto.getName());
+            entity.setEmail(dto.getEmail());
+            return null;
+        }).when(appUserMapper).patchAppUserFromDto(eq(newPatchDto), same(originalEntity));
+
+
+        when(appUserRepository.save(any(AppUser.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(appUserMapper.toDto(originalEntity)).thenReturn(outputDto);
+
+        try (var mockedUtil = Mockito.mockStatic(AppUtils.class);
+             var mockedSec = Mockito.mockStatic(SecurityUtils.class)) {
+            mockedUtil.when(() -> AppUtils.allFieldsNull(newPatchDto)).thenReturn(false);
+            mockedSec.when(SecurityUtils::getCurrentUserDetails).thenReturn(new AppUserDetails(fakeUser));
+
+            // Act
+            AppUserDto result = appUserService.patchUser(1L, newPatchDto);
+
+            // Assert (contract)
+            assertEquals(outputDto, result);
+
+            // Assert (repo validation)
+            verify(appUserRepository).save(appUserCaptor.capture());
+            AppUser saved = appUserCaptor.getValue();
+
+            assertEquals("John Wick", saved.getName());
+            assertEquals("john@wick.com", saved.getEmail());
+
+            // Assert (collaboration)
+            verify(appUserRepository, times(1)).findById(1L);
+            verify(appUserMapper, times(1)).patchAppUserFromDto(newPatchDto, originalEntity);
+            verify(appUserRepository, times(1)).findByEmail(any());
+            verify(appUserRepository, times(1)).save(any(AppUser.class));
+            verify(appUserMapper, times(1)).toDto(originalEntity);
+
+            // Static verify
+            mockedUtil.verify(() -> AppUtils.allFieldsNull(eq(newPatchDto)));
+            mockedSec.verify(SecurityUtils::getCurrentUserDetails);
+
+        }
+    }
+
+    @Test
     void deleteUser() {
         // Arrange
         AppUser entity = new AppUser(); entity.setId(1L);
@@ -512,5 +650,71 @@ class AppUserServiceTest {
         verify(appUserRepository, times(1)).findById(1L);
         verify(appUserRepository, never()).deleteById(any());
         verifyNoMoreInteractions(appUserRepository);
+    }
+
+    @Test
+    void deleteUserWithProfilePicture() {
+        // Arrange
+        AppUser entity = new AppUser(); entity.setId(1L);
+        Attachment profilePicture = new Attachment();
+        profilePicture.setId(1L);
+        profilePicture.setAttachableType("AppUser");
+        profilePicture.setAttachableId(1L);
+
+        entity.setProfilePicture(profilePicture);
+
+        when(appUserRepository.findById(1L)).thenReturn(Optional.of(entity));
+        doNothing().when(attachmentService).deleteAttachmentFromParent(profilePicture.getId());
+        when(appUserRepository.save(any(AppUser.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        // Act
+        appUserService.deleteUser(entity.getId());
+
+        // Assert
+        verify(appUserRepository, times(1)).findById(1L);
+        verify(attachmentService, times(1)).deleteAttachmentFromParent(entity.getId());
+        verify(appUserRepository, times(1)).save(any());
+        verify(appUserRepository, times(1)).deleteById(1L);
+        verifyNoMoreInteractions(appUserRepository);
+    }
+
+    @Test
+    void addProfilePicture() {
+        // Arrange
+        AppUser entity = new AppUser(); entity.setId(1L);
+        Attachment profilePicture = new Attachment();
+        profilePicture.setId(1L);
+        profilePicture.setAttachableType("AppUser");
+        profilePicture.setAttachableId(1L);
+        entity.setProfilePicture(profilePicture);
+
+        AttachmentDto profileDto = new AttachmentDto(); profileDto.setId(1L);
+
+        when(appUserRepository.findById(1L)).thenReturn(Optional.of(entity));
+
+        when(attachmentRepository.findByAttachableTypeAndAttachableId(profilePicture.getAttachableType(),
+                profilePicture.getAttachableId())).thenReturn(List.of(profilePicture));
+
+        doNothing().when(attachmentService).validateAttachableAndAccess(profilePicture.getAttachableType(),
+                profilePicture.getAttachableId());
+
+        doNothing().when(attachmentService).deleteAttachmentFromParent(profilePicture.getId());
+
+        when(attachmentService.addAttachment(file, profilePicture.getAttachableType(),
+                profilePicture.getAttachableId())).thenReturn(profileDto);
+
+
+        // Act
+        appUserService.addProfilePicture(file, "AppUser", 1L);
+
+        // Arrange
+        verify(appUserRepository, times(1)).findById(1L);
+        verify(attachmentRepository, times(1)).findByAttachableTypeAndAttachableId(
+                profilePicture.getAttachableType(), profilePicture.getAttachableId());
+        verify(attachmentService, times(1)).validateAttachableAndAccess(
+                profilePicture.getAttachableType(), profilePicture.getAttachableId());
+        verify(attachmentService, times(1)).deleteAttachmentFromParent(profilePicture.getId());
+        verify(attachmentService, times(1)).addAttachment(same(file),eq("AppUser"), eq(1L));
+
     }
 }

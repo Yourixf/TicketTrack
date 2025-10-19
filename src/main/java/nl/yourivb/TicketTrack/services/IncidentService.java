@@ -4,6 +4,7 @@ import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
 import nl.yourivb.TicketTrack.dtos.incident.IncidentDto;
 import nl.yourivb.TicketTrack.dtos.incident.IncidentInputDto;
 import nl.yourivb.TicketTrack.dtos.incident.IncidentPatchDto;
+import nl.yourivb.TicketTrack.dtos.note.NoteDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.CustomException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
@@ -41,18 +42,20 @@ public class IncidentService {
     private final NoteRepository noteRepository;
     private final AttachmentRepository attachmentRepository;
     private final AttachmentService attachmentService;
+    private final NoteService noteService;
 
     public IncidentService(IncidentRepository incidentRepository,
                            InteractionRepository interactionRepository,
                            IncidentMapper incidentMapper, NoteRepository noteRepository,
                            AttachmentRepository attachmentRepository,
-                           AttachmentService attachmentService) {
+                           AttachmentService attachmentService, NoteService noteService) {
         this.incidentRepository = incidentRepository;
         this.interactionRepository = interactionRepository;
         this.incidentMapper = incidentMapper;
         this.noteRepository = noteRepository;
         this.attachmentRepository = attachmentRepository;
         this.attachmentService = attachmentService;
+        this.noteService = noteService;
     }
 
 
@@ -350,10 +353,16 @@ public class IncidentService {
         }
 
         List<AttachmentDto> attachmentsList = attachmentService.getAllAttachmentsFromParent("Incident", id);
+        List<NoteDto> noteList = noteService.getAllNotesFromParent("Incident", id);
 
         if (attachmentsList != null) {
             for (AttachmentDto attachment : attachmentsList) {
                 attachmentService.deleteAttachmentFromParent(attachment.getId());
+            }
+        }
+        if (noteList != null) {
+            for (NoteDto note : noteList) {
+                noteService.deleteNote(note.getId());
             }
         }
 

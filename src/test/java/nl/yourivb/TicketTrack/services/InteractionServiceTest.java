@@ -1,8 +1,10 @@
 package nl.yourivb.TicketTrack.services;
 
+import nl.yourivb.TicketTrack.dtos.attachment.AttachmentDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionInputDto;
 import nl.yourivb.TicketTrack.dtos.interaction.InteractionPatchDto;
+import nl.yourivb.TicketTrack.dtos.note.NoteDto;
 import nl.yourivb.TicketTrack.exceptions.BadRequestException;
 import nl.yourivb.TicketTrack.exceptions.CustomException;
 import nl.yourivb.TicketTrack.exceptions.RecordNotFoundException;
@@ -42,7 +44,11 @@ class InteractionServiceTest {
     @Mock
     NoteRepository noteRepository;
     @Mock
+    NoteService noteService;
+    @Mock
     AttachmentRepository attachmentRepository;
+    @Mock
+    AttachmentService attachmentService;
 
     // this enables you to inspect the entity that went to the repo.
     @Captor
@@ -482,7 +488,6 @@ class InteractionServiceTest {
         Interaction entity = new Interaction(); entity.setId(1L);
         when(interactionRepository.findById(1L)).thenReturn(Optional.of(entity));
 
-
         // Act
         interactionService.deleteInteraction(1L);
 
@@ -503,6 +508,36 @@ class InteractionServiceTest {
         // Assert (collaboration)
         verify(interactionRepository).findById(2L);
         verify(interactionRepository, never()).deleteById(any());
+        verifyNoMoreInteractions(interactionRepository);
+    }
+
+    @Test
+    void deleteInteractionWithAttachmentAndNote() {
+        // Arrange
+        Interaction entity = new Interaction(); entity.setId(1L);
+        AttachmentDto attach = new AttachmentDto(); attach.setId(1L); attach.setAttachableId(entity.getId());
+        NoteDto note = new NoteDto(); note.setId(1L); note.setNoteableId(entity.getId()); note.setNoteableType("Interaction");
+        attach.setAttachableType("Interaction");
+
+        when(interactionRepository.findById(1L)).thenReturn(Optional.of(entity));
+        when(attachmentService.getAllAttachmentsFromParent("Interaction", entity.getId()))
+                .thenReturn(List.of(attach));
+        when(noteService.getAllNotesFromParent("Interaction", entity.getId())).thenReturn(List.of(note));
+
+        doNothing().when(attachmentService).deleteAttachmentFromParent(attach.getId());
+        doNothing().when(noteService).deleteNote(note.getId());
+
+        // Act
+        interactionService.deleteInteraction(1L);
+
+        // Assert (collaboration)
+        verify(interactionRepository, times(1)).findById(1L);
+        verify(attachmentService, times( 1)).getAllAttachmentsFromParent(eq("Interaction"),
+                eq(1L));
+        verify(noteService, times(1)).getAllNotesFromParent(eq("Interaction"), eq(1L));
+        verify(attachmentService, times(1)).deleteAttachmentFromParent(attach.getId());
+        verify(noteService, times(1)).deleteNote(note.getId());
+        verify(interactionRepository, times(1)).deleteById(1L);
         verifyNoMoreInteractions(interactionRepository);
     }
 }
