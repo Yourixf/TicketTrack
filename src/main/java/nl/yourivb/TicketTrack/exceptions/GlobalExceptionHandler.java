@@ -12,6 +12,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MultipartException;
 
 import java.lang.IllegalStateException;
 import java.time.LocalDateTime;
@@ -132,4 +133,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(org.springframework.web.multipart.MultipartException.class)
+    public ResponseEntity<ApiResponse<Object>> handleMultipart(MultipartException ex) {
+        ApiResponse<Object> response = new ApiResponse<>(ex.getMessage(), HttpStatus.BAD_REQUEST, null);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }
